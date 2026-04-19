@@ -47,7 +47,8 @@ async function bloquearCargo(guild) {
       if (channel.id === canalLiberado) {
         await channel.permissionOverwrites.edit(roleId, {
           ViewChannel: true,
-          SendMessages: true
+          SendMessages: true,
+          AddReactions: true
         });
       } else {
         await channel.permissionOverwrites.edit(roleId, {
@@ -61,26 +62,30 @@ async function bloquearCargo(guild) {
 }
 
 // ==========================
-// SLASH COMMAND
+// 📌 COMANDO /PAINEL
 // ==========================
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("🏢 Abrir catálogo")
+    .setDescription("🏢 Abrir catálogo da empresa")
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 (async () => {
-  await rest.put(
-    Routes.applicationGuildCommands(process.env.CLIENT_ID, CONFIG.serverId),
-    { body: commands }
-  );
-  console.log("🏢 BOT ONLINE");
+  try {
+    await rest.put(
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, CONFIG.serverId),
+      { body: commands }
+    );
+    console.log("🏢 BOT ONLINE");
+  } catch (err) {
+    console.log(err);
+  }
 })();
 
 // ==========================
-// READY
+// 🚀 READY
 // ==========================
 client.once("ready", async () => {
   console.log(`🏢 ONLINE: ${client.user.tag}`);
@@ -90,7 +95,7 @@ client.once("ready", async () => {
 });
 
 // ==========================
-// BOAS-VINDAS
+// 👋 BOAS-VINDAS
 // ==========================
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== CONFIG.serverId) return;
@@ -106,16 +111,18 @@ client.on("guildMemberAdd", async (member) => {
     .setDescription(
 `👋 Bem-vindo ${member.user}
 
-🤖 Bots Discord  
+💼 Você entrou na AURA BOTS STUDIO
+
+🤖 Desenvolvimento de Bots Discord  
 ⚙️ Sistemas automatizados  
-🚀 Soluções profissionais RP`
+🚀 Soluções profissionais para servidores RP`
     );
 
   channel.send({ embeds: [embed] });
 });
 
 // ==========================
-// INTERAÇÕES
+// 🎛️ INTERAÇÕES
 // ==========================
 client.on("interactionCreate", async (interaction) => {
 
@@ -135,42 +142,50 @@ client.on("interactionCreate", async (interaction) => {
       .setTitle("🏢 AURA BOTS STUDIO - CATÁLOGO OFICIAL")
       .setDescription(
 `╔══════════════════════════════╗
-💎 ELITE STORE
+🏢 AURA BOTS STUDIO
 ╚══════════════════════════════╝
 
-🚀 AUTOMAÇÃO PROFISSIONAL
+🚀 DESENVOLVIMENTO PROFISSIONAL DE SISTEMAS
 
-Escolha uma categoria abaixo 👇`
+A AURA BOTS STUDIO cria soluções modernas para Discord e servidores RP, focando em automação, performance e qualidade.
+
+📦 SERVIÇOS DISPONÍVEIS:
+
+🤖 Bot Básico - R$ 15  
+📝 Comandos simples e automações leves
+
+───────────────────────────────
+
+💎 Bot Personalizado - R$ 50  
+📝 Sistema completo sob medida para seu servidor
+
+───────────────────────────────
+
+⚙️ Sistema Enterprise - R$ 120  
+📝 Automação avançada, integrações e recursos premium
+
+═══════════════════════════════
+🎫 Clique abaixo para abrir um pedido
+🔥 Atendimento rápido e profissional
+═══════════════════════════════`
       );
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("cat_basic")
-        .setLabel("🤖 Básico - R$15")
-        .setStyle(ButtonStyle.Primary),
-
-      new ButtonBuilder()
-        .setCustomId("cat_pro")
-        .setLabel("💎 Personalizado - R$50")
-        .setStyle(ButtonStyle.Success),
-
-      new ButtonBuilder()
-        .setCustomId("cat_enterprise")
-        .setLabel("⚙️ Enterprise - R$120")
-        .setStyle(ButtonStyle.Danger)
+        .setCustomId("open_ticket")
+        .setLabel("📦 Abrir Pedido")
+        .setStyle(ButtonStyle.Primary)
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
 
-    return interaction.reply({ content: "✅ painel enviado", ephemeral: true });
+    return interaction.reply({ content: "✅ catálogo enviado", ephemeral: true });
   }
 
   // ======================
-  // ABRIR TICKET
+  // 🎫 TICKET
   // ======================
-  if (interaction.isButton() && interaction.customId.startsWith("cat_")) {
-
-    const tipo = interaction.customId;
+  if (interaction.isButton() && interaction.customId === "open_ticket") {
 
     const channel = await interaction.guild.channels.create({
       name: `pedido-${interaction.user.username}`,
@@ -197,21 +212,15 @@ Escolha uma categoria abaixo 👇`
       ]
     });
 
-    let plano = "";
-
-    if (tipo === "cat_basic") plano = "🤖 Bot Básico - R$15";
-    if (tipo === "cat_pro") plano = "💎 Bot Personalizado - R$50";
-    if (tipo === "cat_enterprise") plano = "⚙️ Sistema Enterprise - R$120";
-
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("🏢 PEDIDO ABERTO")
+      .setTitle("🏢 PEDIDO ABERTO - AURA BOTS STUDIO")
       .setDescription(
-`📦 Plano selecionado:
+`📦 Escolha seu serviço:
 
-${plano}
-
-💬 Aguarde atendimento da equipe`
+🤖 Bot Básico - R$ 15  
+💎 Bot Personalizado - R$ 50  
+⚙️ Sistema Enterprise - R$ 120`
       );
 
     const row = new ActionRowBuilder().addComponents(
@@ -222,7 +231,7 @@ ${plano}
 
       new ButtonBuilder()
         .setCustomId("close")
-        .setLabel("🔒 Fechar")
+        .setLabel("🔒 Encerrar")
         .setStyle(ButtonStyle.Danger)
     );
 
@@ -232,14 +241,14 @@ ${plano}
   }
 
   // ======================
-  // FEEDBACK
+  // ⭐ FEEDBACK
   // ======================
   if (interaction.isButton() && interaction.customId === "feedback") {
 
     const embed = new EmbedBuilder()
       .setColor("#FFD700")
-      .setTitle("⭐ FEEDBACK")
-      .setDescription("Escolha sua nota:");
+      .setTitle("⭐ FEEDBACK AURA BOTS STUDIO")
+      .setDescription("Escolha sua avaliação:");
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId("fb1").setLabel("⭐ 1").setStyle(ButtonStyle.Secondary),
@@ -273,11 +282,11 @@ ${plano}
       canal.send({ embeds: [embed] });
     }
 
-    return interaction.reply({ content: "✅ obrigado pelo feedback!", ephemeral: true });
+    return interaction.reply({ content: "✅ feedback enviado!", ephemeral: true });
   }
 
   // ======================
-  // FECHAR
+  // FECHAR TICKET
   // ======================
   if (interaction.isButton() && interaction.customId === "close") {
 
@@ -285,7 +294,7 @@ ${plano}
       return interaction.reply({ content: "❌ sem permissão", ephemeral: true });
     }
 
-    await interaction.reply("🔒 fechando...");
+    await interaction.reply("🔒 encerrando...");
     setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
