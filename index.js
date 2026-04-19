@@ -23,7 +23,7 @@ const CONFIG = {
   staffRole: "1495178024797208588",
   autoRole: "1495178024759332917",
   chatGeral: "1495178025296461986",
-  feedbackChannel: "COLOQUE_ID_CANAL_FEEDBACK"
+  feedbackChannel: "1495178025443000471"
 };
 
 // ==========================
@@ -65,12 +65,12 @@ async function bloquearCargo(guild) {
 }
 
 // ==========================
-// 📌 COMANDO
+// 📌 COMANDO PAINEL
 // ==========================
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("🏢 Abrir catálogo")
+    .setDescription("🏢 Abrir catálogo da empresa")
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
@@ -131,7 +131,9 @@ client.on("interactionCreate", async (interaction) => {
 
   if (!interaction.guild) return;
 
+  // ======================
   // /PAINEL
+  // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
@@ -198,9 +200,7 @@ client.on("interactionCreate", async (interaction) => {
 
 🤖 Bot Básico - R$ 15  
 💎 Bot Personalizado - R$ 50  
-⚙️ Sistema Enterprise - R$ 120
-
-💬 Use o menu abaixo`
+⚙️ Sistema Enterprise - R$ 120`
       );
 
     const menu = new ActionRowBuilder().addComponents(
@@ -239,7 +239,7 @@ client.on("interactionCreate", async (interaction) => {
     const embed = new EmbedBuilder()
       .setColor("#FFD700")
       .setTitle("⭐ FEEDBACK")
-      .setDescription("Escolha sua nota de 1 a 5 estrelas:");
+      .setDescription("Escolha uma nota de 1 a 5 estrelas:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
@@ -267,7 +267,7 @@ client.on("interactionCreate", async (interaction) => {
 
     if (channel) {
       channel.send(
-`⭐ **NOVO FEEDBACK**
+`⭐ **NOVO FEEDBACK RECEBIDO**
 
 👤 Usuário: ${interaction.user}
 ⭐ Nota: ${nota}/5
@@ -275,7 +275,7 @@ client.on("interactionCreate", async (interaction) => {
       );
     }
 
-    return interaction.reply({ content: "✅ Obrigado pelo feedback!", ephemeral: true });
+    return interaction.reply({ content: "✅ Feedback enviado com sucesso!", ephemeral: true });
   }
 
   // ======================
@@ -287,7 +287,7 @@ client.on("interactionCreate", async (interaction) => {
       return interaction.reply({ content: "❌ apenas equipe", ephemeral: true });
     }
 
-    await interaction.reply("🔒 fechando...");
+    await interaction.reply("🔒 encerrando...");
     setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
