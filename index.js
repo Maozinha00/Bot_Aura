@@ -57,7 +57,7 @@ const client = new Client({
 });
 
 // ==========================
-// 🔒 BLOQUEIO DE PERMISSÃO
+// 🔒 BLOQUEIO DE CARGO
 // ==========================
 async function bloquearCargo(guild) {
   const roleId = CONFIG.autoRole;
@@ -143,16 +143,21 @@ client.on("guildMemberAdd", async (member) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("🏢 AURA BOTS STUDIO")
+      .setTitle("🏢 AURA BOTS STUDIO | EMPRESA OFICIAL")
       .setDescription(
 `👋 Bem-vindo ${member.user}
 
-💼 Você entrou na empresa
+💼 Você entrou na AURA BOTS STUDIO
 
-Use /painel para ver o catálogo`
+Somos especialistas em:
+
+🤖 Desenvolvimento de Bots Discord  
+⚙️ Sistemas automatizados  
+🚀 Soluções profissionais para servidores RP`
       );
 
     await channel.send({ embeds: [embed] });
+
   } catch {}
 });
 
@@ -172,11 +177,11 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("🏢 CATÁLOGO")
+      .setTitle("🏢 CATÁLOGO OFICIAL")
       .setDescription(
-`🤖 Bot Básico - R$ 15
-💎 Bot Personalizado - R$ 50
-⚙️ Sistema Enterprise - R$ 120`
+`🤖 ${PRODUCTS.basic.name} - ${PRODUCTS.basic.price}
+💎 ${PRODUCTS.pro.name} - ${PRODUCTS.pro.price}
+⚙️ ${PRODUCTS.enterprise.name} - ${PRODUCTS.enterprise.price}`
       );
 
     const row = new ActionRowBuilder().addComponents(
