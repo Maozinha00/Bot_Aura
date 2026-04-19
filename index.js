@@ -258,21 +258,26 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   // ======================
-  // RECEBER FEEDBACK
+  // RECEBER FEEDBACK (CORRIGIDO)
   // ======================
   if (interaction.isStringSelectMenu() && interaction.customId === "nota_feedback") {
 
     const nota = interaction.values[0];
-    const channel = interaction.guild.channels.cache.get(CONFIG.feedbackChannel);
 
-    if (channel) {
-      channel.send(
-`⭐ **NOVO FEEDBACK RECEBIDO**
+    const canalFeedback = await interaction.guild.channels.fetch(CONFIG.feedbackChannel).catch(() => null);
 
-👤 Usuário: ${interaction.user}
-⭐ Nota: ${nota}/5
-📦 Ticket: ${interaction.channel.name}`
-      );
+    if (canalFeedback) {
+      const embed = new EmbedBuilder()
+        .setColor("#FFD700")
+        .setTitle("⭐ NOVO FEEDBACK RECEBIDO")
+        .addFields(
+          { name: "👤 Usuário", value: `${interaction.user}`, inline: false },
+          { name: "⭐ Nota", value: `${nota}/5`, inline: true },
+          { name: "📦 Ticket", value: `${interaction.channel.name}`, inline: true }
+        )
+        .setTimestamp();
+
+      await canalFeedback.send({ embeds: [embed] });
     }
 
     return interaction.reply({ content: "✅ Feedback enviado com sucesso!", ephemeral: true });
