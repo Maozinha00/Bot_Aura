@@ -15,14 +15,15 @@ import {
 } from "discord.js";
 
 // ==========================
-// 🏢 CONFIG EMPRESA
+// 🏢 CONFIG
 // ==========================
 const CONFIG = {
   serverId: "1495178024759332914",
   welcomeChannel: "1495275678533288068",
   staffRole: "1495178024797208588",
   autoRole: "1495178024759332917",
-  chatGeral: "1495178025296461986"
+  chatGeral: "1495178025296461986",
+  feedbackChannel: "COLOQUE_ID_CANAL_FEEDBACK"
 };
 
 // ==========================
@@ -59,19 +60,17 @@ async function bloquearCargo(guild) {
         });
       }
 
-    } catch (err) {
-      console.log(`Erro no canal ${channel.name}`);
-    }
+    } catch {}
   });
 }
 
 // ==========================
-// 📌 COMANDO PAINEL
+// 📌 COMANDO
 // ==========================
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("🏢 Abrir catálogo da empresa")
+    .setDescription("🏢 Abrir catálogo")
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
@@ -79,14 +78,10 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 (async () => {
   try {
     await rest.put(
-      Routes.applicationGuildCommands(
-        process.env.CLIENT_ID,
-        CONFIG.serverId
-      ),
+      Routes.applicationGuildCommands(process.env.CLIENT_ID, CONFIG.serverId),
       { body: commands }
     );
-
-    console.log("🏢 BOT EMPRESA ONLINE");
+    console.log("🏢 BOT ONLINE");
   } catch (err) {
     console.log(err);
   }
@@ -99,9 +94,7 @@ client.once("ready", async () => {
   console.log(`🏢 ONLINE: ${client.user.tag}`);
 
   const guild = client.guilds.cache.get(CONFIG.serverId);
-  if (!guild) return;
-
-  await bloquearCargo(guild);
+  if (guild) await bloquearCargo(guild);
 });
 
 // ==========================
@@ -110,30 +103,25 @@ client.once("ready", async () => {
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== CONFIG.serverId) return;
 
-  try {
-    await member.roles.add(CONFIG.autoRole).catch(() => {});
+  await member.roles.add(CONFIG.autoRole).catch(() => {});
 
-    const channel = await member.guild.channels.fetch(CONFIG.welcomeChannel).catch(() => null);
-    if (!channel) return;
+  const channel = await member.guild.channels.fetch(CONFIG.welcomeChannel).catch(() => null);
+  if (!channel) return;
 
-    const embed = new EmbedBuilder()
-      .setColor("#6A0DAD")
-      .setTitle("🏢 AURA BOTS STUDIO | EMPRESA OFICIAL")
-      .setDescription(
+  const embed = new EmbedBuilder()
+    .setColor("#6A0DAD")
+    .setTitle("🏢 AURA BOTS STUDIO | EMPRESA OFICIAL")
+    .setDescription(
 `👋 Bem-vindo ${member.user}
 
 💼 Você entrou na AURA BOTS STUDIO
 
-Somos especialistas em:
-
 🤖 Desenvolvimento de Bots Discord  
 ⚙️ Sistemas automatizados  
 🚀 Soluções profissionais para servidores RP`
-      );
+    );
 
-    await channel.send({ embeds: [embed] });
-
-  } catch {}
+  channel.send({ embeds: [embed] });
 });
 
 // ==========================
@@ -143,9 +131,7 @@ client.on("interactionCreate", async (interaction) => {
 
   if (!interaction.guild) return;
 
-  // ======================
   // /PAINEL
-  // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
@@ -160,29 +146,14 @@ client.on("interactionCreate", async (interaction) => {
 💎 AURA BOTS STUDIO - ELITE STORE
 ╚══════════════════════════════╝
 
-🚀 AUTOMAÇÃO PROFISSIONAL PARA SERVIDORES
+🚀 AUTOMAÇÃO PROFISSIONAL
 
-📦 CATÁLOGO DE SERVIÇOS:
-
-🤖 Bot Básico
-💰 R$ 15
-📝 Comandos simples + estrutura leve
-
-───────────────────────────────
-
-💎 Bot Personalizado
-💰 R$ 50
-📝 Sistema completo sob medida
-
-───────────────────────────────
-
-⚙️ Sistema Enterprise
-💰 R$ 120
-📝 Automação avançada + recursos premium
+🤖 Bot Básico - R$ 15  
+💎 Bot Personalizado - R$ 50  
+⚙️ Sistema Enterprise - R$ 120
 
 ═══════════════════════════════
 🎫 Clique abaixo para solicitar
-🔥 Atendimento premium e rápido
 ═══════════════════════════════`
       );
 
@@ -195,11 +166,11 @@ client.on("interactionCreate", async (interaction) => {
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
 
-    return interaction.reply({ content: "✅ catálogo enviado", ephemeral: true });
+    return interaction.reply({ content: "✅ enviado", ephemeral: true });
   }
 
   // ======================
-  // 🎫 TICKET COM CATÁLOGO
+  // 🎫 TICKET
   // ======================
   if (interaction.isButton() && interaction.customId === "open_ticket") {
 
@@ -207,60 +178,29 @@ client.on("interactionCreate", async (interaction) => {
       name: `pedido-${interaction.user.username}`,
       type: ChannelType.GuildText,
       permissionOverwrites: [
-        {
-          id: interaction.guild.id,
-          deny: [PermissionsBitField.Flags.ViewChannel]
-        },
+        { id: interaction.guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
         {
           id: interaction.user.id,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages
-          ]
+          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
         },
         {
           id: CONFIG.staffRole,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages
-          ]
+          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
         }
       ]
     });
 
-    // 🔥 CATÁLOGO DENTRO DO TICKET
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("🏢 AURA BOTS STUDIO - PEDIDO OFICIAL")
+      .setTitle("🏢 PEDIDO ABERTO")
       .setDescription(
-`╔══════════════════════════════╗
-💎 AURA BOTS STUDIO - ELITE STORE
-╚══════════════════════════════╝
+`📦 Escolha seu serviço:
 
-🚀 SEU PEDIDO FOI ABERTO
+🤖 Bot Básico - R$ 15  
+💎 Bot Personalizado - R$ 50  
+⚙️ Sistema Enterprise - R$ 120
 
-📦 ESCOLHA O SERVIÇO:
-
-🤖 Bot Básico
-💰 R$ 15
-📝 Comandos simples + estrutura leve
-
-───────────────────────────────
-
-💎 Bot Personalizado
-💰 R$ 50
-📝 Sistema completo sob medida
-
-───────────────────────────────
-
-⚙️ Sistema Enterprise
-💰 R$ 120
-📝 Automação avançada + recursos premium
-
-═══════════════════════════════
-💬 Responda aqui qual plano deseja
-🔥 Atendimento já iniciado
-═══════════════════════════════`
+💬 Use o menu abaixo`
       );
 
     const menu = new ActionRowBuilder().addComponents(
@@ -268,39 +208,74 @@ client.on("interactionCreate", async (interaction) => {
         .setCustomId("menu")
         .setPlaceholder("Selecionar serviço")
         .addOptions([
-          { label: "🤖 Bot Básico - R$ 15", value: "basic" },
-          { label: "💎 Bot Personalizado - R$ 50", value: "pro" },
-          { label: "⚙️ Sistema Enterprise - R$ 120", value: "enterprise" }
+          { label: "Bot Básico - R$ 15", value: "basic" },
+          { label: "Bot Personalizado - R$ 50", value: "pro" },
+          { label: "Sistema Enterprise - R$ 120", value: "enterprise" }
         ])
     );
 
-    const close = new ActionRowBuilder().addComponents(
+    const row2 = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("feedback")
+        .setLabel("⭐ Dar Feedback")
+        .setStyle(ButtonStyle.Success),
+
       new ButtonBuilder()
         .setCustomId("close")
-        .setLabel("🔒 Encerrar Pedido")
+        .setLabel("🔒 Encerrar")
         .setStyle(ButtonStyle.Danger)
     );
 
-    await channel.send({ embeds: [embed], components: [menu, close] });
+    await channel.send({ embeds: [embed], components: [menu, row2] });
 
     return interaction.reply({ content: "📦 ticket criado", ephemeral: true });
   }
 
   // ======================
-  // MENU
+  // ⭐ FEEDBACK
   // ======================
-  if (interaction.isStringSelectMenu()) {
+  if (interaction.isButton() && interaction.customId === "feedback") {
 
-    const v = interaction.values[0];
+    const embed = new EmbedBuilder()
+      .setColor("#FFD700")
+      .setTitle("⭐ FEEDBACK")
+      .setDescription("Escolha sua nota de 1 a 5 estrelas:");
 
-    const msg =
-      v === "basic"
-        ? "🤖 Bot Básico - R$ 15"
-        : v === "pro"
-        ? "💎 Bot Personalizado - R$ 50"
-        : "⚙️ Sistema Enterprise - R$ 120";
+    const menu = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId("nota_feedback")
+        .setPlaceholder("Selecionar nota")
+        .addOptions([
+          { label: "⭐ 1", value: "1" },
+          { label: "⭐⭐ 2", value: "2" },
+          { label: "⭐⭐⭐ 3", value: "3" },
+          { label: "⭐⭐⭐⭐ 4", value: "4" },
+          { label: "⭐⭐⭐⭐⭐ 5", value: "5" }
+        ])
+    );
 
-    return interaction.reply({ content: msg, ephemeral: true });
+    return interaction.reply({ embeds: [embed], components: [menu], ephemeral: true });
+  }
+
+  // ======================
+  // RECEBER FEEDBACK
+  // ======================
+  if (interaction.isStringSelectMenu() && interaction.customId === "nota_feedback") {
+
+    const nota = interaction.values[0];
+    const channel = interaction.guild.channels.cache.get(CONFIG.feedbackChannel);
+
+    if (channel) {
+      channel.send(
+`⭐ **NOVO FEEDBACK**
+
+👤 Usuário: ${interaction.user}
+⭐ Nota: ${nota}/5
+📦 Ticket: ${interaction.channel.name}`
+      );
+    }
+
+    return interaction.reply({ content: "✅ Obrigado pelo feedback!", ephemeral: true });
   }
 
   // ======================
@@ -312,7 +287,7 @@ client.on("interactionCreate", async (interaction) => {
       return interaction.reply({ content: "❌ apenas equipe", ephemeral: true });
     }
 
-    await interaction.reply("🔒 encerrando...");
+    await interaction.reply("🔒 fechando...");
     setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
