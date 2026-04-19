@@ -7,33 +7,31 @@ import {
   ButtonBuilder,
   ButtonStyle,
   ChannelType,
-  PermissionsBitField
+  PermissionsBitField,
+  StringSelectMenuBuilder
 } from "discord.js";
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
 });
 
-// 🔑 IDs
+// 🔑 CONFIG
 const SERVIDOR_ID = "1495178024759332914";
 const CANAL_BOAS_VINDAS = "1495178025296461992";
 const CANAL_PAINEL = "1495178025602515176";
 const CARGO_STAFF = "1495178024797208588";
 const CARGO_AUTO = "1495178024759332917";
 
-// 🚀 BOT ONLINE
+// 🚀 ONLINE
 client.once("ready", async () => {
-  console.log(`✅ Logado como ${client.user.tag}`);
+  console.log(`✅ ${client.user.tag} online`);
 
-  try {
-    const guild = await client.guilds.fetch(SERVIDOR_ID);
-    const canal = await guild.channels.fetch(CANAL_PAINEL);
+  const guild = await client.guilds.fetch(SERVIDOR_ID);
+  const canal = await guild.channels.fetch(CANAL_PAINEL);
 
-    if (!canal) return console.log("❌ Canal não encontrado");
-
-    const embed = new EmbedBuilder()
-      .setColor("Purple")
-      .setDescription(
+  const embed = new EmbedBuilder()
+    .setColor("#6A0DAD")
+    .setDescription(
 `╔══════════════════════════════╗
 👑 **AURA BOTS STUDIO**
 ╚══════════════════════════════╝
@@ -49,115 +47,96 @@ client.once("ready", async () => {
 🎫 **SOLICITE AGORA SEU BOT**
 🔥 Atendimento rápido e suporte ativo
 ═══════════════════════════════`
-      );
-
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("abrir_ticket")
-        .setLabel("🎫 Abrir Ticket")
-        .setStyle(ButtonStyle.Primary)
     );
 
-    canal.send({ embeds: [embed], components: [row] });
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId("ticket")
+      .setLabel("🎫 Abrir Ticket")
+      .setStyle(ButtonStyle.Primary)
+  );
 
-  } catch (err) {
-    console.log("Erro painel:", err);
-  }
+  canal.send({ embeds: [embed], components: [row] });
 });
 
-// 👋 ENTRADA + AUTO CARGO
+// 👋 ENTRADA
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== SERVIDOR_ID) return;
 
-  try {
-    await member.roles.add(CARGO_AUTO);
+  await member.roles.add(CARGO_AUTO);
 
-    const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS);
-    if (!canal) return;
+  const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS);
 
-    const embed = new EmbedBuilder()
-      .setColor("Purple")
-      .setDescription(
-`👋 ${member}
+  const embed = new EmbedBuilder()
+    .setColor("#6A0DAD")
+    .setDescription(`👋 ${member}\nBem-vindo ao **Aura Bots Studio** 🚀`);
 
-Seja bem-vindo ao **AURA BOTS STUDIO** 🚀
-
-🎫 Abra um ticket para solicitar seu bot`
-      )
-      .setThumbnail(member.user.displayAvatarURL());
-
-    canal.send({ embeds: [embed] });
-
-  } catch (err) {
-    console.log("Erro entrada:", err);
-  }
+  canal.send({ embeds: [embed] });
 });
 
-// 🎫 SISTEMA DE TICKET
+// 🎫 INTERAÇÕES
 client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isButton()) return;
   if (interaction.guild.id !== SERVIDOR_ID) return;
 
-  if (interaction.customId === "abrir_ticket") {
-    try {
-      const canal = await interaction.guild.channels.create({
-        name: `ticket-${interaction.user.username}`,
-        type: ChannelType.GuildText,
-        permissionOverwrites: [
-          {
-            id: interaction.guild.id,
-            deny: [PermissionsBitField.Flags.ViewChannel]
-          },
-          {
-            id: interaction.user.id,
-            allow: [
-              PermissionsBitField.Flags.ViewChannel,
-              PermissionsBitField.Flags.SendMessages
-            ]
-          },
-          {
-            id: CARGO_STAFF,
-            allow: [
-              PermissionsBitField.Flags.ViewChannel,
-              PermissionsBitField.Flags.SendMessages
-            ]
-          }
-        ]
-      });
+  // ABRIR TICKET
+  if (interaction.isButton() && interaction.customId === "ticket") {
 
-      const embed = new EmbedBuilder()
-        .setColor("Purple")
-        .setDescription(
-`🎫 **Ticket aberto**
+    const canal = await interaction.guild.channels.create({
+      name: `ticket-${interaction.user.username}`,
+      type: ChannelType.GuildText,
+      permissionOverwrites: [
+        { id: interaction.guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
+        { id: interaction.user.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
+        { id: CARGO_STAFF, allow: [PermissionsBitField.Flags.ViewChannel] }
+      ]
+    });
 
-Explique seu pedido que a equipe irá te atender.`
-        );
+    const embed = new EmbedBuilder()
+      .setColor("#6A0DAD")
+      .setTitle("🎫 Atendimento")
+      .setDescription("Selecione o tipo de pedido abaixo:");
 
-      const row = new ActionRowBuilder().addComponents(
-        new ButtonBuilder()
-          .setCustomId("fechar_ticket")
-          .setLabel("🔒 Fechar Ticket")
-          .setStyle(ButtonStyle.Danger)
-      );
+    const menu = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId("menu")
+        .setPlaceholder("Escolha uma opção")
+        .addOptions([
+          { label: "🤖 Bot Simples", value: "simples" },
+          { label: "💎 Bot Premium", value: "premium" },
+          { label: "⚙️ Sistema Personalizado", value: "sistema" }
+        ])
+    );
 
-      canal.send({ embeds: [embed], components: [row] });
+    const fechar = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("fechar")
+        .setLabel("🔒 Fechar Ticket")
+        .setStyle(ButtonStyle.Danger)
+    );
 
-      interaction.reply({
-        content: `✅ Ticket criado: ${canal}`,
-        ephemeral: true
-      });
+    canal.send({ embeds: [embed], components: [menu, fechar] });
 
-    } catch (err) {
-      console.log("Erro ticket:", err);
-    }
+    interaction.reply({ content: `✅ Ticket criado: ${canal}`, ephemeral: true });
   }
 
-  if (interaction.customId === "fechar_ticket") {
+  // MENU
+  if (interaction.isStringSelectMenu()) {
+    let resposta = "";
+
+    if (interaction.values[0] === "simples")
+      resposta = "🤖 Bot simples solicitado.";
+    if (interaction.values[0] === "premium")
+      resposta = "💎 Bot premium solicitado.";
+    if (interaction.values[0] === "sistema")
+      resposta = "⚙️ Sistema personalizado solicitado.";
+
+    interaction.reply({ content: resposta });
+  }
+
+  // FECHAR
+  if (interaction.isButton() && interaction.customId === "fechar") {
     if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
-      return interaction.reply({
-        content: "❌ Apenas staff pode fechar",
-        ephemeral: true
-      });
+      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
     }
 
     await interaction.reply("🔒 Fechando...");
