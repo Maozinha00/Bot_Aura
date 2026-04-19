@@ -199,7 +199,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 
   // ======================
-  // 🎫 TICKET
+  // 🎫 TICKET COM CATÁLOGO
   // ======================
   if (interaction.isButton() && interaction.customId === "open_ticket") {
 
@@ -228,8 +228,92 @@ client.on("interactionCreate", async (interaction) => {
       ]
     });
 
-    await channel.send("📦 pedido criado");
-    return interaction.reply({ content: "ticket criado", ephemeral: true });
+    // 🔥 CATÁLOGO DENTRO DO TICKET
+    const embed = new EmbedBuilder()
+      .setColor("#6A0DAD")
+      .setTitle("🏢 AURA BOTS STUDIO - PEDIDO OFICIAL")
+      .setDescription(
+`╔══════════════════════════════╗
+💎 AURA BOTS STUDIO - ELITE STORE
+╚══════════════════════════════╝
+
+🚀 SEU PEDIDO FOI ABERTO
+
+📦 ESCOLHA O SERVIÇO:
+
+🤖 Bot Básico
+💰 R$ 15
+📝 Comandos simples + estrutura leve
+
+───────────────────────────────
+
+💎 Bot Personalizado
+💰 R$ 50
+📝 Sistema completo sob medida
+
+───────────────────────────────
+
+⚙️ Sistema Enterprise
+💰 R$ 120
+📝 Automação avançada + recursos premium
+
+═══════════════════════════════
+💬 Responda aqui qual plano deseja
+🔥 Atendimento já iniciado
+═══════════════════════════════`
+      );
+
+    const menu = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId("menu")
+        .setPlaceholder("Selecionar serviço")
+        .addOptions([
+          { label: "🤖 Bot Básico - R$ 15", value: "basic" },
+          { label: "💎 Bot Personalizado - R$ 50", value: "pro" },
+          { label: "⚙️ Sistema Enterprise - R$ 120", value: "enterprise" }
+        ])
+    );
+
+    const close = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("close")
+        .setLabel("🔒 Encerrar Pedido")
+        .setStyle(ButtonStyle.Danger)
+    );
+
+    await channel.send({ embeds: [embed], components: [menu, close] });
+
+    return interaction.reply({ content: "📦 ticket criado", ephemeral: true });
+  }
+
+  // ======================
+  // MENU
+  // ======================
+  if (interaction.isStringSelectMenu()) {
+
+    const v = interaction.values[0];
+
+    const msg =
+      v === "basic"
+        ? "🤖 Bot Básico - R$ 15"
+        : v === "pro"
+        ? "💎 Bot Personalizado - R$ 50"
+        : "⚙️ Sistema Enterprise - R$ 120";
+
+    return interaction.reply({ content: msg, ephemeral: true });
+  }
+
+  // ======================
+  // FECHAR TICKET
+  // ======================
+  if (interaction.isButton() && interaction.customId === "close") {
+
+    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
+      return interaction.reply({ content: "❌ apenas equipe", ephemeral: true });
+    }
+
+    await interaction.reply("🔒 encerrando...");
+    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
 
