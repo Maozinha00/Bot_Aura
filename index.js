@@ -36,7 +36,7 @@ const PRECOS = {
 };
 
 // ==========================
-// 📌 SLASH COMMAND
+// SLASH COMMAND
 // ==========================
 const commands = [
   new SlashCommandBuilder()
@@ -44,15 +44,13 @@ const commands = [
     .setDescription("Enviar painel de pedidos")
 ].map(c => c.toJSON());
 
-// ==========================
-// REGISTRO DE COMANDOS
-// ==========================
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
+// registro seguro
 (async () => {
   try {
-    if (!process.env.CLIENT_ID) {
-      throw new Error("CLIENT_ID não definido no .env");
+    if (!process.env.CLIENT_ID || !process.env.TOKEN) {
+      throw new Error("CLIENT_ID ou TOKEN não definido no .env");
     }
 
     await rest.put(
@@ -67,14 +65,14 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 })();
 
 // ==========================
-// 🚀 BOT ONLINE
+// BOT ONLINE
 // ==========================
 client.once("ready", () => {
-  console.log(`💎 AURA BOTS ONLINE: ${client.user.tag}`);
+  console.log(`💎 ULTRA ELITE ONLINE: ${client.user.tag}`);
 });
 
 // ==========================
-// 👋 BOAS-VINDAS + AUTO CARGO
+// BOAS-VINDAS
 // ==========================
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== SERVIDOR_ID) return;
@@ -91,33 +89,27 @@ client.on("guildMemberAdd", async (member) => {
       .setDescription(
 `💎 Olá ${member.user}
 
-Bem-vindo à **Aura Bots Studio**
-
 🤖 Bots simples e profissionais  
 💎 Bots personalizados  
 ⚙️ Sistemas automatizados  
 
-🎫 Abra um ticket para solicitar seu bot`
-      )
-      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      .setFooter({ text: "Aura Bots Studio" });
+🎫 Use /painel para começar`
+      );
 
     await canal.send({ embeds: [embed] }).catch(() => {});
-
   } catch (err) {
     console.log("Erro boas-vindas:", err);
   }
 });
 
 // ==========================
-// 🎛️ INTERAÇÕES
+// INTERAÇÕES
 // ==========================
 client.on("interactionCreate", async (interaction) => {
-
   if (!interaction.guild) return;
 
   // ======================
-  // /PAINEL
+  // PAINEL
   // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
@@ -127,11 +119,7 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setDescription(
-`💎 **AURA BOTS STUDIO**
-
-🚀 Clique abaixo para abrir pedido`
-      );
+      .setDescription("💎 Clique abaixo para abrir um pedido");
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -140,10 +128,7 @@ client.on("interactionCreate", async (interaction) => {
         .setStyle(ButtonStyle.Primary)
     );
 
-    await interaction.channel.send({
-      embeds: [embed],
-      components: [row]
-    });
+    await interaction.channel.send({ embeds: [embed], components: [row] });
 
     return interaction.reply({ content: "✅ painel enviado", ephemeral: true });
   }
@@ -179,21 +164,18 @@ client.on("interactionCreate", async (interaction) => {
     }).catch(() => null);
 
     if (!canal) {
-      return interaction.reply({
-        content: "❌ erro ao criar ticket",
-        ephemeral: true
-      });
+      return interaction.reply({ content: "❌ erro ao criar ticket", ephemeral: true });
     }
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
       .setTitle("💎 NOVO PEDIDO")
-      .setDescription("Selecione o produto abaixo:");
+      .setDescription("Escolha o produto abaixo:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId("menu")
-        .setPlaceholder("Escolha o produto")
+        .setPlaceholder("Selecionar produto")
         .addOptions([
           { label: `🤖 Bot Simples - ${PRECOS.simples}`, value: "simples" },
           { label: `💎 Bot Personalizado - ${PRECOS.premium}`, value: "premium" },
@@ -204,23 +186,19 @@ client.on("interactionCreate", async (interaction) => {
     const fechar = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("fechar")
-        .setLabel("🔒 Fechar Pedido")
+        .setLabel("🔒 Fechar")
         .setStyle(ButtonStyle.Danger)
     );
 
     await canal.send({ embeds: [embed], components: [menu, fechar] });
 
-    return interaction.reply({
-      content: `✅ Ticket criado: ${canal}`,
-      ephemeral: true
-    });
+    return interaction.reply({ content: `✅ ticket criado`, ephemeral: true });
   }
 
   // ======================
   // MENU
   // ======================
   if (interaction.isStringSelectMenu()) {
-
     const escolha = interaction.values?.[0];
     if (!escolha) return;
 
@@ -243,8 +221,8 @@ client.on("interactionCreate", async (interaction) => {
       return interaction.reply({ content: "❌ apenas staff", ephemeral: true });
     }
 
-    await interaction.reply("🔒 finalizando pedido...");
-    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
+    await interaction.reply("🔒 fechando...");
+    setTimeout(() => interaction.channel.delete().catch(() => {}), 2500);
   }
 });
 
