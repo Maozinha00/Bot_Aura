@@ -45,7 +45,7 @@ const commands = [
 ].map(c => c.toJSON());
 
 // ==========================
-// REGISTRO (GUILD — INSTANTÂNEO)
+// 🔥 REGISTRO CORRETO (GUILD INSTANT)
 // ==========================
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
@@ -59,7 +59,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
       { body: commands }
     );
 
-    console.log("✅ comandos registrados (GUILD INSTANT)");
+    console.log("✅ comandos registrados (INSTANT)");
   } catch (err) {
     console.log("❌ erro comandos:", err);
   }
@@ -218,7 +218,4 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
-// ==========================
-// LOGIN
-// ==========================
 client.login(process.env.TOKEN);
