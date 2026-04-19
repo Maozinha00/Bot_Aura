@@ -15,7 +15,7 @@ import {
 } from "discord.js";
 
 // ==========================
-// ⚙️ CONFIG ELITE
+// 🏢 CONFIG EMPRESA
 // ==========================
 const CONFIG = {
   serverId: "1495178024759332914",
@@ -24,14 +24,30 @@ const CONFIG = {
   autoRole: "1495178024759332917"
 };
 
-// 💎 PLANOS ELITE
-const PLANS = {
-  basic: "R$ 15",
-  pro: "R$ 50",
-  elite: "R$ 120"
+// ==========================
+// 💰 CATÁLOGO COM PREÇOS
+// ==========================
+const PRODUCTS = {
+  basic: {
+    name: "🤖 Bot Básico",
+    price: "R$ 15",
+    desc: "Comandos simples + estrutura leve"
+  },
+  pro: {
+    name: "💎 Bot Personalizado",
+    price: "R$ 50",
+    desc: "Sistema completo sob medida"
+  },
+  enterprise: {
+    name: "⚙️ Sistema Enterprise",
+    price: "R$ 120",
+    desc: "Automação avançada + recursos premium"
+  }
 };
 
-// 🚀 CLIENT
+// ==========================
+// 🤖 CLIENT
+// ==========================
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -40,20 +56,14 @@ const client = new Client({
 });
 
 // ==========================
-// 📌 SLASH COMMANDS
+// 📌 COMANDOS
 // ==========================
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("💎 Enviar painel elite"),
-  new SlashCommandBuilder()
-    .setName("setup")
-    .setDescription("⚙️ Criar painel fixo")
+    .setDescription("🏢 Abrir catálogo da empresa")
 ].map(c => c.toJSON());
 
-// ==========================
-// 🔥 REGISTRO GUILD
-// ==========================
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 (async () => {
@@ -66,21 +76,21 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
       { body: commands }
     );
 
-    console.log("💎 BOT ELITE ONLINE");
+    console.log("🏢 BOT EMPRESA ONLINE");
   } catch (err) {
-    console.log("❌ erro comandos:", err);
+    console.log(err);
   }
 })();
 
 // ==========================
-// 🚀 READY
+// 🚀 ONLINE
 // ==========================
 client.once("ready", () => {
-  console.log(`💎 ELITE ONLINE: ${client.user.tag}`);
+  console.log(`🏢 AURA BOTS STUDIO ONLINE: ${client.user.tag}`);
 });
 
 // ==========================
-// 👋 BOAS-VINDAS ELITE
+// 👋 BOAS-VINDAS
 // ==========================
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== CONFIG.serverId) return;
@@ -93,20 +103,22 @@ client.on("guildMemberAdd", async (member) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 AURA BOTS STUDIO | ELITE")
+      .setTitle("🏢 AURA BOTS STUDIO | EMPRESA OFICIAL")
       .setDescription(
-`👋 Olá ${member.user}
+`👋 Bem-vindo ${member.user}
 
-💎 Bem-vindo à experiência **ELITE**
+💼 Você entrou na **AURA BOTS STUDIO**
 
-🤖 Bots profissionais sob medida  
-⚙️ Sistemas automatizados avançados  
-🚀 Suporte premium  
+Somos especialistas em:
 
-📦 Use /painel para começar`
+🤖 Desenvolvimento de Bots Discord  
+⚙️ Sistemas automatizados  
+🚀 Soluções profissionais para servidores RP  
+
+📦 Use /painel para acessar o catálogo`
       );
 
-    channel.send({ embeds: [embed] }).catch(() => {});
+    await channel.send({ embeds: [embed] });
   } catch {}
 });
 
@@ -118,55 +130,58 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.guild) return;
 
   // ======================
-  // /SETUP
-  // ======================
-  if (interaction.isChatInputCommand() && interaction.commandName === "setup") {
-
-    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
-    }
-
-    const embed = new EmbedBuilder()
-      .setColor("#6A0DAD")
-      .setTitle("💎 PAINEL ELITE")
-      .setDescription("Clique para abrir atendimento");
-
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("open_ticket")
-        .setLabel("🎫 Abrir Atendimento")
-        .setStyle(ButtonStyle.Primary)
-    );
-
-    await interaction.channel.send({ embeds: [embed], components: [row] });
-
-    return interaction.reply({ content: "✅ painel criado", ephemeral: true });
-  }
-
-  // ======================
   // /PAINEL
   // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
+      return interaction.reply({ content: "❌ Apenas equipe da empresa", ephemeral: true });
     }
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 AURA ELITE PANEL")
-      .setDescription("Abra seu pedido abaixo");
+      .setTitle("🏢 AURA BOTS STUDIO - CATÁLOGO OFICIAL")
+      .setDescription(
+`╔══════════════════════════════╗
+💎 AURA BOTS STUDIO - ELITE STORE
+╚══════════════════════════════╝
+
+🚀 AUTOMAÇÃO PROFISSIONAL PARA SERVIDORES
+
+📦 CATÁLOGO DE SERVIÇOS:
+
+🤖 ${PRODUCTS.basic.name}
+💰 ${PRODUCTS.basic.price}
+📝 ${PRODUCTS.basic.desc}
+
+───────────────────────────────
+
+💎 ${PRODUCTS.pro.name}
+💰 ${PRODUCTS.pro.price}
+📝 ${PRODUCTS.pro.desc}
+
+───────────────────────────────
+
+⚙️ ${PRODUCTS.enterprise.name}
+💰 ${PRODUCTS.enterprise.price}
+📝 ${PRODUCTS.enterprise.desc}
+
+═══════════════════════════════
+🎫 Clique abaixo para solicitar
+🔥 Atendimento premium e rápido
+═══════════════════════════════`
+      );
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("open_ticket")
-        .setLabel("🎫 Abrir Pedido")
+        .setLabel("📦 Abrir Pedido")
         .setStyle(ButtonStyle.Primary)
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
 
-    return interaction.reply({ content: "✅ enviado", ephemeral: true });
+    return interaction.reply({ content: "✅ catálogo enviado", ephemeral: true });
   }
 
   // ======================
@@ -201,30 +216,39 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 ATENDIMENTO ELITE")
-      .setDescription("Selecione o plano desejado");
+      .setTitle("🏢 PEDIDO EMPRESA")
+      .setDescription("Selecione o serviço desejado:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
-        .setCustomId("plans")
-        .setPlaceholder("Escolha seu plano")
+        .setCustomId("menu")
+        .setPlaceholder("Selecionar serviço")
         .addOptions([
-          { label: `🤖 Básico - ${PLANS.basic}`, value: "basic" },
-          { label: `💎 Pro - ${PLANS.pro}`, value: "pro" },
-          { label: `⚙️ Elite - ${PLANS.elite}`, value: "elite" }
+          {
+            label: `${PRODUCTS.basic.name} - ${PRODUCTS.basic.price}`,
+            value: "basic"
+          },
+          {
+            label: `${PRODUCTS.pro.name} - ${PRODUCTS.pro.price}`,
+            value: "pro"
+          },
+          {
+            label: `${PRODUCTS.enterprise.name} - ${PRODUCTS.enterprise.price}`,
+            value: "enterprise"
+          }
         ])
     );
 
     const close = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("close")
-        .setLabel("🔒 Fechar")
+        .setLabel("🔒 Encerrar")
         .setStyle(ButtonStyle.Danger)
     );
 
     await channel.send({ embeds: [embed], components: [menu, close] });
 
-    return interaction.reply({ content: `✅ criado: ${channel}`, ephemeral: true });
+    return interaction.reply({ content: `📦 pedido criado`, ephemeral: true });
   }
 
   // ======================
@@ -236,10 +260,10 @@ client.on("interactionCreate", async (interaction) => {
 
     const msg =
       v === "basic"
-        ? `🤖 Plano Básico - ${PLANS.basic}`
+        ? `🤖 ${PRODUCTS.basic.name} - ${PRODUCTS.basic.price}`
         : v === "pro"
-        ? `💎 Plano Pro - ${PLANS.pro}`
-        : `⚙️ Plano Elite - ${PLANS.elite}`;
+        ? `💎 ${PRODUCTS.pro.name} - ${PRODUCTS.pro.price}`
+        : `⚙️ ${PRODUCTS.enterprise.name} - ${PRODUCTS.enterprise.price}`;
 
     return interaction.reply({ content: msg, ephemeral: true });
   }
@@ -250,11 +274,11 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.isButton() && interaction.customId === "close") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ apenas staff", ephemeral: true });
+      return interaction.reply({ content: "❌ apenas equipe", ephemeral: true });
     }
 
-    await interaction.reply("🔒 encerrando...");
-    setTimeout(() => interaction.channel.delete().catch(() => {}), 2500);
+    await interaction.reply("🔒 encerrando pedido...");
+    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
 
