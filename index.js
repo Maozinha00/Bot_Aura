@@ -14,15 +14,9 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 
-// 🚀 CLIENT PREMIUM
-const client = new Client({
-  intents: [
-    GatewayIntentBits.Guilds,
-    GatewayIntentBits.GuildMembers
-  ]
-});
-
-// 🔑 CONFIG
+// ==========================
+// ⚙️ CONFIG ELITE
+// ==========================
 const CONFIG = {
   serverId: "1495178024759332914",
   welcomeChannel: "1495275678533288068",
@@ -30,12 +24,20 @@ const CONFIG = {
   autoRole: "1495178024759332917"
 };
 
-// 💰 PREÇOS
-const PRICE = {
-  simple: "R$ 15",
-  premium: "R$ 50",
-  system: "R$ 120"
+// 💎 PLANOS ELITE
+const PLANS = {
+  basic: "R$ 15",
+  pro: "R$ 50",
+  elite: "R$ 120"
 };
+
+// 🚀 CLIENT
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
+  ]
+});
 
 // ==========================
 // 📌 SLASH COMMANDS
@@ -43,11 +45,14 @@ const PRICE = {
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("📦 Enviar painel de pedidos premium")
+    .setDescription("💎 Enviar painel elite"),
+  new SlashCommandBuilder()
+    .setName("setup")
+    .setDescription("⚙️ Criar painel fixo")
 ].map(c => c.toJSON());
 
 // ==========================
-// 🔥 REGISTRO GUILD (INSTANT)
+// 🔥 REGISTRO GUILD
 // ==========================
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
@@ -61,21 +66,21 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
       { body: commands }
     );
 
-    console.log("💎 Comandos registrados (PREMIUM MODE)");
+    console.log("💎 BOT ELITE ONLINE");
   } catch (err) {
     console.log("❌ erro comandos:", err);
   }
 })();
 
 // ==========================
-// 🚀 READY (CORRIGIDO)
+// 🚀 READY
 // ==========================
 client.once("ready", () => {
-  console.log(`💎 AURA BOTS ONLINE: ${client.user.tag}`);
+  console.log(`💎 ELITE ONLINE: ${client.user.tag}`);
 });
 
 // ==========================
-// 👋 BOAS-VINDAS PREMIUM
+// 👋 BOAS-VINDAS ELITE
 // ==========================
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== CONFIG.serverId) return;
@@ -88,24 +93,21 @@ client.on("guildMemberAdd", async (member) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 Bem-vindo à Aura Bots Studio")
+      .setTitle("💎 AURA BOTS STUDIO | ELITE")
       .setDescription(
 `👋 Olá ${member.user}
 
-💎 **AURA BOTS STUDIO - PREMIUM STORE**
+💎 Bem-vindo à experiência **ELITE**
 
-🤖 Bots simples e leves  
-💎 Bots personalizados avançados  
-⚙️ Sistemas automatizados completos  
+🤖 Bots profissionais sob medida  
+⚙️ Sistemas automatizados avançados  
+🚀 Suporte premium  
 
-🚀 Use /painel para iniciar seu pedido`
-      )
-      .setThumbnail(member.user.displayAvatarURL());
+📦 Use /painel para começar`
+      );
 
-    await channel.send({ embeds: [embed] }).catch(() => {});
-  } catch (err) {
-    console.log(err);
-  }
+    channel.send({ embeds: [embed] }).catch(() => {});
+  } catch {}
 });
 
 // ==========================
@@ -116,35 +118,61 @@ client.on("interactionCreate", async (interaction) => {
   if (!interaction.guild) return;
 
   // ======================
+  // /SETUP
+  // ======================
+  if (interaction.isChatInputCommand() && interaction.commandName === "setup") {
+
+    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
+      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor("#6A0DAD")
+      .setTitle("💎 PAINEL ELITE")
+      .setDescription("Clique para abrir atendimento");
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("open_ticket")
+        .setLabel("🎫 Abrir Atendimento")
+        .setStyle(ButtonStyle.Primary)
+    );
+
+    await interaction.channel.send({ embeds: [embed], components: [row] });
+
+    return interaction.reply({ content: "✅ painel criado", ephemeral: true });
+  }
+
+  // ======================
   // /PAINEL
   // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ Apenas staff pode usar.", ephemeral: true });
+      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
     }
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 PAINEL PREMIUM")
-      .setDescription("Clique abaixo para abrir seu pedido");
+      .setTitle("💎 AURA ELITE PANEL")
+      .setDescription("Abra seu pedido abaixo");
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("ticket")
+        .setCustomId("open_ticket")
         .setLabel("🎫 Abrir Pedido")
         .setStyle(ButtonStyle.Primary)
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
 
-    return interaction.reply({ content: "✅ painel enviado", ephemeral: true });
+    return interaction.reply({ content: "✅ enviado", ephemeral: true });
   }
 
   // ======================
-  // TICKET
+  // 🎫 TICKET
   // ======================
-  if (interaction.isButton() && interaction.customId === "ticket") {
+  if (interaction.isButton() && interaction.customId === "open_ticket") {
 
     const channel = await interaction.guild.channels.create({
       name: `pedido-${interaction.user.username}`,
@@ -173,30 +201,30 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 PEDIDO PREMIUM ABERTO")
-      .setDescription("Escolha o produto desejado:");
+      .setTitle("💎 ATENDIMENTO ELITE")
+      .setDescription("Selecione o plano desejado");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
-        .setCustomId("menu")
-        .setPlaceholder("Selecionar produto")
+        .setCustomId("plans")
+        .setPlaceholder("Escolha seu plano")
         .addOptions([
-          { label: `🤖 Bot Simples - ${PRICE.simple}`, value: "simple" },
-          { label: `💎 Bot Premium - ${PRICE.premium}`, value: "premium" },
-          { label: `⚙️ Sistema Completo - ${PRICE.system}`, value: "system" }
+          { label: `🤖 Básico - ${PLANS.basic}`, value: "basic" },
+          { label: `💎 Pro - ${PLANS.pro}`, value: "pro" },
+          { label: `⚙️ Elite - ${PLANS.elite}`, value: "elite" }
         ])
     );
 
     const close = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("close")
-        .setLabel("🔒 Fechar Pedido")
+        .setLabel("🔒 Fechar")
         .setStyle(ButtonStyle.Danger)
     );
 
     await channel.send({ embeds: [embed], components: [menu, close] });
 
-    return interaction.reply({ content: `✅ ticket criado: ${channel}`, ephemeral: true });
+    return interaction.reply({ content: `✅ criado: ${channel}`, ephemeral: true });
   }
 
   // ======================
@@ -204,14 +232,14 @@ client.on("interactionCreate", async (interaction) => {
   // ======================
   if (interaction.isStringSelectMenu()) {
 
-    const choice = interaction.values[0];
+    const v = interaction.values[0];
 
     const msg =
-      choice === "simple"
-        ? `🤖 Bot Simples - ${PRICE.simple}`
-        : choice === "premium"
-        ? `💎 Bot Premium - ${PRICE.premium}`
-        : `⚙️ Sistema Completo - ${PRICE.system}`;
+      v === "basic"
+        ? `🤖 Plano Básico - ${PLANS.basic}`
+        : v === "pro"
+        ? `💎 Plano Pro - ${PLANS.pro}`
+        : `⚙️ Plano Elite - ${PLANS.elite}`;
 
     return interaction.reply({ content: msg, ephemeral: true });
   }
@@ -225,8 +253,8 @@ client.on("interactionCreate", async (interaction) => {
       return interaction.reply({ content: "❌ apenas staff", ephemeral: true });
     }
 
-    await interaction.reply("🔒 fechando pedido...");
-    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
+    await interaction.reply("🔒 encerrando...");
+    setTimeout(() => interaction.channel.delete().catch(() => {}), 2500);
   }
 });
 
