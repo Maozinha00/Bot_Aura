@@ -8,7 +8,10 @@ import {
   ButtonStyle,
   ChannelType,
   PermissionsBitField,
-  StringSelectMenuBuilder
+  StringSelectMenuBuilder,
+  REST,
+  Routes,
+  SlashCommandBuilder
 } from "discord.js";
 
 const client = new Client({
@@ -17,100 +20,121 @@ const client = new Client({
 
 // 🔑 CONFIG
 const SERVIDOR_ID = "1495178024759332914";
-const CANAL_BOAS_VINDAS = "1495178025296461992";
-const CANAL_PAINEL = "1495178025602515176";
 const CARGO_STAFF = "1495178024797208588";
 const CARGO_AUTO = "1495178024759332917";
 
-// 🚀 ONLINE
-client.once("ready", async () => {
-  console.log(`💎 ${client.user.tag} ONLINE - AURA ELITE`);
+// 📦 memória simples (painel config)
+let PAINEL_CANAL = null;
 
-  const guild = await client.guilds.fetch(SERVIDOR_ID);
-  const canal = await guild.channels.fetch(CANAL_PAINEL);
+// 💰 PREÇOS
+const PRECOS = {
+  simples: "R$ 15",
+  premium: "R$ 50",
+  sistema: "R$ 120"
+};
 
-  const embed = new EmbedBuilder()
-    .setColor("#6A0DAD")
-    .setDescription(
-`╔══════════════════════════════╗
-💎 **AURA BOTS STUDIO - ELITE STORE**
-╚══════════════════════════════╝
+// ==========================
+// 📌 SLASH COMMANDS
+// ==========================
+const commands = [
+  new SlashCommandBuilder()
+    .setName("painel")
+    .setDescription("Enviar painel de pedidos"),
 
-🚀 **AUTOMAÇÃO PROFISSIONAL PARA SERVIDORES**
+  new SlashCommandBuilder()
+    .setName("painel-setup")
+    .setDescription("Definir canal do painel")
+].map(c => c.toJSON());
 
-🤖 Bots modernos, rápidos e personalizados  
-⚙️ Sistemas completos para Discord e FiveM  
+const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
-💼 Soluções para servidores RP e comunidades profissionais  
-
-═══════════════════════════════
-🎫 Clique abaixo e abra seu pedido
-🔥 Atendimento premium e rápido
-═══════════════════════════════`
+(async () => {
+  try {
+    await rest.put(
+      Routes.applicationCommands(process.env.CLIENT_ID),
+      { body: commands }
     );
+    console.log("✅ comandos registrados");
+  } catch (err) {
+    console.log("❌ erro comandos:", err);
+  }
+})();
 
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("ticket")
-      .setLabel("🎫 Abrir Pedido")
-      .setStyle(ButtonStyle.Primary)
-  );
-
-  canal.send({ embeds: [embed], components: [row] });
+// ==========================
+// 🚀 ONLINE
+// ==========================
+client.once("ready", () => {
+  console.log(`💎 ULTRA ELITE ONLINE: ${client.user.tag}`);
 });
 
-// 👋 BOAS-VINDAS + CATÁLOGO
+// ==========================
+// 👋 AUTO CARGO
+// ==========================
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== SERVIDOR_ID) return;
 
-  await member.roles.add(CARGO_AUTO);
-
-  const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS);
-
-  const embed = new EmbedBuilder()
-    .setColor("#6A0DAD")
-    .setDescription(
-`╔══════════════════════════════╗
-👋 **BEM-VINDO À AURA BOTS STUDIO**
-╚══════════════════════════════╝
-
-💎 **LOJA OFICIAL DE BOTS PREMIUM**
-
-🤖 Criamos bots profissionais para Discord e FiveM  
-⚙️ Sistemas automatizados sob medida  
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  
-📦 **CATÁLOGO DE PRODUTOS:**  
-
-🤖 **BOT SIMPLES**
-• Comandos básicos  
-• Sistemas leves  
-• Ideal para servidores iniciantes  
-
-💎 **BOT PERSONALIZADO**
-• Sistema completo sob medida  
-• Design e funções exclusivas  
-• Ideal para servidores profissionais  
-
-⚙️ **SISTEMA COMPLETO**
-• Projetos avançados  
-• Automação total do servidor  
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━  
-🎫 Abra um ticket para orçamento  
-🚀 Suporte rápido e atendimento premium  
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
-    )
-    .setThumbnail(member.user.displayAvatarURL());
-
-  canal.send({ embeds: [embed] });
+  try {
+    await member.roles.add(CARGO_AUTO);
+  } catch {}
 });
 
-// 🎫 SISTEMA DE TICKET ELITE
+// ==========================
+// 🎛️ INTERAÇÕES
+// ==========================
 client.on("interactionCreate", async (interaction) => {
-  if (interaction.guild.id !== SERVIDOR_ID) return;
 
-  // ABRIR TICKET
+  // ======================
+  // SETUP PAINEL
+  // ======================
+  if (interaction.isChatInputCommand() && interaction.commandName === "painel-setup") {
+
+    if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
+      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
+    }
+
+    PAINEL_CANAL = interaction.channel.id;
+
+    return interaction.reply({
+      content: `✅ Painel configurado neste canal!`,
+      ephemeral: true
+    });
+  }
+
+  // ======================
+  // PAINEL
+  // ======================
+  if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
+
+    if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
+      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
+    }
+
+    const embed = new EmbedBuilder()
+      .setColor("#6A0DAD")
+      .setDescription(
+`💎 **AURA BOTS STUDIO - ULTRA ELITE**
+
+🚀 Escolha abaixo e abra seu pedido`
+      );
+
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder()
+        .setCustomId("ticket")
+        .setLabel("🎫 Abrir Pedido")
+        .setStyle(ButtonStyle.Primary)
+    );
+
+    await interaction.channel.send({
+      embeds: [embed],
+      components: [row]
+    });
+
+    return interaction.reply({ content: "✅ painel enviado", ephemeral: true });
+  }
+
+  // ======================
+  // TICKET
+  // ======================
   if (interaction.isButton() && interaction.customId === "ticket") {
 
     const canal = await interaction.guild.channels.create({
@@ -125,70 +149,59 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 Orçamento Aura Bots Studio")
-      .setDescription(
-`👋 Olá ${interaction.user}
-
-📌 Preencha abaixo seu pedido:
-
-• Tipo de bot desejado  
-• Funções que precisa  
-• Prazo esperado  
-
-💼 Nossa equipe irá te responder com orçamento personalizado.`
-      );
+      .setTitle("💎 NOVO PEDIDO ULTRA ELITE")
+      .setDescription("Selecione o produto abaixo:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId("menu")
         .setPlaceholder("Escolha o produto")
         .addOptions([
-          { label: "🤖 Bot Simples", value: "simples" },
-          { label: "💎 Bot Personalizado", value: "premium" },
-          { label: "⚙️ Sistema Completo", value: "sistema" }
+          { label: `🤖 Bot Simples - ${PRECOS.simples}`, value: "simples" },
+          { label: `💎 Bot Personalizado - ${PRECOS.premium}`, value: "premium" },
+          { label: `⚙️ Sistema Completo - ${PRECOS.sistema}`, value: "sistema" }
         ])
     );
 
     const fechar = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("fechar")
-        .setLabel("🔒 Finalizar Pedido")
+        .setLabel("🔒 Fechar Pedido")
         .setStyle(ButtonStyle.Danger)
     );
 
-    canal.send({ embeds: [embed], components: [menu, fechar] });
+    await canal.send({ embeds: [embed], components: [menu, fechar] });
 
-    interaction.reply({ content: `✅ Pedido aberto: ${canal}`, ephemeral: true });
+    return interaction.reply({ content: `✅ criado: ${canal}`, ephemeral: true });
   }
 
+  // ======================
   // MENU
+  // ======================
   if (interaction.isStringSelectMenu()) {
 
-    let msg = "";
+    const escolha = interaction.values[0];
 
-    switch (interaction.values[0]) {
-      case "simples":
-        msg = "🤖 Pedido: **Bot Simples** registrado.";
-        break;
-      case "premium":
-        msg = "💎 Pedido: **Bot Personalizado** registrado.";
-        break;
-      case "sistema":
-        msg = "⚙️ Pedido: **Sistema Completo** registrado.";
-        break;
-    }
+    const msg =
+      escolha === "simples"
+        ? `🤖 Bot Simples selecionado - ${PRECOS.simples}`
+        : escolha === "premium"
+        ? `💎 Bot Personalizado selecionado - ${PRECOS.premium}`
+        : `⚙️ Sistema Completo selecionado - ${PRECOS.sistema}`;
 
-    interaction.reply({ content: msg, ephemeral: true });
+    return interaction.reply({ content: msg, ephemeral: true });
   }
 
-  // FECHAR TICKET
+  // ======================
+  // FECHAR
+  // ======================
   if (interaction.isButton() && interaction.customId === "fechar") {
 
     if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
-      return interaction.reply({ content: "❌ Apenas staff pode finalizar pedidos.", ephemeral: true });
+      return interaction.reply({ content: "❌ apenas staff", ephemeral: true });
     }
 
-    await interaction.reply("🔒 Finalizando pedido...");
+    await interaction.reply("🔒 finalizando pedido...");
     setTimeout(() => interaction.channel.delete(), 3000);
   }
 });
