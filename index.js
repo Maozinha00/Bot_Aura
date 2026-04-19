@@ -14,7 +14,7 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 
-// 🚀 CLIENT
+// 🚀 CLIENT PREMIUM
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -23,29 +23,31 @@ const client = new Client({
 });
 
 // 🔑 CONFIG
-const SERVIDOR_ID = "1495178024759332914";
-const CANAL_BOAS_VINDAS = "1495275678533288068";
-const CARGO_STAFF = "1495178024797208588";
-const CARGO_AUTO = "1495178024759332917";
+const CONFIG = {
+  serverId: "1495178024759332914",
+  welcomeChannel: "1495275678533288068",
+  staffRole: "1495178024797208588",
+  autoRole: "1495178024759332917"
+};
 
 // 💰 PREÇOS
-const PRECOS = {
-  simples: "R$ 15",
+const PRICE = {
+  simple: "R$ 15",
   premium: "R$ 50",
-  sistema: "R$ 120"
+  system: "R$ 120"
 };
 
 // ==========================
-// 📌 COMANDOS
+// 📌 SLASH COMMANDS
 // ==========================
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("Enviar painel de pedidos")
+    .setDescription("📦 Enviar painel de pedidos premium")
 ].map(c => c.toJSON());
 
 // ==========================
-// 🔥 REGISTRO CORRETO (GUILD INSTANT)
+// 🔥 REGISTRO GUILD (INSTANT)
 // ==========================
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
@@ -54,71 +56,78 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
     await rest.put(
       Routes.applicationGuildCommands(
         process.env.CLIENT_ID,
-        SERVIDOR_ID
+        CONFIG.serverId
       ),
       { body: commands }
     );
 
-    console.log("✅ comandos registrados (INSTANT)");
+    console.log("💎 Comandos registrados (PREMIUM MODE)");
   } catch (err) {
     console.log("❌ erro comandos:", err);
   }
 })();
 
 // ==========================
-// BOT ONLINE
+// 🚀 READY (CORRIGIDO)
 // ==========================
 client.once("ready", () => {
-  console.log(`💎 ONLINE: ${client.user.tag}`);
+  console.log(`💎 AURA BOTS ONLINE: ${client.user.tag}`);
 });
 
 // ==========================
-// BOAS-VINDAS
+// 👋 BOAS-VINDAS PREMIUM
 // ==========================
 client.on("guildMemberAdd", async (member) => {
-  if (member.guild.id !== SERVIDOR_ID) return;
+  if (member.guild.id !== CONFIG.serverId) return;
 
   try {
-    await member.roles.add(CARGO_AUTO).catch(() => {});
+    await member.roles.add(CONFIG.autoRole).catch(() => {});
 
-    const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS).catch(() => null);
-    if (!canal) return;
+    const channel = await member.guild.channels.fetch(CONFIG.welcomeChannel).catch(() => null);
+    if (!channel) return;
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("👋 Bem-vindo à Aura Bots Studio")
+      .setTitle("💎 Bem-vindo à Aura Bots Studio")
       .setDescription(
-`💎 Olá ${member.user}
+`👋 Olá ${member.user}
 
-🤖 Bots simples  
-💎 Bots personalizados  
-⚙️ Sistemas automatizados  
+💎 **AURA BOTS STUDIO - PREMIUM STORE**
 
-Use /painel para começar`
-      );
+🤖 Bots simples e leves  
+💎 Bots personalizados avançados  
+⚙️ Sistemas automatizados completos  
 
-    await canal.send({ embeds: [embed] }).catch(() => {});
+🚀 Use /painel para iniciar seu pedido`
+      )
+      .setThumbnail(member.user.displayAvatarURL());
+
+    await channel.send({ embeds: [embed] }).catch(() => {});
   } catch (err) {
     console.log(err);
   }
 });
 
 // ==========================
-// INTERAÇÕES
+// 🎛️ INTERAÇÕES
 // ==========================
 client.on("interactionCreate", async (interaction) => {
+
   if (!interaction.guild) return;
 
-  // 🎛️ PAINEL
+  // ======================
+  // /PAINEL
+  // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
-    if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
-      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
+    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
+      return interaction.reply({ content: "❌ Apenas staff pode usar.", ephemeral: true });
     }
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setDescription("💎 Clique para abrir pedido");
+      .setTitle("💎 PAINEL PREMIUM")
+      .setDescription("Clique abaixo para abrir seu pedido");
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -127,18 +136,17 @@ client.on("interactionCreate", async (interaction) => {
         .setStyle(ButtonStyle.Primary)
     );
 
-    await interaction.channel.send({
-      embeds: [embed],
-      components: [row]
-    });
+    await interaction.channel.send({ embeds: [embed], components: [row] });
 
     return interaction.reply({ content: "✅ painel enviado", ephemeral: true });
   }
 
-  // 🎫 TICKET
+  // ======================
+  // TICKET
+  // ======================
   if (interaction.isButton() && interaction.customId === "ticket") {
 
-    const canal = await interaction.guild.channels.create({
+    const channel = await interaction.guild.channels.create({
       name: `pedido-${interaction.user.username}`,
       type: ChannelType.GuildText,
       permissionOverwrites: [
@@ -154,7 +162,7 @@ client.on("interactionCreate", async (interaction) => {
           ]
         },
         {
-          id: CARGO_STAFF,
+          id: CONFIG.staffRole,
           allow: [
             PermissionsBitField.Flags.ViewChannel,
             PermissionsBitField.Flags.SendMessages
@@ -165,57 +173,64 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 NOVO PEDIDO")
-      .setDescription("Escolha o produto:");
+      .setTitle("💎 PEDIDO PREMIUM ABERTO")
+      .setDescription("Escolha o produto desejado:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
         .setCustomId("menu")
         .setPlaceholder("Selecionar produto")
         .addOptions([
-          { label: `🤖 Bot Simples - ${PRECOS.simples}`, value: "simples" },
-          { label: `💎 Bot Personalizado - ${PRECOS.premium}`, value: "premium" },
-          { label: `⚙️ Sistema Completo - ${PRECOS.sistema}`, value: "sistema" }
+          { label: `🤖 Bot Simples - ${PRICE.simple}`, value: "simple" },
+          { label: `💎 Bot Premium - ${PRICE.premium}`, value: "premium" },
+          { label: `⚙️ Sistema Completo - ${PRICE.system}`, value: "system" }
         ])
     );
 
-    const fechar = new ActionRowBuilder().addComponents(
+    const close = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("fechar")
-        .setLabel("🔒 Fechar")
+        .setCustomId("close")
+        .setLabel("🔒 Fechar Pedido")
         .setStyle(ButtonStyle.Danger)
     );
 
-    await canal.send({ embeds: [embed], components: [menu, fechar] });
+    await channel.send({ embeds: [embed], components: [menu, close] });
 
-    return interaction.reply({ content: `✅ ticket criado`, ephemeral: true });
+    return interaction.reply({ content: `✅ ticket criado: ${channel}`, ephemeral: true });
   }
 
-  // 📦 MENU
+  // ======================
+  // MENU
+  // ======================
   if (interaction.isStringSelectMenu()) {
 
-    const escolha = interaction.values?.[0];
+    const choice = interaction.values[0];
 
     const msg =
-      escolha === "simples"
-        ? `🤖 Bot Simples - ${PRECOS.simples}`
-        : escolha === "premium"
-        ? `💎 Bot Personalizado - ${PRECOS.premium}`
-        : `⚙️ Sistema Completo - ${PRECOS.sistema}`;
+      choice === "simple"
+        ? `🤖 Bot Simples - ${PRICE.simple}`
+        : choice === "premium"
+        ? `💎 Bot Premium - ${PRICE.premium}`
+        : `⚙️ Sistema Completo - ${PRICE.system}`;
 
     return interaction.reply({ content: msg, ephemeral: true });
   }
 
-  // 🔒 FECHAR
-  if (interaction.isButton() && interaction.customId === "fechar") {
+  // ======================
+  // FECHAR
+  // ======================
+  if (interaction.isButton() && interaction.customId === "close") {
 
-    if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
+    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
       return interaction.reply({ content: "❌ apenas staff", ephemeral: true });
     }
 
-    await interaction.reply("🔒 fechando...");
-    setTimeout(() => interaction.channel.delete().catch(() => {}), 2500);
+    await interaction.reply("🔒 fechando pedido...");
+    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
 
+// ==========================
+// LOGIN
+// ==========================
 client.login(process.env.TOKEN);
