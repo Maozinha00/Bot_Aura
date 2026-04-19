@@ -44,10 +44,17 @@ const commands = [
     .setDescription("Enviar painel de pedidos")
 ].map(c => c.toJSON());
 
+// ==========================
+// REGISTRO DE COMANDOS
+// ==========================
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 (async () => {
   try {
+    if (!process.env.CLIENT_ID) {
+      throw new Error("CLIENT_ID não definido no .env");
+    }
+
     await rest.put(
       Routes.applicationCommands(process.env.CLIENT_ID),
       { body: commands }
@@ -74,9 +81,10 @@ client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== SERVIDOR_ID) return;
 
   try {
-    await member.roles.add(CARGO_AUTO);
+    await member.roles.add(CARGO_AUTO).catch(() => {});
 
-    const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS);
+    const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS).catch(() => null);
+    if (!canal) return;
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
@@ -95,7 +103,7 @@ Bem-vindo ao **Aura Bots Studio**
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
       .setFooter({ text: "Aura Bots Studio - Loja Oficial" });
 
-    canal.send({ embeds: [embed] });
+    canal.send({ embeds: [embed] }).catch(() => {});
 
   } catch (err) {
     console.log("Erro boas-vindas:", err);
@@ -169,7 +177,17 @@ client.on("interactionCreate", async (interaction) => {
           ]
         }
       ]
+    }).catch(err => {
+      console.log("Erro criar canal:", err);
+      return null;
     });
+
+    if (!canal) {
+      return interaction.reply({
+        content: "❌ erro ao criar ticket",
+        ephemeral: true
+      });
+    }
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
@@ -204,7 +222,8 @@ client.on("interactionCreate", async (interaction) => {
   // ======================
   if (interaction.isStringSelectMenu()) {
 
-    const escolha = interaction.values[0];
+    const escolha = interaction.values?.[0];
+    if (!escolha) return;
 
     const msg =
       escolha === "simples"
@@ -226,7 +245,7 @@ client.on("interactionCreate", async (interaction) => {
     }
 
     await interaction.reply("🔒 finalizando pedido...");
-    setTimeout(() => interaction.channel.delete(), 3000);
+    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
 
