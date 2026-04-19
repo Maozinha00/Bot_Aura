@@ -14,17 +14,19 @@ import {
   SlashCommandBuilder
 } from "discord.js";
 
+// 🚀 CLIENT
 const client = new Client({
-  intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMembers]
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMembers
+  ]
 });
 
 // 🔑 CONFIG
 const SERVIDOR_ID = "1495178024759332914";
+const CANAL_BOAS_VINDAS = "1495275678533288068";
 const CARGO_STAFF = "1495178024797208588";
 const CARGO_AUTO = "1495178024759332917";
-
-// 📦 memória simples (painel config)
-let PAINEL_CANAL = null;
 
 // 💰 PREÇOS
 const PRECOS = {
@@ -39,11 +41,7 @@ const PRECOS = {
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("Enviar painel de pedidos"),
-
-  new SlashCommandBuilder()
-    .setName("painel-setup")
-    .setDescription("Definir canal do painel")
+    .setDescription("Enviar painel de pedidos")
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
@@ -54,28 +52,54 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
       Routes.applicationCommands(process.env.CLIENT_ID),
       { body: commands }
     );
+
     console.log("✅ comandos registrados");
+
   } catch (err) {
     console.log("❌ erro comandos:", err);
   }
 })();
 
 // ==========================
-// 🚀 ONLINE
+// 🚀 BOT ONLINE
 // ==========================
 client.once("ready", () => {
   console.log(`💎 ULTRA ELITE ONLINE: ${client.user.tag}`);
 });
 
 // ==========================
-// 👋 AUTO CARGO
+// 👋 BOAS-VINDAS + AUTO CARGO
 // ==========================
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== SERVIDOR_ID) return;
 
   try {
     await member.roles.add(CARGO_AUTO);
-  } catch {}
+
+    const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS);
+
+    const embed = new EmbedBuilder()
+      .setColor("#6A0DAD")
+      .setTitle("👋 Bem-vindo à Aura Bots Studio")
+      .setDescription(
+`💎 Olá ${member.user}
+
+Bem-vindo ao **Aura Bots Studio**
+
+🤖 Bots simples e profissionais  
+💎 Bots personalizados  
+⚙️ Sistemas automatizados  
+
+🎫 Abra um ticket para solicitar seu bot`
+      )
+      .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+      .setFooter({ text: "Aura Bots Studio - Loja Oficial" });
+
+    canal.send({ embeds: [embed] });
+
+  } catch (err) {
+    console.log("Erro boas-vindas:", err);
+  }
 });
 
 // ==========================
@@ -83,25 +107,10 @@ client.on("guildMemberAdd", async (member) => {
 // ==========================
 client.on("interactionCreate", async (interaction) => {
 
-  // ======================
-  // SETUP PAINEL
-  // ======================
-  if (interaction.isChatInputCommand() && interaction.commandName === "painel-setup") {
-
-    if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
-      return interaction.reply({ content: "❌ Apenas staff", ephemeral: true });
-    }
-
-    PAINEL_CANAL = interaction.channel.id;
-
-    return interaction.reply({
-      content: `✅ Painel configurado neste canal!`,
-      ephemeral: true
-    });
-  }
+  if (!interaction.guild) return;
 
   // ======================
-  // PAINEL
+  // /PAINEL
   // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
@@ -112,9 +121,9 @@ client.on("interactionCreate", async (interaction) => {
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
       .setDescription(
-`💎 **AURA BOTS STUDIO - ULTRA ELITE**
+`💎 **AURA BOTS STUDIO**
 
-🚀 Escolha abaixo e abra seu pedido`
+🚀 Clique abaixo para abrir pedido`
       );
 
     const row = new ActionRowBuilder().addComponents(
@@ -141,16 +150,31 @@ client.on("interactionCreate", async (interaction) => {
       name: `pedido-${interaction.user.username}`,
       type: ChannelType.GuildText,
       permissionOverwrites: [
-        { id: interaction.guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
-        { id: interaction.user.id, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] },
-        { id: CARGO_STAFF, allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages] }
+        {
+          id: interaction.guild.id,
+          deny: [PermissionsBitField.Flags.ViewChannel]
+        },
+        {
+          id: interaction.user.id,
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages
+          ]
+        },
+        {
+          id: CARGO_STAFF,
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages
+          ]
+        }
       ]
     });
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("💎 NOVO PEDIDO ULTRA ELITE")
-      .setDescription("Selecione o produto abaixo:");
+      .setTitle("💎 NOVO PEDIDO")
+      .setDescription("Selecione o produto:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
@@ -184,10 +208,10 @@ client.on("interactionCreate", async (interaction) => {
 
     const msg =
       escolha === "simples"
-        ? `🤖 Bot Simples selecionado - ${PRECOS.simples}`
+        ? `🤖 Bot Simples - ${PRECOS.simples}`
         : escolha === "premium"
-        ? `💎 Bot Personalizado selecionado - ${PRECOS.premium}`
-        : `⚙️ Sistema Completo selecionado - ${PRECOS.sistema}`;
+        ? `💎 Bot Personalizado - ${PRECOS.premium}`
+        : `⚙️ Sistema Completo - ${PRECOS.sistema}`;
 
     return interaction.reply({ content: msg, ephemeral: true });
   }
