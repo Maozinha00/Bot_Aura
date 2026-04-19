@@ -8,7 +8,6 @@ import {
   ButtonStyle,
   ChannelType,
   PermissionsBitField,
-  StringSelectMenuBuilder,
   REST,
   Routes,
   SlashCommandBuilder
@@ -45,12 +44,10 @@ async function bloquearCargo(guild) {
 
   guild.channels.cache.forEach(async (channel) => {
     try {
-
       if (channel.id === canalLiberado) {
         await channel.permissionOverwrites.edit(roleId, {
           ViewChannel: true,
-          SendMessages: true,
-          AddReactions: true
+          SendMessages: true
         });
       } else {
         await channel.permissionOverwrites.edit(roleId, {
@@ -59,36 +56,31 @@ async function bloquearCargo(guild) {
           Speak: false
         });
       }
-
     } catch {}
   });
 }
 
 // ==========================
-// 📌 COMANDO PAINEL
+// SLASH COMMAND
 // ==========================
 const commands = [
   new SlashCommandBuilder()
     .setName("painel")
-    .setDescription("🏢 Abrir catálogo da empresa")
+    .setDescription("🏢 Abrir catálogo")
 ].map(c => c.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
 (async () => {
-  try {
-    await rest.put(
-      Routes.applicationGuildCommands(process.env.CLIENT_ID, CONFIG.serverId),
-      { body: commands }
-    );
-    console.log("🏢 BOT ONLINE");
-  } catch (err) {
-    console.log(err);
-  }
+  await rest.put(
+    Routes.applicationGuildCommands(process.env.CLIENT_ID, CONFIG.serverId),
+    { body: commands }
+  );
+  console.log("🏢 BOT ONLINE");
 })();
 
 // ==========================
-// 🚀 READY
+// READY
 // ==========================
 client.once("ready", async () => {
   console.log(`🏢 ONLINE: ${client.user.tag}`);
@@ -98,7 +90,7 @@ client.once("ready", async () => {
 });
 
 // ==========================
-// 👋 BOAS-VINDAS
+// BOAS-VINDAS
 // ==========================
 client.on("guildMemberAdd", async (member) => {
   if (member.guild.id !== CONFIG.serverId) return;
@@ -114,18 +106,16 @@ client.on("guildMemberAdd", async (member) => {
     .setDescription(
 `👋 Bem-vindo ${member.user}
 
-💼 Você entrou na AURA BOTS STUDIO
-
-🤖 Desenvolvimento de Bots Discord  
+🤖 Bots Discord  
 ⚙️ Sistemas automatizados  
-🚀 Soluções profissionais para servidores RP`
+🚀 Soluções profissionais RP`
     );
 
   channel.send({ embeds: [embed] });
 });
 
 // ==========================
-// 🎛️ INTERAÇÕES
+// INTERAÇÕES
 // ==========================
 client.on("interactionCreate", async (interaction) => {
 
@@ -145,159 +135,160 @@ client.on("interactionCreate", async (interaction) => {
       .setTitle("🏢 AURA BOTS STUDIO - CATÁLOGO OFICIAL")
       .setDescription(
 `╔══════════════════════════════╗
-💎 AURA BOTS STUDIO - ELITE STORE
+💎 ELITE STORE
 ╚══════════════════════════════╝
 
 🚀 AUTOMAÇÃO PROFISSIONAL
 
-🤖 Bot Básico - R$ 15  
-💎 Bot Personalizado - R$ 50  
-⚙️ Sistema Enterprise - R$ 120
-
-═══════════════════════════════
-🎫 Clique abaixo para solicitar
-═══════════════════════════════`
+Escolha uma categoria abaixo 👇`
       );
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
-        .setCustomId("open_ticket")
-        .setLabel("📦 Abrir Pedido")
-        .setStyle(ButtonStyle.Primary)
+        .setCustomId("cat_basic")
+        .setLabel("🤖 Básico - R$15")
+        .setStyle(ButtonStyle.Primary),
+
+      new ButtonBuilder()
+        .setCustomId("cat_pro")
+        .setLabel("💎 Personalizado - R$50")
+        .setStyle(ButtonStyle.Success),
+
+      new ButtonBuilder()
+        .setCustomId("cat_enterprise")
+        .setLabel("⚙️ Enterprise - R$120")
+        .setStyle(ButtonStyle.Danger)
     );
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
 
-    return interaction.reply({ content: "✅ enviado", ephemeral: true });
+    return interaction.reply({ content: "✅ painel enviado", ephemeral: true });
   }
 
   // ======================
-  // 🎫 TICKET
+  // ABRIR TICKET
   // ======================
-  if (interaction.isButton() && interaction.customId === "open_ticket") {
+  if (interaction.isButton() && interaction.customId.startsWith("cat_")) {
+
+    const tipo = interaction.customId;
 
     const channel = await interaction.guild.channels.create({
       name: `pedido-${interaction.user.username}`,
       type: ChannelType.GuildText,
       permissionOverwrites: [
-        { id: interaction.guild.id, deny: [PermissionsBitField.Flags.ViewChannel] },
+        {
+          id: interaction.guild.id,
+          deny: [PermissionsBitField.Flags.ViewChannel]
+        },
         {
           id: interaction.user.id,
-          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages
+          ]
         },
         {
           id: CONFIG.staffRole,
-          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages
+          ]
         }
       ]
     });
+
+    let plano = "";
+
+    if (tipo === "cat_basic") plano = "🤖 Bot Básico - R$15";
+    if (tipo === "cat_pro") plano = "💎 Bot Personalizado - R$50";
+    if (tipo === "cat_enterprise") plano = "⚙️ Sistema Enterprise - R$120";
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
       .setTitle("🏢 PEDIDO ABERTO")
       .setDescription(
-`📦 Escolha seu serviço:
+`📦 Plano selecionado:
 
-🤖 Bot Básico - R$ 15  
-💎 Bot Personalizado - R$ 50  
-⚙️ Sistema Enterprise - R$ 120`
+${plano}
+
+💬 Aguarde atendimento da equipe`
       );
 
-    const menu = new ActionRowBuilder().addComponents(
-      new StringSelectMenuBuilder()
-        .setCustomId("menu")
-        .setPlaceholder("Selecionar serviço")
-        .addOptions([
-          { label: "Bot Básico - R$ 15", value: "basic" },
-          { label: "Bot Personalizado - R$ 50", value: "pro" },
-          { label: "Sistema Enterprise - R$ 120", value: "enterprise" }
-        ])
-    );
-
-    const row2 = new ActionRowBuilder().addComponents(
+    const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
         .setCustomId("feedback")
-        .setLabel("⭐ Dar Feedback")
+        .setLabel("⭐ Feedback")
         .setStyle(ButtonStyle.Success),
 
       new ButtonBuilder()
         .setCustomId("close")
-        .setLabel("🔒 Encerrar")
+        .setLabel("🔒 Fechar")
         .setStyle(ButtonStyle.Danger)
     );
 
-    await channel.send({ embeds: [embed], components: [menu, row2] });
+    await channel.send({ embeds: [embed], components: [row] });
 
     return interaction.reply({ content: "📦 ticket criado", ephemeral: true });
   }
 
   // ======================
-  // ⭐ FEEDBACK
+  // FEEDBACK
   // ======================
   if (interaction.isButton() && interaction.customId === "feedback") {
 
     const embed = new EmbedBuilder()
       .setColor("#FFD700")
       .setTitle("⭐ FEEDBACK")
-      .setDescription("Escolha uma nota de 1 a 5 estrelas:");
+      .setDescription("Escolha sua nota:");
 
-    const menu = new ActionRowBuilder().addComponents(
-      new StringSelectMenuBuilder()
-        .setCustomId("nota_feedback")
-        .setPlaceholder("Selecionar nota")
-        .addOptions([
-          { label: "⭐ 1", value: "1" },
-          { label: "⭐⭐ 2", value: "2" },
-          { label: "⭐⭐⭐ 3", value: "3" },
-          { label: "⭐⭐⭐⭐ 4", value: "4" },
-          { label: "⭐⭐⭐⭐⭐ 5", value: "5" }
-        ])
+    const row = new ActionRowBuilder().addComponents(
+      new ButtonBuilder().setCustomId("fb1").setLabel("⭐ 1").setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId("fb2").setLabel("⭐⭐ 2").setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId("fb3").setLabel("⭐⭐⭐ 3").setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId("fb4").setLabel("⭐⭐⭐⭐ 4").setStyle(ButtonStyle.Secondary),
+      new ButtonBuilder().setCustomId("fb5").setLabel("⭐⭐⭐⭐⭐ 5").setStyle(ButtonStyle.Success)
     );
 
-    return interaction.reply({ embeds: [embed], components: [menu], ephemeral: true });
+    return interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
   }
 
   // ======================
-  // RECEBER FEEDBACK (CORRIGIDO)
+  // SALVAR FEEDBACK
   // ======================
-  if (interaction.isStringSelectMenu() && interaction.customId === "nota_feedback") {
+  if (interaction.isButton() && interaction.customId.startsWith("fb")) {
 
-    const nota = interaction.values[0];
+    const nota = interaction.customId.replace("fb", "");
+    const canal = await interaction.guild.channels.fetch(CONFIG.feedbackChannel).catch(() => null);
 
-    const canalFeedback = await interaction.guild.channels.fetch(CONFIG.feedbackChannel).catch(() => null);
-
-    if (canalFeedback) {
+    if (canal) {
       const embed = new EmbedBuilder()
         .setColor("#FFD700")
-        .setTitle("⭐ NOVO FEEDBACK RECEBIDO")
+        .setTitle("⭐ NOVO FEEDBACK")
         .addFields(
-          { name: "👤 Usuário", value: `${interaction.user}`, inline: false },
-          { name: "⭐ Nota", value: `${nota}/5`, inline: true },
-          { name: "📦 Ticket", value: `${interaction.channel.name}`, inline: true }
-        )
-        .setTimestamp();
+          { name: "Usuário", value: `${interaction.user}` },
+          { name: "Nota", value: `${nota}/5` },
+          { name: "Ticket", value: interaction.channel.name }
+        );
 
-      await canalFeedback.send({ embeds: [embed] });
+      canal.send({ embeds: [embed] });
     }
 
-    return interaction.reply({ content: "✅ Feedback enviado com sucesso!", ephemeral: true });
+    return interaction.reply({ content: "✅ obrigado pelo feedback!", ephemeral: true });
   }
 
   // ======================
-  // FECHAR TICKET
+  // FECHAR
   // ======================
   if (interaction.isButton() && interaction.customId === "close") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ apenas equipe", ephemeral: true });
+      return interaction.reply({ content: "❌ sem permissão", ephemeral: true });
     }
 
-    await interaction.reply("🔒 encerrando...");
+    await interaction.reply("🔒 fechando...");
     setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
   }
 });
 
-// ==========================
-// LOGIN
 // ==========================
 client.login(process.env.TOKEN);
