@@ -26,27 +26,6 @@ const CONFIG = {
 };
 
 // ==========================
-// 💰 CATÁLOGO
-// ==========================
-const PRODUCTS = {
-  basic: {
-    name: "🤖 Bot Básico",
-    price: "R$ 15",
-    desc: "Comandos simples + estrutura leve"
-  },
-  pro: {
-    name: "💎 Bot Personalizado",
-    price: "R$ 50",
-    desc: "Sistema completo sob medida"
-  },
-  enterprise: {
-    name: "⚙️ Sistema Enterprise",
-    price: "R$ 120",
-    desc: "Automação avançada + recursos premium"
-  }
-};
-
-// ==========================
 // 🤖 CLIENT
 // ==========================
 const client = new Client({
@@ -66,17 +45,13 @@ async function bloquearCargo(guild) {
   guild.channels.cache.forEach(async (channel) => {
     try {
 
-      // 🔓 CHAT GERAL LIBERADO
       if (channel.id === canalLiberado) {
         await channel.permissionOverwrites.edit(roleId, {
           ViewChannel: true,
           SendMessages: true,
           AddReactions: true
         });
-      }
-
-      // 🔒 DEMAIS CANAIS BLOQUEADOS
-      else {
+      } else {
         await channel.permissionOverwrites.edit(roleId, {
           SendMessages: false,
           AddReactions: false,
@@ -91,7 +66,7 @@ async function bloquearCargo(guild) {
 }
 
 // ==========================
-// 📌 COMANDOS
+// 📌 COMANDO PAINEL
 // ==========================
 const commands = [
   new SlashCommandBuilder()
@@ -168,7 +143,9 @@ client.on("interactionCreate", async (interaction) => {
 
   if (!interaction.guild) return;
 
-  // /painel
+  // ======================
+  // /PAINEL
+  // ======================
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
@@ -177,11 +154,36 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("🏢 CATÁLOGO OFICIAL")
+      .setTitle("🏢 AURA BOTS STUDIO - CATÁLOGO OFICIAL")
       .setDescription(
-`🤖 ${PRODUCTS.basic.name} - ${PRODUCTS.basic.price}
-💎 ${PRODUCTS.pro.name} - ${PRODUCTS.pro.price}
-⚙️ ${PRODUCTS.enterprise.name} - ${PRODUCTS.enterprise.price}`
+`╔══════════════════════════════╗
+💎 AURA BOTS STUDIO - ELITE STORE
+╚══════════════════════════════╝
+
+🚀 AUTOMAÇÃO PROFISSIONAL PARA SERVIDORES
+
+📦 CATÁLOGO DE SERVIÇOS:
+
+🤖 Bot Básico
+💰 R$ 15
+📝 Comandos simples + estrutura leve
+
+───────────────────────────────
+
+💎 Bot Personalizado
+💰 R$ 50
+📝 Sistema completo sob medida
+
+───────────────────────────────
+
+⚙️ Sistema Enterprise
+💰 R$ 120
+📝 Automação avançada + recursos premium
+
+═══════════════════════════════
+🎫 Clique abaixo para solicitar
+🔥 Atendimento premium e rápido
+═══════════════════════════════`
       );
 
     const row = new ActionRowBuilder().addComponents(
@@ -193,10 +195,12 @@ client.on("interactionCreate", async (interaction) => {
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
 
-    return interaction.reply({ content: "✅ enviado", ephemeral: true });
+    return interaction.reply({ content: "✅ catálogo enviado", ephemeral: true });
   }
 
-  // ticket
+  // ======================
+  // 🎫 TICKET
+  // ======================
   if (interaction.isButton() && interaction.customId === "open_ticket") {
 
     const channel = await interaction.guild.channels.create({
