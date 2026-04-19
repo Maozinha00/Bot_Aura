@@ -36,7 +36,7 @@ const PRECOS = {
 };
 
 // ==========================
-// SLASH COMMAND
+// 📌 COMANDOS
 // ==========================
 const commands = [
   new SlashCommandBuilder()
@@ -44,21 +44,22 @@ const commands = [
     .setDescription("Enviar painel de pedidos")
 ].map(c => c.toJSON());
 
+// ==========================
+// REGISTRO (GUILD — INSTANTÂNEO)
+// ==========================
 const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 
-// registro seguro
 (async () => {
   try {
-    if (!process.env.CLIENT_ID || !process.env.TOKEN) {
-      throw new Error("CLIENT_ID ou TOKEN não definido no .env");
-    }
-
     await rest.put(
-      Routes.applicationCommands(process.env.CLIENT_ID),
+      Routes.applicationGuildCommands(
+        process.env.CLIENT_ID,
+        SERVIDOR_ID
+      ),
       { body: commands }
     );
 
-    console.log("✅ comandos registrados");
+    console.log("✅ comandos registrados (GUILD INSTANT)");
   } catch (err) {
     console.log("❌ erro comandos:", err);
   }
@@ -68,7 +69,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 // BOT ONLINE
 // ==========================
 client.once("ready", () => {
-  console.log(`💎 ULTRA ELITE ONLINE: ${client.user.tag}`);
+  console.log(`💎 ONLINE: ${client.user.tag}`);
 });
 
 // ==========================
@@ -89,16 +90,16 @@ client.on("guildMemberAdd", async (member) => {
       .setDescription(
 `💎 Olá ${member.user}
 
-🤖 Bots simples e profissionais  
+🤖 Bots simples  
 💎 Bots personalizados  
 ⚙️ Sistemas automatizados  
 
-🎫 Use /painel para começar`
+Use /painel para começar`
       );
 
     await canal.send({ embeds: [embed] }).catch(() => {});
   } catch (err) {
-    console.log("Erro boas-vindas:", err);
+    console.log(err);
   }
 });
 
@@ -108,9 +109,7 @@ client.on("guildMemberAdd", async (member) => {
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.guild) return;
 
-  // ======================
-  // PAINEL
-  // ======================
+  // 🎛️ PAINEL
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
     if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
@@ -119,7 +118,7 @@ client.on("interactionCreate", async (interaction) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setDescription("💎 Clique abaixo para abrir um pedido");
+      .setDescription("💎 Clique para abrir pedido");
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder()
@@ -128,14 +127,15 @@ client.on("interactionCreate", async (interaction) => {
         .setStyle(ButtonStyle.Primary)
     );
 
-    await interaction.channel.send({ embeds: [embed], components: [row] });
+    await interaction.channel.send({
+      embeds: [embed],
+      components: [row]
+    });
 
     return interaction.reply({ content: "✅ painel enviado", ephemeral: true });
   }
 
-  // ======================
-  // TICKET
-  // ======================
+  // 🎫 TICKET
   if (interaction.isButton() && interaction.customId === "ticket") {
 
     const canal = await interaction.guild.channels.create({
@@ -161,16 +161,12 @@ client.on("interactionCreate", async (interaction) => {
           ]
         }
       ]
-    }).catch(() => null);
-
-    if (!canal) {
-      return interaction.reply({ content: "❌ erro ao criar ticket", ephemeral: true });
-    }
+    });
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
       .setTitle("💎 NOVO PEDIDO")
-      .setDescription("Escolha o produto abaixo:");
+      .setDescription("Escolha o produto:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
@@ -195,12 +191,10 @@ client.on("interactionCreate", async (interaction) => {
     return interaction.reply({ content: `✅ ticket criado`, ephemeral: true });
   }
 
-  // ======================
-  // MENU
-  // ======================
+  // 📦 MENU
   if (interaction.isStringSelectMenu()) {
+
     const escolha = interaction.values?.[0];
-    if (!escolha) return;
 
     const msg =
       escolha === "simples"
@@ -212,9 +206,7 @@ client.on("interactionCreate", async (interaction) => {
     return interaction.reply({ content: msg, ephemeral: true });
   }
 
-  // ======================
-  // FECHAR
-  // ======================
+  // 🔒 FECHAR
   if (interaction.isButton() && interaction.customId === "fechar") {
 
     if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
