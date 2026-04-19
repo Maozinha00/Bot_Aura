@@ -18,6 +18,7 @@ const client = new Client({
 });
 
 // 🔑 IDs
+const SERVIDOR_ID = "1495178024759332914";
 const CANAL_BOAS_VINDAS = "1495178025296461992";
 const CANAL_PAINEL = "1495178025602515176";
 const CARGO_STAFF = "1495178024797208588";
@@ -26,7 +27,8 @@ const CARGO_STAFF = "1495178024797208588";
 client.once("ready", async () => {
   console.log(`✅ Logado como ${client.user.tag}`);
 
-  const canal = await client.channels.fetch(CANAL_PAINEL);
+  const guild = await client.guilds.fetch(SERVIDOR_ID);
+  const canal = await guild.channels.fetch(CANAL_PAINEL);
 
   const embed = new EmbedBuilder()
     .setTitle("🎛️ Painel Aura Bots Studio")
@@ -53,6 +55,8 @@ client.once("ready", async () => {
 
 // 👋 BOAS-VINDAS
 client.on("guildMemberAdd", async (member) => {
+  if (member.guild.id !== SERVIDOR_ID) return;
+
   const canal = await member.guild.channels.fetch(CANAL_BOAS_VINDAS);
 
   const embed = new EmbedBuilder()
@@ -71,11 +75,14 @@ client.on("guildMemberAdd", async (member) => {
   canal.send({ embeds: [embed] });
 });
 
-// 🎫 SISTEMA DE TICKET
+// 🎫 INTERAÇÕES
 client.on("interactionCreate", async (interaction) => {
   if (!interaction.isButton()) return;
+  if (interaction.guild.id !== SERVIDOR_ID) return;
 
+  // 🎫 ABRIR TICKET
   if (interaction.customId === "abrir_ticket") {
+
     const canal = await interaction.guild.channels.create({
       name: `ticket-${interaction.user.username}`,
       type: ChannelType.GuildText,
@@ -86,11 +93,17 @@ client.on("interactionCreate", async (interaction) => {
         },
         {
           id: interaction.user.id,
-          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages
+          ]
         },
         {
           id: CARGO_STAFF,
-          allow: [PermissionsBitField.Flags.ViewChannel, PermissionsBitField.Flags.SendMessages]
+          allow: [
+            PermissionsBitField.Flags.ViewChannel,
+            PermissionsBitField.Flags.SendMessages
+          ]
         }
       ]
     });
@@ -121,6 +134,7 @@ client.on("interactionCreate", async (interaction) => {
 
   // 🔒 FECHAR TICKET
   if (interaction.customId === "fechar_ticket") {
+
     if (!interaction.member.roles.cache.has(CARGO_STAFF)) {
       return interaction.reply({
         content: "❌ Apenas staff pode fechar.",
