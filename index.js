@@ -21,11 +21,12 @@ const CONFIG = {
   serverId: "1495178024759332914",
   welcomeChannel: "1495275678533288068",
   staffRole: "1495178024797208588",
-  autoRole: "1495178024759332917"
+  autoRole: "1495178024759332917",
+  chatGeral: "1495178025296461986"
 };
 
 // ==========================
-// 💰 CATÁLOGO COM PREÇOS
+// 💰 CATÁLOGO
 // ==========================
 const PRODUCTS = {
   basic: {
@@ -56,6 +57,40 @@ const client = new Client({
 });
 
 // ==========================
+// 🔒 BLOQUEIO DE PERMISSÃO
+// ==========================
+async function bloquearCargo(guild) {
+  const roleId = CONFIG.autoRole;
+  const canalLiberado = CONFIG.chatGeral;
+
+  guild.channels.cache.forEach(async (channel) => {
+    try {
+
+      // 🔓 CHAT GERAL LIBERADO
+      if (channel.id === canalLiberado) {
+        await channel.permissionOverwrites.edit(roleId, {
+          ViewChannel: true,
+          SendMessages: true,
+          AddReactions: true
+        });
+      }
+
+      // 🔒 DEMAIS CANAIS BLOQUEADOS
+      else {
+        await channel.permissionOverwrites.edit(roleId, {
+          SendMessages: false,
+          AddReactions: false,
+          Speak: false
+        });
+      }
+
+    } catch (err) {
+      console.log(`Erro no canal ${channel.name}`);
+    }
+  });
+}
+
+// ==========================
 // 📌 COMANDOS
 // ==========================
 const commands = [
@@ -83,10 +118,15 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 })();
 
 // ==========================
-// 🚀 ONLINE
+// 🚀 READY
 // ==========================
-client.once("ready", () => {
-  console.log(`🏢 AURA BOTS STUDIO ONLINE: ${client.user.tag}`);
+client.once("ready", async () => {
+  console.log(`🏢 ONLINE: ${client.user.tag}`);
+
+  const guild = client.guilds.cache.get(CONFIG.serverId);
+  if (!guild) return;
+
+  await bloquearCargo(guild);
 });
 
 // ==========================
@@ -103,19 +143,13 @@ client.on("guildMemberAdd", async (member) => {
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("🏢 AURA BOTS STUDIO | EMPRESA OFICIAL")
+      .setTitle("🏢 AURA BOTS STUDIO")
       .setDescription(
 `👋 Bem-vindo ${member.user}
 
-💼 Você entrou na **AURA BOTS STUDIO**
+💼 Você entrou na empresa
 
-Somos especialistas em:
-
-🤖 Desenvolvimento de Bots Discord  
-⚙️ Sistemas automatizados  
-🚀 Soluções profissionais para servidores RP  
-
-📦 Use /painel para acessar o catálogo`
+Use /painel para ver o catálogo`
       );
 
     await channel.send({ embeds: [embed] });
@@ -129,47 +163,20 @@ client.on("interactionCreate", async (interaction) => {
 
   if (!interaction.guild) return;
 
-  // ======================
-  // /PAINEL
-  // ======================
+  // /painel
   if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
 
     if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ Apenas equipe da empresa", ephemeral: true });
+      return interaction.reply({ content: "❌ Apenas equipe", ephemeral: true });
     }
 
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
-      .setTitle("🏢 AURA BOTS STUDIO - CATÁLOGO OFICIAL")
+      .setTitle("🏢 CATÁLOGO")
       .setDescription(
-`╔══════════════════════════════╗
-💎 AURA BOTS STUDIO - ELITE STORE
-╚══════════════════════════════╝
-
-🚀 AUTOMAÇÃO PROFISSIONAL PARA SERVIDORES
-
-📦 CATÁLOGO DE SERVIÇOS:
-
-🤖 ${PRODUCTS.basic.name}
-💰 ${PRODUCTS.basic.price}
-📝 ${PRODUCTS.basic.desc}
-
-───────────────────────────────
-
-💎 ${PRODUCTS.pro.name}
-💰 ${PRODUCTS.pro.price}
-📝 ${PRODUCTS.pro.desc}
-
-───────────────────────────────
-
-⚙️ ${PRODUCTS.enterprise.name}
-💰 ${PRODUCTS.enterprise.price}
-📝 ${PRODUCTS.enterprise.desc}
-
-═══════════════════════════════
-🎫 Clique abaixo para solicitar
-🔥 Atendimento premium e rápido
-═══════════════════════════════`
+`🤖 Bot Básico - R$ 15
+💎 Bot Personalizado - R$ 50
+⚙️ Sistema Enterprise - R$ 120`
       );
 
     const row = new ActionRowBuilder().addComponents(
@@ -181,12 +188,10 @@ client.on("interactionCreate", async (interaction) => {
 
     await interaction.channel.send({ embeds: [embed], components: [row] });
 
-    return interaction.reply({ content: "✅ catálogo enviado", ephemeral: true });
+    return interaction.reply({ content: "✅ enviado", ephemeral: true });
   }
 
-  // ======================
-  // 🎫 TICKET
-  // ======================
+  // ticket
   if (interaction.isButton() && interaction.customId === "open_ticket") {
 
     const channel = await interaction.guild.channels.create({
@@ -214,71 +219,8 @@ client.on("interactionCreate", async (interaction) => {
       ]
     });
 
-    const embed = new EmbedBuilder()
-      .setColor("#6A0DAD")
-      .setTitle("🏢 PEDIDO EMPRESA")
-      .setDescription("Selecione o serviço desejado:");
-
-    const menu = new ActionRowBuilder().addComponents(
-      new StringSelectMenuBuilder()
-        .setCustomId("menu")
-        .setPlaceholder("Selecionar serviço")
-        .addOptions([
-          {
-            label: `${PRODUCTS.basic.name} - ${PRODUCTS.basic.price}`,
-            value: "basic"
-          },
-          {
-            label: `${PRODUCTS.pro.name} - ${PRODUCTS.pro.price}`,
-            value: "pro"
-          },
-          {
-            label: `${PRODUCTS.enterprise.name} - ${PRODUCTS.enterprise.price}`,
-            value: "enterprise"
-          }
-        ])
-    );
-
-    const close = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("close")
-        .setLabel("🔒 Encerrar")
-        .setStyle(ButtonStyle.Danger)
-    );
-
-    await channel.send({ embeds: [embed], components: [menu, close] });
-
-    return interaction.reply({ content: `📦 pedido criado`, ephemeral: true });
-  }
-
-  // ======================
-  // MENU
-  // ======================
-  if (interaction.isStringSelectMenu()) {
-
-    const v = interaction.values[0];
-
-    const msg =
-      v === "basic"
-        ? `🤖 ${PRODUCTS.basic.name} - ${PRODUCTS.basic.price}`
-        : v === "pro"
-        ? `💎 ${PRODUCTS.pro.name} - ${PRODUCTS.pro.price}`
-        : `⚙️ ${PRODUCTS.enterprise.name} - ${PRODUCTS.enterprise.price}`;
-
-    return interaction.reply({ content: msg, ephemeral: true });
-  }
-
-  // ======================
-  // FECHAR
-  // ======================
-  if (interaction.isButton() && interaction.customId === "close") {
-
-    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ apenas equipe", ephemeral: true });
-    }
-
-    await interaction.reply("🔒 encerrando pedido...");
-    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
+    await channel.send("📦 pedido criado");
+    return interaction.reply({ content: "ticket criado", ephemeral: true });
   }
 });
 
