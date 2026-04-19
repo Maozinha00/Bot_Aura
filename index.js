@@ -36,7 +36,7 @@ const PRECOS = {
 };
 
 // ==========================
-// 📌 SLASH COMMANDS
+// 📌 SLASH COMMAND
 // ==========================
 const commands = [
   new SlashCommandBuilder()
@@ -61,7 +61,6 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
     );
 
     console.log("✅ comandos registrados");
-
   } catch (err) {
     console.log("❌ erro comandos:", err);
   }
@@ -71,7 +70,7 @@ const rest = new REST({ version: "10" }).setToken(process.env.TOKEN);
 // 🚀 BOT ONLINE
 // ==========================
 client.once("ready", () => {
-  console.log(`💎 ULTRA ELITE ONLINE: ${client.user.tag}`);
+  console.log(`💎 AURA BOTS ONLINE: ${client.user.tag}`);
 });
 
 // ==========================
@@ -92,7 +91,7 @@ client.on("guildMemberAdd", async (member) => {
       .setDescription(
 `💎 Olá ${member.user}
 
-Bem-vindo ao **Aura Bots Studio**
+Bem-vindo à **Aura Bots Studio**
 
 🤖 Bots simples e profissionais  
 💎 Bots personalizados  
@@ -101,9 +100,9 @@ Bem-vindo ao **Aura Bots Studio**
 🎫 Abra um ticket para solicitar seu bot`
       )
       .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
-      .setFooter({ text: "Aura Bots Studio - Loja Oficial" });
+      .setFooter({ text: "Aura Bots Studio" });
 
-    canal.send({ embeds: [embed] }).catch(() => {});
+    await canal.send({ embeds: [embed] }).catch(() => {});
 
   } catch (err) {
     console.log("Erro boas-vindas:", err);
@@ -177,10 +176,7 @@ client.on("interactionCreate", async (interaction) => {
           ]
         }
       ]
-    }).catch(err => {
-      console.log("Erro criar canal:", err);
-      return null;
-    });
+    }).catch(() => null);
 
     if (!canal) {
       return interaction.reply({
@@ -192,7 +188,7 @@ client.on("interactionCreate", async (interaction) => {
     const embed = new EmbedBuilder()
       .setColor("#6A0DAD")
       .setTitle("💎 NOVO PEDIDO")
-      .setDescription("Selecione o produto:");
+      .setDescription("Selecione o produto abaixo:");
 
     const menu = new ActionRowBuilder().addComponents(
       new StringSelectMenuBuilder()
@@ -214,7 +210,10 @@ client.on("interactionCreate", async (interaction) => {
 
     await canal.send({ embeds: [embed], components: [menu, fechar] });
 
-    return interaction.reply({ content: `✅ criado: ${canal}`, ephemeral: true });
+    return interaction.reply({
+      content: `✅ Ticket criado: ${canal}`,
+      ephemeral: true
+    });
   }
 
   // ======================
@@ -249,4 +248,7 @@ client.on("interactionCreate", async (interaction) => {
   }
 });
 
+// ==========================
+// LOGIN
+// ==========================
 client.login(process.env.TOKEN);
