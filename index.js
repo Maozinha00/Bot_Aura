@@ -522,4 +522,4 @@ A AURA BOTS STUDIO cria soluções modernas para Discord e servidores RP, focand
 });
 
 // Login do Bot
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN || process.env.DISCORD_BOT_TOKEN);
