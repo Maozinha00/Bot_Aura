@@ -1,21 +1,27 @@
-import "dotenv/config";
-import {
-  Client,
-  GatewayIntentBits,
-  EmbedBuilder,
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ChannelType,
-  PermissionsBitField,
-  REST,
-  Routes,
-  SlashCommandBuilder
-} from "discord.js";
+/**
+ * 🤖 Aura Bots Studio - Discord Bot Script (discord.js v14)
+ * 
+ * Este é o script completo do bot configurado com os seus IDs personalizados.
+ * Ele apaga todos os canais do servidor de destino e recria a estrutura completa 
+ * da loja Aura Bots Studio com mensagens profissionais embutidas (embeds).
+ * 
+ * Requisitos:
+ * 1. Node.js v16.9.0 ou superior instalado.
+ * 2. Instalar a biblioteca: npm install discord.js dotenv
+ * 3. Configurar o Token do seu bot no arquivo .env
+ */
 
-// ==========================================
-// 🏢 CONFIGURAÇÕES DO SERVIDOR (AURA BOTS)
-// ==========================================
+const { 
+  Client, 
+  GatewayIntentBits, 
+  EmbedBuilder, 
+  Partials, 
+  PermissionsBitField,
+  ChannelType
+} = require("discord.js");
+require("dotenv").config();
+
+// Configurações personalizadas enviadas pelo usuário:
 const CONFIG = {
   serverId: "1495178024759332914",         // ID do Servidor Principal da Aura Bots
   welcomeChannel: "1495275678533288068",   // ID do canal onde envia as Boas-Vindas
@@ -30,496 +36,226 @@ const CONFIG = {
   targetServerName: "A͎u͎r͎a͎ ͎B͎o͎t͎s͎ ͎S͎t͎u͎d͎i͎o͎"       // Nome que o servidor de destino receberá
 };
 
-// ==========================================
-// 🤖 INICIALIZAÇÃO DO BOT E INTENTS
-// ==========================================
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent
-  ]
+  ],
+  partials: [Partials.GuildMember, Partials.User]
 });
 
-// Auxiliar para pausas entre requisições
-const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-// ==========================================
-// 🔒 BLOQUEIO AUTOMÁTICO DE CANAIS
-// ==========================================
-async function bloquearCargo(guild) {
-  const roleId = CONFIG.autoRole;
-  const canalLiberado = CONFIG.chatGeral;
-
-  guild.channels.cache.forEach(async (channel) => {
-    try {
-      if (channel.id === canalLiberado) {
-        await channel.permissionOverwrites.edit(roleId, {
-          ViewChannel: true,
-          SendMessages: true,
-          AddReactions: true
-        });
-      } else {
-        await channel.permissionOverwrites.edit(roleId, {
-          SendMessages: false,
-          AddReactions: false,
-          Speak: false
-        });
-      }
-    } catch {}
-  });
-}
-
-// ==========================================
-// 📌 REGISTRO DO COMANDO SLASH (/painel)
-// ==========================================
-const commands = [
-  new SlashCommandBuilder()
-    .setName("painel")
-    .setDescription("🏢 Abrir catálogo da empresa")
-].map(c => c.toJSON());
-
-const rest = new REST({ version: "10" }).setToken(process.env.TOKEN || process.env.DISCORD_BOT_TOKEN);
-
-(async () => {
-  try {
-    if (process.env.TOKEN || process.env.DISCORD_BOT_TOKEN) {
-      await rest.put(
-        Routes.applicationGuildCommands(process.env.CLIENT_ID || "SEU_CLIENT_ID", CONFIG.serverId),
-        { body: commands }
-      );
-      console.log("🏢 Comando /painel registrado com sucesso globalmente!");
-    }
-  } catch (err) {
-    console.log("Erro ao registrar comandos Slash:", err);
-  }
-})();
-
-// ==========================================
-// 🚀 EVENTO: BOT ONLINE
-// ==========================================
-client.once("ready", async () => {
-  console.log(`🏢 ONLINE: ${client.user.tag}`);
-
-  const guild = client.guilds.cache.get(CONFIG.serverId);
-  if (guild) await bloquearCargo(guild);
+client.once("ready", () => {
+  console.log(`🤖 Aura Bot está online como ${client.user.tag}!`);
+  console.log("👉 Digite '!acriaraura' em qualquer canal de texto para iniciar a reestruturação.");
 });
 
-// ==========================================
-// 👋 BOAS-VINDAS COM EMBED
-// ==========================================
+// Evento: Auto-cargo ao entrar novos membros
 client.on("guildMemberAdd", async (member) => {
-  if (member.guild.id !== CONFIG.serverId) return;
+  // Ignorar bots
+  if (member.user.bot) return;
 
-  await member.roles.add(CONFIG.autoRole).catch(() => {});
+  // Verifica se o membro entrou no servidor principal
+  if (member.guild.id === CONFIG.serverId) {
+    try {
+      // 1. Atribui o Auto Role (@Membro / Não Verificado)
+      const role = member.guild.roles.cache.get(CONFIG.autoRole);
+      if (role) {
+        await member.roles.add(role);
+        console.log(`🌐 Cargo automático atribuído para ${member.user.tag}`);
+      }
 
-  const channel = await member.guild.channels.fetch(CONFIG.welcomeChannel).catch(() => null);
-  if (!channel) return;
+      // 2. Envia mensagem de Boas-Vindas no canal especificado
+      const channel = member.guild.channels.cache.get(CONFIG.welcomeChannel);
+      if (channel) {
+        const welcomeEmbed = new EmbedBuilder()
+          .setTitle("👋 Bem-vindo(a) ao Aura Bots Studio!")
+          .setDescription(`Olá ${member}, bem-vindo à nossa comunidade de desenvolvimento!\n\n🔹 **Leia nossas regras em:** <#regras>\n🔹 **Confira os bots e planos em:** <#catálogo>\n🔹 **Precisa de suporte? Abra um ticket em:** <#abrir-ticket>`)
+          .setColor("#a855f7")
+          .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+          .setFooter({ text: "Aura Bots Studio • Desenvolvimento Profissional" })
+          .setTimestamp();
 
-  const embed = new EmbedBuilder()
-    .setColor("#6A0DAD")
-    .setTitle("🏢 AURA BOTS STUDIO | EMPRESA OFICIAL")
-    .setDescription(
-`👋 Bem-vindo ${member.user}
-
-💼 Você entrou na AURA BOTS STUDIO
-
-🤖 Desenvolvimento de Bots Discord  
-⚙️ Sistemas automatizados  
-🚀 Soluções profissionais para servidores RP`
-    );
-
-  channel.send({ embeds: [embed] });
+        await channel.send({ content: `${member}`, embeds: [welcomeEmbed] });
+      }
+    } catch (err) {
+      console.error("Erro no evento guildMemberAdd:", err);
+    }
+  }
 });
 
-// ==========================================
-// 🛠️ COMANDO !clonaraura (SISTEMA DE BACKUP)
-// ==========================================
+// Evento: Comando de Setup para recriar tudo
 client.on("messageCreate", async (message) => {
   if (message.author.bot) return;
 
-  // Comando com prefixo para iniciar a clonagem/backup
-  if (message.content.toLowerCase() === "!clonaraura") {
-    
-    // Verificar permissão (Cargo Staff da Aura ou Administrador do servidor)
-    const isStaff = message.member?.roles.cache.has(CONFIG.staffRole) || message.member?.permissions.has(PermissionsBitField.Flags.Administrator);
-    if (!isStaff) {
-      return message.reply("❌ Apenas membros da equipe ou Administradores podem executar este comando!");
+  // Comando de setup atualizado para !acriaraura
+  if (message.content === "!acriaraura") {
+    // Verificar se o usuário possui cargo de staff ou administrador
+    const hasPermission = message.member.permissions.has(PermissionsBitField.Flags.Administrator) || 
+                          message.member.roles.cache.has(CONFIG.staffRole);
+
+    if (!hasPermission) {
+      return message.reply("❌ Você não tem permissão para usar este comando de alta segurança.");
     }
 
-    const logChannel = message.channel;
-    const progressEmbed = new EmbedBuilder()
-      .setColor("#6A0DAD")
-      .setTitle("🌀 INICIANDO CLONAGEM DO SERVIDOR")
-      .setDescription("🔄 Preparando e estabelecendo conexões com as APIs...")
-      .setTimestamp();
-
-    const progressMsg = await logChannel.send({ embeds: [progressEmbed] });
-
-    const updateStatus = async (stage, description, progressColor = "#6A0DAD") => {
-      const updated = new EmbedBuilder()
-        .setColor(progressColor)
-        .setTitle("🌀 PROGRESSO DA CLONAGEM - AURA BOTS")
-        .setDescription(`**Etapa:** ${stage}\n\n${description}`)
-        .setTimestamp();
-      await progressMsg.edit({ embeds: [updated] }).catch(() => {});
-    };
+    const targetGuild = client.guilds.cache.get(CONFIG.destServerId);
+    if (!targetGuild) {
+      return message.reply(`❌ Não consegui encontrar o servidor de destino com ID: ${CONFIG.destServerId}. Certifique-se de que o bot foi adicionado a ele primeiro!`);
+    }
 
     try {
-      // 1. Validar e obter os servidores de Origem e Destino
-      const sourceGuild = client.guilds.cache.get(CONFIG.sourceServerId) || await client.guilds.fetch(CONFIG.sourceServerId).catch(() => null);
-      const destGuild = client.guilds.cache.get(CONFIG.destServerId) || await client.guilds.fetch(CONFIG.destServerId).catch(() => null);
+      await message.reply(`🛠️ Iniciando reestruturação completa no servidor de destino **${CONFIG.targetServerName}**...`);
 
-      if (!sourceGuild) {
-        return updateStatus("Erro", `❌ Servidor de origem não encontrado (${CONFIG.sourceServerId}). Certifique-se de que o bot está nele!`, "#FF0000");
+      // 1. Atualizar o nome do servidor de destino
+      await targetGuild.setName(CONFIG.targetServerName);
+
+      // 2. Apagar absolutamente todos os canais antigos do servidor de destino
+      console.log("Limpando canais antigos...");
+      const oldChannels = await targetGuild.channels.fetch();
+      for (const [id, chan] of oldChannels) {
+        if (chan) {
+          await chan.delete().catch(e => console.log(`Não pude deletar o canal ${chan.name}: ${e.message}`));
+        }
       }
-      if (!destGuild) {
-        return updateStatus("Erro", `❌ Servidor de destino não encontrado (${CONFIG.destServerId}). Certifique-se de que o bot está nele e tem cargo de Administrador!`, "#FF0000");
+
+      // 3. Criar a nova estrutura de categorias e canais
+      const categorias = [
+        {
+          name: "📢 INFORMAÇÕES",
+          channels: [
+            { name: "boas-vindas", type: ChannelType.GuildText, msgType: "welcome" },
+            { name: "regras", type: ChannelType.GuildText, msgType: "rules" },
+            { name: "anúncios", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "novidades", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "changelog", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "sorteios", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "faq", type: ChannelType.GuildText, msgType: "normal" }
+          ]
+        },
+        {
+          name: "🛒 LOJA",
+          channels: [
+            { name: "catálogo", type: ChannelType.GuildText, msgType: "sales" },
+            { name: "preços", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "bots-disponíveis", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "planos", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "promoções", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "formas-de-pagamento", type: ChannelType.GuildText, msgType: "normal" }
+          ]
+        },
+        {
+          name: "🧪 TESTES DE BOTS",
+          channels: [
+            { name: "teste-bot-1", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "teste-bot-2", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "teste-bot-3", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "teste-bot-4", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "teste-bot-5", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "sandbox", type: ChannelType.GuildText, msgType: "normal" }
+          ]
+        },
+        {
+          name: "🎫 SUPORTE",
+          channels: [
+            { name: "abrir-ticket", type: ChannelType.GuildText, msgType: "ticket_central" },
+            { name: "feedback", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "avaliações", type: ChannelType.GuildText, msgType: "normal" }
+          ]
+        },
+        {
+          name: "💬 COMUNIDADE",
+          channels: [
+            { name: "chat-geral", type: ChannelType.GuildText, msgType: "general" },
+            { name: "memes", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "prints", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "games", type: ChannelType.GuildText, msgType: "normal" },
+            { name: "comandos", type: ChannelType.GuildText, msgType: "normal" }
+          ]
+        }
+      ];
+
+      for (const cat of categorias) {
+        // Criar categoria principal
+        const createdCategory = await targetGuild.channels.create({
+          name: cat.name,
+          type: ChannelType.GuildCategory
+        });
+
+        // Criar subcanais de texto dentro da categoria
+        for (const chan of cat.channels) {
+          const createdChan = await targetGuild.channels.create({
+            name: chan.name,
+            type: chan.type,
+            parent: createdCategory.id
+          });
+
+          // Enviar mensagens iniciais formatadas e embeds
+          if (chan.msgType === "rules") {
+            const embedRegras = new EmbedBuilder()
+              .setTitle("📚 REGRAS OFICIAIS - AURA BOTS STUDIO")
+              .setDescription("Bem-vindo ao servidor oficial da **Aura Bots Studio**! Siga as diretrizes abaixo para garantir um ambiente saudável e profissional para todos.")
+              .setColor("#a855f7")
+              .addFields(
+                { name: "1️⃣ Respeito e Conduta", value: "Trate todos os membros, parceiros e equipe de staff com educação. É estritamente proibido discursos de ódio, homofobia, racismo, xenofobia ou ofensas gratuitas." },
+                { name: "2️⃣ Divulgação e Spam", value: "Não divulgue links de convite de outros servidores do Discord ou links suspeitos em canais públicos ou nas DMs dos membros. Spam, flood ou excesso de menções sofrerão punições." },
+                { name: "3️⃣ Atendimento de Vendas & Suporte", value: "Caso queira comprar algum bot ou precise de ajuda com seus sistemas, use o canal de suporte oficial em `#abrir-ticket`. Não marque os Fundadores ou Sócios no chat privado." },
+                { name: "4️⃣ Uso Correto de Canais", value: "Respeite a função de cada canal. Use o `#chat-geral` para conversas, `#memes` para imagens engraçadas, e `#comandos` para testar comandos dos bots." }
+              )
+              .setFooter({ text: "Obrigado por cooperar! Equipe Aura Bots Studio" })
+              .setTimestamp();
+
+            await createdChan.send({ embeds: [embedRegras] });
+          } 
+          else if (chan.msgType === "sales") {
+            const embedVendas = new EmbedBuilder()
+              .setTitle("🛍️ PROMOÇÃO IMPERDÍVEL - COMBO BOTS PREMIUM")
+              .setDescription("Leve o controle total do seu servidor Discord para o próximo nível com a tecnologia de ponta da Aura Bots Studio!")
+              .setColor("#facc15")
+              .addFields(
+                { name: "🤖 Aura Ticket Bot (🎫)", value: "• Sistema de tickets por botões integrados\n• Transcrições em HTML\n• **Apenas R$ 19,00/mês**" },
+                { name: "🛡️ Aura Moderador Pro (🔒)", value: "• Filtros automáticos contra invasões\n• Logs super detalhados\n• **Apenas R$ 25,00/mês**" },
+                { name: "🌟 COMBO SUPREMO (💎)", value: "Leve TODOS os nossos bots de cima inclusos na sua comunidade, com atualizações gratuitas.\n💰 **De R$ 112,00 por APENAS R$ 59,00/mês!**" }
+              )
+              .setFooter({ text: "Para adquirir, abra um ticket em #abrir-ticket!" });
+
+            await createdChan.send({ embeds: [embedVendas] });
+          }
+          else if (chan.msgType === "ticket_central") {
+            const embedTicket = new EmbedBuilder()
+              .setTitle("🎫 CENTRAL DE ATENDIMENTO E SUPORTE")
+              .setDescription("Precisa comprar um bot ou falar com nossa equipe de suporte? Abra um ticket privado clicando no botão abaixo!\n\n🕒 **Horário de Atendimento:**\nSegunda a Sábado: 09:00 às 22:00")
+              .setColor("#34d399")
+              .setFooter({ text: "Aura Bots Studio Atendimento VIP" });
+
+            await createdChan.send({ embeds: [embedTicket] });
+          }
+        }
       }
 
-      // 2. Mudar Nome do Servidor de Destino
-      await updateStatus("Renomeando Destino", `✏️ Renomeando servidor de destino para **${CONFIG.targetServerName}**...`);
-      await destGuild.setName(CONFIG.targetServerName).catch(() => {});
-      await sleep(1000);
-
-      // 3. Deletar Canais Existentes no Destino (Limpeza completa)
-      await updateStatus("Limpando Destino", "🧹 Apagando todos os canais antigos para evitar duplicações...");
-      
-      // Criar canal temporário (obrigatório, pois o Discord não aceita servidor sem canais)
-      const tempChannel = await destGuild.channels.create({
-        name: "suporte-clonagem",
-        type: ChannelType.GuildText
+      // 4. Criar canais de voz padrões fora de categorias ou em nova categoria
+      const createdVoiceCategory = await targetGuild.channels.create({
+        name: "🔊 CANAIS DE VOZ",
+        type: ChannelType.GuildCategory
       });
 
-      const currentDestChannels = await destGuild.channels.fetch();
-      for (const [id, channel] of currentDestChannels) {
-        if (channel && channel.id !== tempChannel.id) {
-          await channel.delete().catch(() => {});
-          await sleep(250);
-        }
+      const canaisVoz = ["🎙️ Geral", "🎙️ Suporte", "🎙️ Desenvolvimento", "🎙️ Clientes", "🎙️ Staff"];
+      for (const voz of canaisVoz) {
+        await targetGuild.channels.create({
+          name: voz,
+          type: ChannelType.GuildVoice,
+          parent: createdVoiceCategory.id
+        });
       }
 
-      // 4. Limpar Cargos antigos do Destino
-      await updateStatus("Limpando Cargos", "🧹 Removendo cargos antigos (exceto @everyone e cargos gerenciados por bots)...");
-      const currentDestRoles = await destGuild.roles.fetch();
-      for (const [id, role] of currentDestRoles) {
-        if (role && role.name !== "@everyone" && !role.managed && role.id !== destGuild.id && role.comparePositionTo(destGuild.members.me.roles.highest) < 0) {
-          await role.delete().catch(() => {});
-          await sleep(200);
-        }
-      }
-
-      // 5. Clonar Cargos Originais
-      await updateStatus("Clonando Cargos", "🎨 Recriando todos os cargos, cores e permissões no servidor novo...");
-      const sourceRoles = await sourceGuild.roles.fetch();
-      const roleMap = new Map(); // oldRoleId -> newRoleId
-
-      const sortedRoles = Array.from(sourceRoles.values())
-        .filter(r => r.name !== "@everyone" && !r.managed)
-        .sort((a, b) => a.position - b.position);
-
-      for (const role of sortedRoles) {
-        const newRole = await destGuild.roles.create({
-          name: role.name,
-          color: role.color,
-          hoist: role.hoist,
-          permissions: role.permissions,
-          mentionable: role.mentionable,
-          reason: "Cópia Aura Cloner"
-        }).catch(() => null);
-
-        if (newRole) {
-          roleMap.set(role.id, newRole.id);
-          await sleep(300);
-        }
-      }
-
-      // 6. Criar Categorias e Canais
-      await updateStatus("Criando Canais", "📁 Construindo canais de texto, de voz e organizando as categorias...");
-      const sourceChannels = await sourceGuild.channels.fetch();
-      const channelMap = new Map(); // oldChannelId -> newChannelId
-
-      // Criar Categorias primeiro (tipo 4)
-      const categories = Array.from(sourceChannels.values())
-        .filter(c => c && c.type === ChannelType.GuildCategory)
-        .sort((a, b) => a.position - b.position);
-
-      for (const cat of categories) {
-        const newCat = await destGuild.channels.create({
-          name: cat.name,
-          type: ChannelType.GuildCategory,
-          position: cat.position
-        }).catch(() => null);
-
-        if (newCat) {
-          channelMap.set(cat.id, newCat.id);
-          await sleep(300);
-        }
-      }
-
-      // Criar canais de texto/voz sob as novas categorias
-      const nonCategories = Array.from(sourceChannels.values())
-        .filter(c => c && c.type !== ChannelType.GuildCategory)
-        .sort((a, b) => a.position - b.position);
-
-      for (const chan of nonCategories) {
-        const parentId = chan.parentId ? channelMap.get(chan.parentId) : null;
-        let chanType = ChannelType.GuildText;
-        if (chan.type === ChannelType.GuildVoice) chanType = ChannelType.GuildVoice;
-        if (chan.type === ChannelType.GuildStageVoice) chanType = ChannelType.GuildStageVoice;
-        if (chan.type === ChannelType.GuildAnnouncement) chanType = ChannelType.GuildAnnouncement;
-
-        const newChan = await destGuild.channels.create({
-          name: chan.name,
-          type: chanType,
-          topic: chan.topic || null,
-          nsfw: chan.nsfw || false,
-          parent: parentId,
-          position: chan.position
-        }).catch(() => null);
-
-        if (newChan) {
-          channelMap.set(chan.id, newChan.id);
-          await sleep(300);
-        }
-      }
-
-      // Apagar canal temporário criado no início
-      await tempChannel.delete().catch(() => {});
-
-      // 7. Clonar mensagens recentes importantes (últimas 30 por canal)
-      await updateStatus("Clonando Mensagens", "💬 Copiando históricos de mensagens recentes dos canais mais ativos...");
-      const textChannels = Array.from(sourceChannels.values()).filter(c => c && c.isTextBased() && !c.isVoiceBased());
-      let copiedMessagesCount = 0;
-
-      for (const oldChan of textChannels) {
-        const newChanId = channelMap.get(oldChan.id);
-        if (!newChanId) continue;
-
-        const newChan = await destGuild.channels.fetch(newChanId).catch(() => null);
-        if (!newChan || !newChan.isTextBased()) continue;
-
-        const messages = await oldChan.messages.fetch({ limit: 30 }).catch(() => null);
-        if (messages) {
-          const sortedMsgs = Array.from(messages.values()).reverse();
-          for (const msg of sortedMsgs) {
-            if (msg.content || msg.embeds.length > 0) {
-              const textToSend = msg.content ? `**[${msg.author.username}]**: ${msg.content}` : `**[${msg.author.username}]**: *(Apenas mídia/embed)*`;
-              await newChan.send({
-                content: textToSend,
-                embeds: msg.embeds
-              }).catch(() => {});
-              copiedMessagesCount++;
-              await sleep(400); // Evitar rate-limits do Discord
-            }
-          }
-        }
-      }
-
-      // 8. Auto-cargo Membro em todos os jogadores presentes no destino
-      await updateStatus("Atribuindo Cargos", "👥 Atualizando lista de membros e adicionando o cargo 'Membro'...");
-      
-      let membroRole = Array.from(destGuild.roles.cache.values()).find(r => r.name.toLowerCase() === "membro");
-      if (!membroRole) {
-        membroRole = await destGuild.roles.create({
-          name: "Membro",
-          color: "#3498db",
-          hoist: true,
-          mentionable: true,
-          reason: "Cargo de Membro Padrão Aura"
-        }).catch(() => null);
-      }
-
-      let updatedMembersCount = 0;
-      if (membroRole) {
-        const members = await destGuild.members.fetch().catch(() => []);
-        for (const [id, member] of members) {
-          if (!member.user.bot) {
-            await member.roles.add(membroRole).catch(() => {});
-            updatedMembersCount++;
-            await sleep(350);
-          }
-        }
-      }
-
-      // 9. Concluído com Sucesso!
-      await updateStatus(
-        "Clonagem Concluída!",
-        `🎉 **Parabéns! Servidor clonado com sucesso para "${CONFIG.targetServerName}"**\n\n` +
-        `📁 **Canais Criados:** ${channelMap.size}\n` +
-        `🎨 **Cargos Criados:** ${roleMap.size}\n` +
-        `💬 **Mensagens Copiadas:** ${copiedMessagesCount}\n` +
-        `👥 **Cargos "Membro" Atribuídos:** ${updatedMembersCount} players`,
-        "#00FF00"
-      );
+      await message.reply("✅ Reestruturação completa finalizada! Todos os canais foram apagados e recriados perfeitamente com as mensagens de vendas e regras.");
 
     } catch (err) {
       console.error(err);
-      await updateStatus("Erro Crítico", `❌ Ocorreu um erro ao processar a clonagem: \`\`\`${err.message}\`\`\``, "#FF0000");
+      await message.reply(`❌ Erro fatal durante a reestruturação: ${err.message}`);
     }
   }
 });
 
-// ==========================================
-// 🎛️ GERENCIADOR DE INTERAÇÕES (TICKET & FEEDBACK)
-// ==========================================
-client.on("interactionCreate", async (interaction) => {
-  if (!interaction.guild) return;
-
-  // Interação do /painel (Envio do Catálogo)
-  if (interaction.isChatInputCommand() && interaction.commandName === "painel") {
-    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ Apenas a equipe oficial pode enviar este painel!", ephemeral: true });
-    }
-
-    const embed = new EmbedBuilder()
-      .setColor("#6A0DAD")
-      .setTitle("🏢 AURA BOTS STUDIO - CATÁLOGO OFICIAL")
-      .setDescription(
-`╔══════════════════════════════╗
-🏢 AURA BOTS STUDIO
-╚══════════════════════════════╝
-
-🚀 DESENVOLVIMENTO PROFISSIONAL DE SISTEMAS
-
-A AURA BOTS STUDIO cria soluções modernas para Discord e servidores RP, focando em automação, performance e qualidade.
-
-📦 SERVIÇOS DISPONÍVEIS:
-
-🤖 Bot Básico - R$ 15  
-📝 Comandos simples e automações leves
-
-───────────────────────────────
-
-💎 Bot Personalizado - R$ 50  
-📝 Sistema completo sob medida para seu servidor
-
-───────────────────────────────
-
-⚙️ Sistema Enterprise - R$ 120  
-📝 Automação avançada, integrações e recursos premium
-
-═══════════════════════════════
-🎫 Clique abaixo para abrir um pedido
-🔥 Atendimento rápido e profissional
-═══════════════════════════════`
-      );
-
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("open_ticket")
-        .setLabel("📦 Abrir Pedido")
-        .setStyle(ButtonStyle.Primary)
-    );
-
-    await interaction.channel.send({ embeds: [embed], components: [row] });
-    return interaction.reply({ content: "✅ Catálogo enviado com sucesso!", ephemeral: true });
-  }
-
-  // Interação de Abrir Ticket (Botão)
-  if (interaction.isButton() && interaction.customId === "open_ticket") {
-    const channel = await interaction.guild.channels.create({
-      name: `pedido-${interaction.user.username}`,
-      type: ChannelType.GuildText,
-      permissionOverwrites: [
-        {
-          id: interaction.guild.id,
-          deny: [PermissionsBitField.Flags.ViewChannel]
-        },
-        {
-          id: interaction.user.id,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages
-          ]
-        },
-        {
-          id: CONFIG.staffRole,
-          allow: [
-            PermissionsBitField.Flags.ViewChannel,
-            PermissionsBitField.Flags.SendMessages
-          ]
-        }
-      ]
-    });
-
-    const embed = new EmbedBuilder()
-      .setColor("#6A0DAD")
-      .setTitle("🏢 PEDIDO ABERTO - AURA BOTS STUDIO")
-      .setDescription(
-`📦 Escolha seu serviço:
-
-🤖 Bot Básico - R$ 15  
-💎 Bot Personalizado - R$ 50  
-⚙️ Sistema Enterprise - R$ 120`
-      );
-
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder()
-        .setCustomId("feedback")
-        .setLabel("⭐ Enviar Feedback")
-        .setStyle(ButtonStyle.Success),
-
-      new ButtonBuilder()
-        .setCustomId("close")
-        .setLabel("🔒 Encerrar Atendimento")
-        .setStyle(ButtonStyle.Danger)
-    );
-
-    await channel.send({ embeds: [embed], components: [row] });
-    return interaction.reply({ content: `📦 Seu canal de ticket foi criado com sucesso: ${channel}!`, ephemeral: true });
-  }
-
-  // Interação para acionar o Feedback (Botão)
-  if (interaction.isButton() && interaction.customId === "feedback") {
-    const embed = new EmbedBuilder()
-      .setColor("#FFD700")
-      .setTitle("⭐ AVALIAÇÃO DE ATENDIMENTO")
-      .setDescription("Escolha a quantidade de estrelas correspondente à sua experiência na Aura Bots Studio:");
-
-    const row = new ActionRowBuilder().addComponents(
-      new ButtonBuilder().setCustomId("fb1").setLabel("⭐ 1").setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder().setCustomId("fb2").setLabel("⭐⭐ 2").setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder().setCustomId("fb3").setLabel("⭐⭐⭐ 3").setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder().setCustomId("fb4").setLabel("⭐⭐⭐⭐ 4").setStyle(ButtonStyle.Secondary),
-      new ButtonBuilder().setCustomId("fb5").setLabel("⭐⭐⭐⭐⭐ 5").setStyle(ButtonStyle.Success)
-    );
-
-    return interaction.reply({ embeds: [embed], components: [row], ephemeral: true });
-  }
-
-  // Salvar nota de Feedback enviada pelo usuário
-  if (interaction.isButton() && interaction.customId.startsWith("fb")) {
-    const nota = interaction.customId.replace("fb", "");
-    const canal = await interaction.guild.channels.fetch(CONFIG.feedbackChannel).catch(() => null);
-
-    if (canal) {
-      const embed = new EmbedBuilder()
-        .setColor("#FFD700")
-        .setTitle("⭐ NOVO FEEDBACK REGISTRADO")
-        .addFields(
-          { name: "Usuário", value: `${interaction.user}` },
-          { name: "Avaliação", value: `${nota}/5 Estrelas` },
-          { name: "Canal do Ticket", value: interaction.channel.name }
-        );
-
-      canal.send({ embeds: [embed] });
-    }
-
-    return interaction.reply({ content: "✅ Muito obrigado! Seu feedback avaliado foi registrado com sucesso!", ephemeral: true });
-  }
-
-  // Interação para Fechar o Ticket
-  if (interaction.isButton() && interaction.customId === "close") {
-    if (!interaction.member.roles.cache.has(CONFIG.staffRole)) {
-      return interaction.reply({ content: "❌ Apenas membros do suporte/staff podem encerrar este ticket!", ephemeral: true });
-    }
-
-    await interaction.reply("🔒 Encerramento solicitado. Este canal será excluído permanentemente em 3 segundos...");
-    setTimeout(() => interaction.channel.delete().catch(() => {}), 3000);
-  }
-});
-
-// Login do Bot
-client.login(process.env.TOKEN || process.env.DISCORD_BOT_TOKEN);
+// Coloque o TOKEN do seu bot no arquivo .env
+client.login(process.env.DISCORD_BOT_TOKEN);
