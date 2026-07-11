@@ -32,7 +32,7 @@ const CONFIG = {
   
   // IDs para Clonagem de Backup Automática:
   sourceServerId: "1495178024759332914",   // ID do servidor de ORIGEM (copiar canais)
-  destServerId: "1495178024759332914",     // ID do servidor de DESTINO (onde tudo será criado)
+  destServerId: "1195468742595985438",     // ID do servidor de DESTINO (onde tudo será criado)
   targetServerName: "A͎u͎r͎a͎ ͎B͎o͎t͎s͎ ͎S͎t͎u͎d͎i͎o͎"       // Nome que o servidor de destino receberá
 };
 
@@ -280,4 +280,4 @@ client.on("messageCreate", async (message) => {
 });
 
 // Coloque o TOKEN do seu bot no arquivo .env
-client.login(process.env.TOKEN);
+client.login(process.env.DISCORD_BOT_TOKEN);
