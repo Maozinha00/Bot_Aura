@@ -1,38 +1,20 @@
-// ============================================================
-// AURA BOT STUDIO v4.1
-// Desenvolvido por Henrique
-// Sistema automático de canais, IDs e mensagens
-// ============================================================
+// ======================================================================
+// 🤖 SCRIPT OFICIAL DO AURA BOT v2 - DESENVOLVEDOR POR HENRIQUE
+// Versão livre de IA - 100% focado em performance, comandos e utilitários
+// Com mapeamento automático de IDs e envio inteligente de mensagens
+// ======================================================================
 
-const {
-  Client,
-  GatewayIntentBits,
-  EmbedBuilder,
-  ActivityType,
-  PermissionFlagsBits,
-  ChannelType
-} = require("discord.js");
+const { Client, GatewayIntentBits, EmbedBuilder, ActivityType, ActionRowBuilder, ButtonBuilder, ButtonStyle } = require('discord.js');
+require('dotenv').config();
 
-const fs = require("fs");
-require("dotenv").config();
-
-// ============================================================
-// CONFIGURAÇÕES
-// ============================================================
-
-const DEV_ID = "1174745079630549014";
-
+const DEV_ID = "1174745079630549014"; // ID oficial do Henrique
 const TOKEN = process.env.TOKEN;
-const PREFIX = process.env.PREFIX || "!";
+const PREFIX = process.env.PREFIX || '!';
 
 if (!TOKEN) {
-  console.error("❌ ERRO: TOKEN não configurado no arquivo .env");
+  console.error("❌ Erro crítico: O TOKEN do bot não está configurado no arquivo .env!");
   process.exit(1);
 }
-
-// ============================================================
-// CLIENT
-// ============================================================
 
 const client = new Client({
   intents: [
@@ -43,718 +25,389 @@ const client = new Client({
   ]
 });
 
-// ============================================================
-// CONFIGURAÇÃO DAS MENSAGENS AUTOMÁTICAS
-// ============================================================
+// Banco de dados em memória para salvar as configurações de canais detectados
+let configuredChannels = {};
 
-const mensagensAutomaticas = {
-  "regras": {
-    titulo: "📜 REGRAS DO SERVIDOR",
-    descricao:
-      "Seja bem-vindo(a) ao nosso servidor!\n\n" +
-      "📌 Respeite todos os membros.\n" +
-      "📌 Não envie spam.\n" +
-      "📌 Não divulgue outros servidores.\n" +
-      "📌 Não utilize conteúdo ofensivo.\n" +
-      "📌 Respeite a equipe administrativa.\n\n" +
-      "⚠️ O desconhecimento das regras não impede punições.",
-    cor: "#ff0000"
+// Conteúdo oficial das mensagens / embeds por canal
+const OFFICIAL_MESSAGES = {
+  "👋・boas-vindas": {
+    title: "👋 BEM-VINDO AO AURA BOTS STUDIO 👋",
+    description: "🌟 **Olá! Seja muito bem-vindo à nossa comunidade oficial!**\nAqui você encontrará as melhores soluções de automação e inteligência artificial para o seu servidor Discord.\n\n🔹 **Comece por aqui:**\n• Leia nossas diretrizes em: <#regras>\n• Acesse nosso catálogo oficial em: <#catálogo>\n• Peça ajuda ou faça orçamentos em: <#abrir-ticket>\n\n🚀 **Nosso Objetivo:** Unir tecnologia de ponta, estabilidade 24/7 e suporte VIP de alta qualidade.",
+    color: "#00ffcc",
+    image: "https://i.imgur.com/3D1QETs.png",
+    footer: "Aura Bots Studio • Tecnologia Virtual de Ponta"
   },
-
-  "boas-vindas": {
-    titulo: "👋 BEM-VINDO(A)",
-    descricao:
-      "Seja muito bem-vindo(a) à nossa comunidade! ❤️\n\n" +
-      "📜 Leia nossas regras.\n" +
-      "🎫 Abra um ticket caso precise de suporte.\n" +
-      "🤖 Conheça nossos bots e sistemas.\n\n" +
-      "Esperamos que você aproveite o servidor!",
-    cor: "#00ffcc"
+  "📚・regras": {
+    title: "👑 DIRETRIZES DA COMUNIDADE - AURA BOTS STUDIO 👑",
+    description: "🌟 **Seja muito bem-vindo!** Leia atentamente as nossas regras oficiais para manter a ordem e garantir um suporte de altíssima qualidade.\n\n1️⃣・**RESPEITO EM PRIMEIRO LUGAR**\n• É obrigatório tratar todos com o máximo de cordialidade.\n• **Proibido** insultos, discursos de ódio ou comportamentos tóxicos.\n\n2️⃣・**SEM SPAM OU DIVULGAÇÃO (DM/CHAT)**\n• **Proibido** enviar convites de servidores ou links externos sem autorização.\n• **Punição imediata** para quem fizer flood ou importunar membros no privado.\n\n3️⃣・**ATENDIMENTO EXCLUSIVO VIA TICKET**\n• Para suporte técnico ou compras, use sempre o canal de ticket.\n• **Não marque** a diretoria ou desenvolvedores no privado.\n\n4️⃣・**USO ADEQUADO DOS CANAIS**\n• Cada canal tem um propósito único. Use os chats adequados para conversas e comandos.\n\n5️⃣・**PROTEÇÃO & SEGURANÇA GERAL**\n• Qualquer abuso de bugs ou de comandos de nossos bots resultará em **banimento permanente**.",
+    color: "#00ffcc",
+    footer: "🔒 Aura Bots Studio • Segurança & Tecnologia Garantida"
   },
-
-  "anuncios": {
-    titulo: "📢 CENTRAL DE ANÚNCIOS",
-    descricao:
-      "Este canal é destinado aos anúncios oficiais.\n\n" +
-      "🔔 Ative as notificações para não perder nenhuma novidade!",
-    cor: "#ffaa00"
+  "📢・anúncios": {
+    title: "📢 ANÚNCIO OFICIAL - INTEGRAÇÃO GEMINI AI 🧠",
+    description: "Fala rapaziada! Estamos lançando oficialmente nosso novo bot integrado ao **Gemini AI**! Agora você pode ter uma inteligência artificial completa que conversa, resume discussões, cria eventos e tira dúvidas de código em tempo real no Discord.\n\n✨ **PLANO DISPONÍVEL:** Já configurado no canal <#catálogo>.\n🎁 **Sandbox Ativa:** Clientes Premium têm acesso exclusivo em <#sandbox> para testar os prompts.",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Inteligência Artificial Integrada"
   },
-
-  "suporte": {
-    titulo: "🎫 CENTRAL DE SUPORTE",
-    descricao:
-      "Precisa de ajuda?\n\n" +
-      "Entre em contato com nossa equipe de suporte.\n\n" +
-      "📌 Explique seu problema corretamente.\n" +
-      "📸 Envie provas ou prints quando necessário.\n" +
-      "⏳ Aguarde o atendimento da equipe.",
-    cor: "#3498db"
+  "✨・novidades": {
+    title: "🚀 NOVIDADES INCRÍVEIS - CLOUD UPGRADE ⚡",
+    description: "Fechamos uma nova parceria estratégica de infraestrutura em nuvem de altíssima performance!\n\n• **Estabilidade Absoluta:** Nossos bots agora rodam com 99.9% de uptime.\n• **Ping Reduzido:** Latência média inferior a **15ms** em servidores sul-americanos.\n• **Mais Velocidade:** Respostas instantâneas para comandos complexos!",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Tecnologia e Infraestrutura"
   },
-
-  "comandos": {
-    titulo: "🤖 COMANDOS DO AURA BOT",
-    descricao:
-      `Utilize os comandos abaixo:\n\n` +
-      `🏓 \`${PREFIX}ping\` — Ver latência\n` +
-      `👑 \`${PREFIX}dev\` — Informações do desenvolvedor\n` +
-      `⚙️ \`${PREFIX}ajuda\` — Central de ajuda\n` +
-      `🧹 \`${PREFIX}limpar 10\` — Limpar mensagens\n` +
-      `ℹ️ \`${PREFIX}botinfo\` — Informações do bot\n` +
-      `🆔 \`${PREFIX}canais\` — Mostrar canais e IDs\n` +
-      `🔄 \`${PREFIX}configurar\` — Configurar servidor`,
-    cor: "#9b59b6"
+  "⚙️・changelog": {
+    title: "⚙️ CHANGELOG - Aura Ticket Bot v2.4.1 ⚙️",
+    description: "🛠️ **MELHORIAS E ATUALIZAÇÕES DA SEMANA:**\n\n• **Correção de Bugs:** Resolvido o erro onde o arquivo de transcrição em HTML ficava vazio.\n• **Multi-Painéis:** Agora com suporte para múltiplos painéis de atendimento em canais separados.\n• **Segurança:** Implementamos limite de tickets ativos por usuário para evitar spam.\n• **Performance:** Otimização geral no tempo de carregamento do bot em **40%**.",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Desenvolvimento e Updates"
+  },
+  "🎉・sorteios": {
+    title: "🎉 RESULTADO DO SORTEIO ESPECIAL 🎉",
+    description: "Parabéns aos grandes vencedores do nosso sorteio mensal de aniversário!\n\n👑 **Ganhadores (1 Mês de Combo Premium 💎 Grátis):**\n• @LucasGamer#9901\n• @JuliaDev#4421\n\n🔔 **Instruções:** Abram um ticket privado em <#abrir-ticket> para resgatar sua assinatura dentro do prazo de **48 horas**!",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Eventos & Sorteios"
+  },
+  "❓・faq": {
+    title: "❓ CENTRAL DE DÚVIDAS FREQUENTES (FAQ) ❓",
+    description: "📌 **Como funcionam os bots?**\n• *Nossos bots operam 24/7 de forma 100% autônoma. A configuração é feita de forma simples e intuitiva via painel.*\n\n📌 **Consigo alterar o nome e foto do bot?**\n• *Sim! No plano personalizado ou no Combo Premium, o bot é totalmente moldado com a sua própria marca e identidade visual.*\n\n📌 **Quais as formas de pagamento aceitas?**\n• *Aceitamos PIX, Cartão de Crédito e Boleto. Para conferir os detalhes de taxas e descontos, leia <#formas-de-pagamento>.*",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Central de Ajuda"
+  },
+  "🛍️・catálogo": {
+    title: "💎 CATÁLOGO OFICIAL - AURA BOTS STUDIO 💎",
+    description: "🚀 **Adquira os melhores bots para a sua comunidade!** Nossos sistemas funcionam **24/7 hospedados em servidores de ponta**, garantindo 100% de estabilidade!\n\n🎫・**AURA TICKET BOT**\n• Atendimento dinâmico com **botões integrados**\n• Transcrições de conversas salvas em **HTML**\n• Painel de controle completo\n• 📦 **Valor: R$ 19,00/mês**\n\n🛡️・**AURA MODERADOR PRO**\n• Sistema robusto de **antiraid & anti-link**\n• Logs detalhados de todas as ações de membros\n• Verificação para evitar contas falsas\n• 📦 **Valor: R$ 25,00/mês**\n\n🎰・**AURA ECONOMIA & CASSINO**\n• Moeda própria com mini-jogos exclusivos\n• Rankings globais e sistema de níveis (XP)\n• Loja para resgatar cargos no servidor\n• 📦 **Valor: R$ 29,00/mês**\n\n🧠・**AURA GEMINI AI**\n• Inteligência Artificial integrada ao chat\n• Responde dúvidas e ajuda na programação\n• 📦 **Valor: R$ 39,00/mês**\n\n🌟・**COMBO SUPREMO PREMIUM (💎)**\n• 🔥 **Leve todos os nossos bots integrados em um único pacote!**\n• Suporte prioritário 24 horas + Hospedagem Premium inclusa de graça\n• 💰 **De R$ 112,00 por APENAS R$ 59,00/mês!**",
+    color: "#00ffcc",
+    footer: "Para adquirir, abra um ticket em #abrir-ticket!"
+  },
+  "📦・preços": {
+    title: "💎 AURA BOTS STUDIO - TABELA DE PREÇOS 💎",
+    description: "📌 **BOT BÁSICO** — **R$ 15,00/mês**\n• Comandos essenciais e estáveis\n• Bot leve, rápido e com hospedagem inclusa\n\n📌 **BOT PERSONALIZADO** — **R$ 50,00/mês**\n• Sistemas sob medida (Sua ideia vira realidade)\n• Funções exclusivas & API de dados personalizada\n\n📌 **BOT ENTERPRISE** — **R$ 120,00/mês**\n• Integrações completas com painéis ou servidores externos\n• Automação avançada para grandes comunidades virtuais\n\n⚡ **INFORMAÇÕES ADICIONAIS:**\n✔ **Entrega Expressa:** Configuração em tempo recorde\n✔ **Suporte Premium:** Equipe pronta para te ajudar 24/7\n\n🎫 Para fazer seu pedido, abra um canal de ticket!",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Orçamentos via Ticket"
+  },
+  "🤖・bots-disponíveis": {
+    title: "🟢 CONEXÃO E LATÊNCIA DOS BOTS OFICIAIS 🟢",
+    description: "🤖 `[ONLINE]` **Aura Ticket Bot#1001** (Atendimento Automatizado)\n🤖 `[ONLINE]` **Aura Moderador Bot#1002** (Segurança & Antiraid)\n🤖 `[ONLINE]` **Aura Casino Bot#1003** (Economia & Entretenimento)\n🤖 `[ONLINE]` **Aura Gemini AI Bot#1004** (Inteligência Artificial)\n\n🌍 **Servidores de Hospedagem:** América do Sul (Latência ultra-baixa de **12ms**)\n🛡️ **Mecanismo de Proteção:** Ativo contra ataques DDoS e quedas inesperadas!",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Status de Sistemas"
+  },
+  "💎・planos": {
+    title: "📦 PLANOS DE ASSINATURA EXCLUSIVOS 📦",
+    description: "• 📅 **Plano Mensal:** **R$ 59,00/mês** (Renovação simples sem fidelidade)\n• 🌟 **Plano Semestral:** **R$ 299,00** (Economize R$ 55,00 + Receba suporte VIP priorizado)\n• 👑 **Plano Anual:** **R$ 499,00** (Economize R$ 209,00 + Ganhe acesso vitalício ao grupo de testes de novos bots!)\n\n💡 *Todos os planos acima já acompanham hospedagem cloud grátis inclusa no valor.*",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Adquira já o seu!"
+  },
+  "🔥・promoções": {
+    title: "🔥 CAMPANHA DE DESCONTO IMEDIATO 🔥",
+    description: "Adquirindo qualquer bot hoje, você ganha **15 dias de licença grátis adicionais** no seu primeiro mês!\n\n🔑 Use o cupom **AURAFIRST15** ao iniciar o seu atendimento privado em <#abrir-ticket> para validar o benefício.",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Promoções Ativas"
+  },
+  "💳・formas-de-pagamento": {
+    title: "💳 MÉTODOS DE PAGAMENTO SEGUROS 💳",
+    description: "⚡ **PIX:** QR Code gerado instantaneamente no ticket. A liberação do bot ocorre de forma **automática em menos de 1 minuto**.\n💳 **Cartão de Crédito:** Parcelamento disponível via Mercado Pago ou Stripe.\n🏦 **Boleto Bancário:** Compensação e ativação em até 1 dia útil.\n\n🧾 *Enviamos o recibo e detalhes da licença diretamente para o seu e-mail cadastrado.*",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Financeiro Seguro"
+  },
+  "🎫・abrir-ticket": {
+    title: "🎫 CENTRAL DE ATENDIMENTO E SUPORTE 🎫",
+    description: "Precisa comprar um bot ou falar com nossa equipe de suporte? Abra um ticket privado clicando no botão verde abaixo!\n\n🕒 **Horário de Funcionamento:**\n• Segunda a Sábado: **09:00 às 22:00**\n• Domingo: **Plantão de urgências**\n\n*Clique abaixo para iniciar seu atendimento personalizado com o Aura Bot.*",
+    color: "#00ffcc",
+    footer: "Aura Bots Studio • Atendimento VIP",
+    isTicket: true
   }
 };
 
-// ============================================================
-// NORMALIZAR NOME DO CANAL
-// ============================================================
+client.once('ready', async () => {
+  console.log(`========================================`);
+  console.log(`🤖 Bot online com sucesso como: ${client.user.tag}`);
+  console.log(`👑 Henrique (ID: ${DEV_ID}) configurado como Dono Oficial.`);
+  console.log(`⚡ Servidores conectados: ${client.guilds.cache.size}`);
+  console.log(`========================================`);
 
-function normalizarNome(nome) {
-  return nome
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\w-]/g, "");
-}
-
-// ============================================================
-// IDENTIFICAR TIPO DE CANAL
-// ============================================================
-
-function identificarCanal(nome) {
-  const canal = normalizarNome(nome);
-
-  if (
-    canal.includes("regras") ||
-    canal.includes("regra")
-  ) {
-    return "regras";
-  }
-
-  if (
-    canal.includes("boas-vindas") ||
-    canal.includes("boasvindas") ||
-    canal.includes("welcome")
-  ) {
-    return "boas-vindas";
-  }
-
-  if (
-    canal.includes("anuncios") ||
-    canal.includes("anuncio") ||
-    canal.includes("novidades")
-  ) {
-    return "anuncios";
-  }
-
-  if (
-    canal.includes("suporte") ||
-    canal.includes("ticket") ||
-    canal.includes("ajuda")
-  ) {
-    return "suporte";
-  }
-
-  if (
-    canal.includes("comandos") ||
-    canal.includes("bot-comandos")
-  ) {
-    return "comandos";
-  }
-
-  return null;
-}
-
-// ============================================================
-// SALVAR IDS DOS CANAIS
-// ============================================================
-
-async function salvarCanais(guild) {
-  const dados = {
-    servidor: {
-      nome: guild.name,
-      id: guild.id
-    },
-
-    categorias: {},
-
-    canais: {}
-  };
-
-  const canais = guild.channels.cache.sort(
-    (a, b) => a.rawPosition - b.rawPosition
-  );
-
-  canais.forEach((canal) => {
-    if (canal.type === ChannelType.GuildCategory) {
-      dados.categorias[canal.name] = canal.id;
-    } else {
-      dados.canais[canal.name] = {
-        id: canal.id,
-        tipo: canal.type,
-        categoria: canal.parent?.name || "SEM CATEGORIA",
-        categoriaId: canal.parentId || null
-      };
-    }
-  });
-
-  fs.writeFileSync(
-    "./canais.json",
-    JSON.stringify(dados, null, 2)
-  );
-
-  console.log("💾 IDs dos canais salvos em canais.json");
-}
-
-// ============================================================
-// MOSTRAR CANAIS NO CONSOLE
-// ============================================================
-
-function mostrarCanais(guild) {
-  console.log("");
-  console.log("================================================");
-  console.log(`🏠 SERVIDOR: ${guild.name}`);
-  console.log(`🆔 ID: ${guild.id}`);
-  console.log("================================================");
-
-  const categorias = guild.channels.cache
-    .filter(
-      canal => canal.type === ChannelType.GuildCategory
-    )
-    .sort(
-      (a, b) => a.rawPosition - b.rawPosition
-    );
-
-  categorias.forEach((categoria) => {
-    console.log("");
-    console.log(`📁 ${categoria.name}`);
-    console.log(`🆔 ${categoria.id}`);
-
-    const canais = guild.channels.cache
-      .filter(
-        canal => canal.parentId === categoria.id
-      )
-      .sort(
-        (a, b) => a.rawPosition - b.rawPosition
-      );
-
-    canais.forEach((canal) => {
-      console.log(`   ├─ #${canal.name}`);
-      console.log(`   │  ID: ${canal.id}`);
-    });
-  });
-
-  console.log("");
-  console.log("================================================");
-}
-
-// ============================================================
-// VERIFICAR SE O BOT JÁ ENVIOU A MENSAGEM
-// ============================================================
-
-async function botJaEnviouMensagem(canal, titulo) {
-  try {
-    const mensagens = await canal.messages.fetch({
-      limit: 50
-    });
-
-    return mensagens.some(
-      mensagem =>
-        mensagem.author.id === client.user.id &&
-        mensagem.embeds.length > 0 &&
-        mensagem.embeds[0]?.title === titulo
-    );
-  } catch (error) {
-    console.log(
-      `⚠️ Não foi possível verificar #${canal.name}`
-    );
-
-    return true;
-  }
-}
-
-// ============================================================
-// GERAR MENSAGENS AUTOMÁTICAS
-// ============================================================
-
-async function gerarMensagens(guild) {
-  console.log("");
-  console.log("🤖 ANALISANDO CANAIS...");
-  console.log("");
-
-  const canais = guild.channels.cache.filter(
-    canal => canal.type === ChannelType.GuildText
-  );
-
-  for (const canal of canais.values()) {
-    const tipo = identificarCanal(canal.name);
-
-    if (!tipo) {
-      console.log(
-        `⚪ Canal ignorado: #${canal.name}`
-      );
-
-      continue;
-    }
-
-    const config = mensagensAutomaticas[tipo];
-
-    const permissao = canal
-      .permissionsFor(guild.members.me);
-
-    if (
-      !permissao ||
-      !permissao.has(
-        PermissionFlagsBits.SendMessages
-      )
-    ) {
-      console.log(
-        `❌ Sem permissão em #${canal.name}`
-      );
-
-      continue;
-    }
-
-    const jaExiste = await botJaEnviouMensagem(
-      canal,
-      config.titulo
-    );
-
-    if (jaExiste) {
-      console.log(
-        `🟡 Mensagem já existe: #${canal.name}`
-      );
-
-      continue;
-    }
-
-    const embed = new EmbedBuilder()
-      .setTitle(config.titulo)
-      .setDescription(config.descricao)
-      .setColor(config.cor)
-      .setFooter({
-        text: "Aura Bots Studio • Henrique Dev"
-      })
-      .setTimestamp();
-
-    try {
-      await canal.send({
-        embeds: [embed]
-      });
-
-      console.log(
-        `✅ Mensagem enviada: #${canal.name}`
-      );
-    } catch (error) {
-      console.error(
-        `❌ Erro no canal #${canal.name}`,
-        error
-      );
-    }
-  }
-}
-
-// ============================================================
-// BOT ONLINE
-// ============================================================
-
-client.once("ready", async () => {
-  console.log("");
-  console.log("========================================");
-  console.log(
-    `🤖 BOT ONLINE: ${client.user.tag}`
-  );
-  console.log(
-    `👑 DONO OFICIAL: HENRIQUE`
-  );
-  console.log(
-    `🆔 DEV ID: ${DEV_ID}`
-  );
-  console.log(
-    `⚡ SERVIDORES: ${client.guilds.cache.size}`
-  );
-  console.log("========================================");
-
+  // Status de presença dinâmico
   client.user.setPresence({
-    activities: [
-      {
-        name: "Aura Bots Studio • Henrique Dev",
-        type: ActivityType.Watching
-      }
-    ],
-
-    status: "online"
+    activities: [{ name: 'Aura Bots Studio • Henrique Dev', type: ActivityType.Watching }],
+    status: 'online',
   });
 
-  for (const guild of client.guilds.cache.values()) {
-    mostrarCanais(guild);
+  // Executa o scanner automático de canais de texto e voz ao iniciar
+  console.log(`🔍 [SCANNER] Identificando todos os canais do servidor...`);
+  const guilds = client.guilds.cache.values();
+  for (const guild of guilds) {
+    console.log(`⚙️ Sincronizando canais no servidor: ${guild.name}`);
+    
+    // Mapeamento automático por nome aproximado ou exato
+    guild.channels.cache.forEach(channel => {
+      const channelNameClean = channel.name.toLowerCase().trim();
+      configuredChannels[channelNameClean] = channel.id;
+      console.log(`  ✔️ Canal identificado: "${channel.name}" -> ID: ${channel.id}`);
+    });
 
-    await salvarCanais(guild);
-
-    await gerarMensagens(guild);
+    // Se o usuário desejar enviar as mensagens oficiais automaticamente, descomente abaixo:
+    // await enviarMensagensOficiais(guild);
   }
-
-  console.log("");
-  console.log("🚀 CONFIGURAÇÃO AUTOMÁTICA FINALIZADA!");
 });
 
-// ============================================================
-// BOAS-VINDAS
-// ============================================================
+// Função para enviar os embeds configurados do Aura Bots Studio nos canais correspondentes
+async function enviarMensagensOficiais(guild) {
+  console.log(`📤 [GERADOR] Enviando mensagens e embeds oficiais do Aura Bots Studio...`);
 
-client.on("guildMemberAdd", async (member) => {
-  const canal = member.guild.channels.cache.find(
-    ch =>
-      ch.type === ChannelType.GuildText &&
-      identificarCanal(ch.name) === "boas-vindas"
-  );
+  for (const [channelName, embedData] of Object.entries(OFFICIAL_MESSAGES)) {
+    // Procura o canal correspondente no cache do servidor
+    const targetChannel = guild.channels.cache.find(ch => 
+      ch.name.toLowerCase().includes(channelName.toLowerCase()) || 
+      channelName.toLowerCase().includes(ch.name.toLowerCase())
+    );
 
-  if (!canal) return;
+    if (targetChannel && targetChannel.isTextBased()) {
+      try {
+        // Limpar mensagens antigas para evitar duplicados (opcional)
+        await targetChannel.bulkDelete(10).catch(() => {});
 
-  const embed = new EmbedBuilder()
-    .setTitle("👋 NOVO MEMBRO!")
-    .setDescription(
-      `Olá ${member}! ❤️\n\n` +
-      `Seja muito bem-vindo(a) ao **${member.guild.name}**!\n\n` +
-      `📜 Leia as regras do servidor.\n` +
-      `🎫 Utilize nosso suporte caso precise.\n\n` +
-      `Você é o membro **#${member.guild.memberCount}**!`
-    )
-    .setColor("#00ffcc")
-    .setThumbnail(
-      member.user.displayAvatarURL({
-        dynamic: true
-      })
-    )
-    .setFooter({
-      text: "Aura Bots Studio"
-    })
+        const embed = new EmbedBuilder()
+          .setTitle(embedData.title)
+          .setDescription(embedData.description.replace(/\\n/g, '\n'))
+          .setColor(embedData.color || '#00ffcc')
+          .setFooter({ text: embedData.footer || 'Aura Bots Studio' })
+          .setTimestamp();
+
+        if (embedData.image) {
+          embed.setImage(embedData.image);
+        }
+
+        // Adiciona botões interativos de ticket se for o canal de ticket
+        if (embedData.isTicket) {
+          const row = new ActionRowBuilder().addComponents(
+            new ButtonBuilder()
+              .setCustomId('abrir_ticket_btn')
+              .setLabel('🎫 Abrir Ticket')
+              .setStyle(ButtonStyle.Success)
+          );
+          await targetChannel.send({ embeds: [embed], components: [row] });
+        } else {
+          await targetChannel.send({ embeds: [embed] });
+        }
+
+        console.log(`  ✨ Mensagem oficial publicada em #${targetChannel.name} (ID: ${targetChannel.id})`);
+      } catch (err) {
+        console.error(`  ❌ Erro ao enviar mensagem no canal ${channelName}: `, err.message);
+      }
+    } else {
+      console.log(`  ⚠️ Canal '#${channelName}' não encontrado ou não é de texto.`);
+    }
+  }
+}
+
+// Evento de boas-vindas para novos membros
+client.on('guildMemberAdd', async (member) => {
+  const channel = member.guild.channels.cache.find(ch => ch.name.includes('boas-vindas') || ch.name.includes('welcome'));
+  if (!channel) return;
+
+  const welcomeEmbed = new EmbedBuilder()
+    .setTitle(`👋 Bem-vindo(a) à nossa comunidade!`)
+    .setDescription(`Olá ${member}, seja muito bem-vindo(a) ao **${member.guild.name}**! Aproveite os canais e interaja conosco.`)
+    .setColor('#00ffcc')
+    .setThumbnail(member.user.displayAvatarURL({ dynamic: true }))
+    .setImage('https://i.imgur.com/3D1QETs.png') // Banner Oficial
+    .setFooter({ text: `Membro nº ${member.guild.memberCount} • Aura Bots` })
     .setTimestamp();
 
-  await canal.send({
-    content: `👋 Bem-vindo(a) ${member}!`,
-    embeds: [embed]
-  });
+  channel.send({ content: `👋 Bem-vindo ${member}!`, embeds: [welcomeEmbed] }).catch(console.error);
 });
 
-// ============================================================
-// COMANDOS
-// ============================================================
+// Evento de interação para botões (como o de abrir ticket)
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isButton()) return;
 
-client.on("messageCreate", async (message) => {
-  if (
-    message.author.bot ||
-    !message.guild
-  ) {
-    return;
-  }
+  if (interaction.customId === 'abrir_ticket_btn') {
+    const guild = interaction.guild;
+    const member = interaction.user;
 
-  // ========================================================
-  // MENÇÃO AO BOT
-  // ========================================================
+    // Nome único do canal do ticket
+    const channelName = `ticket-${member.username}`;
 
-  if (
-    message.mentions.has(client.user) &&
-    !message.reference
-  ) {
-    return message.reply(
-      `⚡ Olá! Meu prefixo é \`${PREFIX}\`\n` +
-      `Use \`${PREFIX}ajuda\` para ver meus comandos.`
-    );
-  }
-
-  if (!message.content.startsWith(PREFIX)) {
-    return;
-  }
-
-  const args = message.content
-    .slice(PREFIX.length)
-    .trim()
-    .split(/ +/);
-
-  const command = args
-    .shift()
-    ?.toLowerCase();
-
-  // ========================================================
-  // DEV
-  // ========================================================
-
-  if (command === "dev") {
-    if (message.author.id !== DEV_ID) {
-      return message.reply(
-        "❌ Apenas Henrique pode utilizar este comando."
-      );
+    // Verifica se já não existe um ticket para este usuário
+    const existingChannel = guild.channels.cache.find(ch => ch.name === channelName);
+    if (existingChannel) {
+      return interaction.reply({ content: `❌ Você já possui um ticket aberto em ${existingChannel}!`, ephemeral: true });
     }
 
-    const embed = new EmbedBuilder()
-      .setTitle(
-        "👑 CONTROLE DO DESENVOLVEDOR"
-      )
-      .setDescription(
-        `Olá **Henrique**!\n\n` +
-        `Seu ID foi reconhecido pelo Aura Bot.\n\n` +
-        `🆔 ID: \`${DEV_ID}\`\n` +
-        `🏓 Ping: \`${client.ws.ping}ms\`\n` +
-        `🤖 Bot: ${client.user.tag}`
-      )
-      .setColor("#3498db")
-      .setTimestamp();
+    // Cria o canal privado de ticket
+    try {
+      const ticketChannel = await guild.channels.create({
+        name: channelName,
+        type: 0, // GuildText
+        permissionOverwrites: [
+          {
+            id: guild.id,
+            deny: ['ViewChannel'], // Oculta de todos por padrão
+          },
+          {
+            id: member.id,
+            allow: ['ViewChannel', 'SendMessages', 'ReadMessageHistory', 'AttachFiles'], // Permite ao usuário do ticket
+          },
+          {
+            id: client.user.id,
+            allow: ['ViewChannel', 'SendMessages', 'ManageMessages'], // Permite ao bot
+          }
+        ]
+      });
 
-    return message.reply({
-      embeds: [embed]
-    });
+      const welcomeTicketEmbed = new EmbedBuilder()
+        .setTitle('🎫 ATENDIMENTO INICIADO - AURA BOTS')
+        .setDescription(`Olá ${member}, seja muito bem-vindo ao suporte técnico da **Aura Bots Studio**!\n\nDescreva detalhadamente sua dúvida ou qual bot deseja comprar. Nossa equipe entrará em contato em instantes.`)
+        .setColor('#00ffcc')
+        .setFooter({ text: 'Aura Bots Studio' })
+        .setTimestamp();
+
+      const closeRow = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('fechar_ticket_btn')
+          .setLabel('🔒 Fechar Atendimento')
+          .setStyle(ButtonStyle.Danger)
+      );
+
+      await ticketChannel.send({ content: `👋 Olá ${member}!`, embeds: [welcomeTicketEmbed], components: [closeRow] });
+      await interaction.reply({ content: `✔️ Seu canal de atendimento privado foi criado com sucesso em ${ticketChannel}!`, ephemeral: true });
+    } catch (err) {
+      console.error(err);
+      await interaction.reply({ content: '❌ Erro crítico ao criar seu canal de ticket.', ephemeral: true });
+    }
   }
 
-  // ========================================================
-  // AJUDA
-  // ========================================================
+  if (interaction.customId === 'fechar_ticket_btn') {
+    await interaction.reply('🔒 O ticket será fechado e deletado em 5 segundos...');
+    setTimeout(async () => {
+      try {
+        await interaction.channel.delete();
+      } catch (err) {
+        console.error('Erro ao deletar canal do ticket:', err.message);
+      }
+    }, 5000);
+  }
+});
 
-  if (command === "ajuda") {
-    const embed = new EmbedBuilder()
-      .setTitle(
-        "⚙️ CENTRAL DE AJUDA - AURA BOT v4.1"
-      )
-      .setDescription(
-        `🏓 \`${PREFIX}ping\`\n` +
-        `👑 \`${PREFIX}dev\`\n` +
-        `🧹 \`${PREFIX}limpar 10\`\n` +
-        `ℹ️ \`${PREFIX}botinfo\`\n` +
-        `🆔 \`${PREFIX}canais\`\n` +
-        `🔄 \`${PREFIX}configurar\``
+client.on('messageCreate', async (message) => {
+  if (message.author.bot || !message.guild) return;
+
+  // Responder se for mencionado diretamente
+  if (message.mentions.has(client.user) && !message.reference) {
+    return message.reply(`⚡ Olá! Meu prefixo padrão é \`${PREFIX}\`. Digite \`${PREFIX}ajuda\` para ver meus comandos disponíveis!`);
+  }
+
+  if (!message.content.startsWith(PREFIX)) return;
+
+  const args = message.content.slice(PREFIX.length).trim().split(/ +/);
+  const command = args.shift().toLowerCase();
+
+  // === COMANDO: !gerarmensagens ===
+  if (command === 'gerarmensagens' || command === 'configurar') {
+    if (message.author.id !== DEV_ID) {
+      return message.reply(`❌ Acesso negado. Apenas o desenvolvedor oficial Henrique pode forçar o gerador de embeds oficiais.`);
+    }
+    const msg = await message.reply('⚡ Iniciando a publicação automática dos embeds oficiais em todos os canais identificados...');
+    await enviarMensagensOficiais(message.guild);
+    return msg.edit('✨ **Sucesso!** Os embeds oficiais do Aura Bots Studio foram publicados nos canais correspondentes!');
+  }
+
+  // === COMANDO: !canais ===
+  if (command === 'canais' || command === 'ids') {
+    if (message.author.id !== DEV_ID) {
+      return message.reply(`❌ Acesso negado. Apenas o desenvolvedor oficial Henrique pode visualizar a lista mapeada de IDs.`);
+    }
+    let list = '📌 **IDs DOS CANAIS IDENTIFICADOS:**\n━━━━━━━━━━━━━━━━━━━━━━━━\n';
+    let count = 0;
+    for (const [name, id] of Object.entries(configuredChannels)) {
+      list += `• **${name}** ➔ `${id}`\n`;
+      count++;
+    }
+    if (count === 0) list = '⚠️ Nenhum canal foi identificado ainda. Certifique-se de reiniciar o bot ou que canais válidos existam.';
+    return message.reply(list);
+  }
+
+  // === COMANDO: !dev ===
+  if (command === 'dev') {
+    if (message.author.id === DEV_ID) {
+      const embed = new EmbedBuilder()
+        .setTitle("👑 CONTROLE DO DESENVOLVEDOR ATIVO")
+        .setDescription(`Olá **Henrique**! O sistema reconheceu com sucesso seu ID (\`${DEV_ID}\`). O Aura Bot está operando sob seu comando exclusivo e livre de bugs. 🚀`)
+        .addFields(
+          { name: '💻 Sistema Operacional', value: 'Debian GNU/Linux', inline: true },
+          { name: '🟢 Latência da API', value: `\`${client.ws.ping}ms\``, inline: true }
+        )
+        .setColor("#3498db")
+        .setTimestamp();
+      return message.reply({ embeds: [embed] });
+    } else {
+      return message.reply(`❌ Acesso negado. Apenas o desenvolvedor oficial Henrique pode usar este comando.`);
+    }
+  }
+
+  // === COMANDO: !ajuda ===
+  if (command === 'ajuda') {
+    const helpEmbed = new EmbedBuilder()
+      .setTitle("⚙️ CENTRAL DE AJUDA - AURA BOT v2")
+      .setDescription("Confira a lista de todos os comandos do servidor disponíveis abaixo:")
+      .addFields(
+        { name: `📌 \`${PREFIX}ping\``, value: "Mede a latência atual do bot.", inline: true },
+        { name: `🧹 \`${PREFIX}limpar <quantidade>\``, value: "Apaga mensagens do canal rápido.", inline: true },
+        { name: `👑 \`${PREFIX}dev\``, value: "Comando especial do programador Henrique.", inline: true },
+        { name: `ℹ️ \`${PREFIX}botinfo\``, value: "Mostra estatísticas técnicas do bot.", inline: true },
+        { name: `📤 \`${PREFIX}configurar\``, value: "Gera e publica os embeds oficiais nos canais (Henrique).", inline: true },
+        { name: `🔍 \`${PREFIX}canais\``, value: "Mostra a lista de canais e seus IDs detectados (Henrique).", inline: true }
       )
       .setColor("#00ffcc")
-      .setFooter({
-        text: "Aura Bots Studio • Henrique"
-      })
+      .setFooter({ text: "Aura Bots Studio • Desenvolvido por Henrique" })
       .setTimestamp();
-
-    return message.reply({
-      embeds: [embed]
-    });
+    return message.reply({ embeds: [helpEmbed] });
   }
 
-  // ========================================================
-  // PING
-  // ========================================================
-
-  if (command === "ping") {
-    const sent = await message.reply(
-      "🏓 Calculando latência..."
-    );
-
-    const latencia =
-      sent.createdTimestamp -
-      message.createdTimestamp;
-
-    return sent.edit(
-      `🏓 **Pong!**\n\n` +
-      `🤖 Bot: \`${latencia}ms\`\n` +
-      `🌐 API Discord: \`${client.ws.ping}ms\``
-    );
+  // === COMANDO: !ping ===
+  if (command === 'ping') {
+    const sent = await message.reply('🏓 Calculando latência...');
+    const latency = sent.createdTimestamp - message.createdTimestamp;
+    return sent.edit(`🏓 **Pong!**\n• Latência do Bot: \`${latency}ms\`\n• Latência da API: \`${client.ws.ping}ms\``);
   }
 
-  // ========================================================
-  // LIMPAR
-  // ========================================================
-
-  if (
-    command === "limpar" ||
-    command === "clear"
-  ) {
-    if (
-      !message.member.permissions.has(
-        PermissionFlagsBits.ManageMessages
-      )
-    ) {
-      return message.reply(
-        "❌ Você não possui permissão para gerenciar mensagens."
-      );
+  // === COMANDO: !limpar ===
+  if (command === 'limpar' || command === 'clear') {
+    if (!message.member.permissions.has('ManageMessages')) {
+      return message.reply('❌ Você não tem permissão de `Gerenciar Mensagens`.');
+    }
+    
+    const amount = parseInt(args[0]);
+    if (isNaN(amount) || amount < 1 || amount > 100) {
+      return message.reply('❌ Insira um número entre 1 e 100.');
     }
 
-    const quantidade = parseInt(args[0]);
-
-    if (
-      isNaN(quantidade) ||
-      quantidade < 1 ||
-      quantidade > 100
-    ) {
-      return message.reply(
-        "❌ Informe um número entre 1 e 100."
-      );
-    }
-
-    try {
-      const mensagens =
-        await message.channel.bulkDelete(
-          quantidade,
-          true
-        );
-
-      const aviso = await message.channel.send(
-        `🧹 Foram apagadas **${mensagens.size} mensagens**.`
-      );
-
-      setTimeout(() => {
-        aviso.delete().catch(() => {});
-      }, 4000);
-    } catch (error) {
-      console.error(error);
-
-      return message.reply(
-        "❌ Erro ao limpar mensagens."
-      );
-    }
+    await message.channel.bulkDelete(amount, true)
+      .then(messages => {
+        message.channel.send(`🧹 Sucesso! Apagadas **${messages.size}** mensagens.`).then(msg => {
+          setTimeout(() => msg.delete(), 4000);
+        });
+      })
+      .catch(err => {
+        console.error(err);
+        message.reply('❌ Erro ao limpar mensagens.');
+      });
   }
 
-  // ========================================================
-  // BOT INFO
-  // ========================================================
-
-  if (command === "botinfo") {
-    const embed = new EmbedBuilder()
-      .setTitle(
-        "ℹ️ INFORMAÇÕES DO AURA BOT"
-      )
+  // === COMANDO: !botinfo ===
+  if (command === 'botinfo') {
+    const infoEmbed = new EmbedBuilder()
+      .setTitle('ℹ️ Informações Técnicas do Bot')
+      .setColor('#9b59b6')
       .addFields(
-        {
-          name: "👑 Criador",
-          value: "Henrique",
-          inline: true
-        },
-        {
-          name: "📚 Biblioteca",
-          value: "Discord.js v14",
-          inline: true
-        },
-        {
-          name: "⚡ Servidores",
-          value: `${client.guilds.cache.size}`,
-          inline: true
-        },
-        {
-          name: "🏓 Ping",
-          value: `${client.ws.ping}ms`,
-          inline: true
-        },
-        {
-          name: "🤖 Versão",
-          value: "Aura Bot v4.1",
-          inline: true
-        },
-        {
-          name: "🟢 Status",
-          value: "Operacional",
-          inline: true
-        }
+        { name: '👑 Criador', value: 'Henrique (ID: 1174745079630549014)', inline: true },
+        { name: '📚 Biblioteca', value: 'Discord.js v14', inline: true },
+        { name: '⚡ Servidores', value: `${client.guilds.cache.size}`, inline: true },
+        { name: '🟢 Status', value: '100% Operacional', inline: true }
       )
-      .setColor("#9b59b6")
-      .setFooter({
-        text: "Aura Bots Studio"
-      })
+      .setFooter({ text: 'Aura Bots Studio' })
       .setTimestamp();
-
-    return message.reply({
-      embeds: [embed]
-    });
-  }
-
-  // ========================================================
-  // LISTAR CANAIS
-  // ========================================================
-
-  if (command === "canais") {
-    if (message.author.id !== DEV_ID) {
-      return message.reply(
-        "❌ Comando exclusivo do desenvolvedor."
-      );
-    }
-
-    let texto = "";
-
-    const canais = message.guild.channels.cache
-      .sort(
-        (a, b) =>
-          a.rawPosition - b.rawPosition
-      );
-
-    canais.forEach((canal) => {
-      if (
-        canal.type === ChannelType.GuildCategory
-      ) {
-        texto += `\n📁 **${canal.name}**\n`;
-        texto += `🆔 \`${canal.id}\`\n`;
-      }
-
-      if (
-        canal.type === ChannelType.GuildText
-      ) {
-        texto += `├─ #${canal.name}\n`;
-        texto += `└ ID: \`${canal.id}\`\n`;
-      }
-    });
-
-    if (texto.length > 1900) {
-      texto = texto.slice(0, 1900);
-    }
-
-    return message.reply({
-      content: texto
-    });
-  }
-
-  // ========================================================
-  // CONFIGURAR
-  // ========================================================
-
-  if (command === "configurar") {
-    if (message.author.id !== DEV_ID) {
-      return message.reply(
-        "❌ Apenas Henrique pode configurar o bot."
-      );
-    }
-
-    const aviso = await message.reply(
-      "🔄 Analisando servidor e configurando canais..."
-    );
-
-    await salvarCanais(message.guild);
-
-    mostrarCanais(message.guild);
-
-    await gerarMensagens(message.guild);
-
-    return aviso.edit(
-      "✅ **CONFIGURAÇÃO FINALIZADA!**\n\n" +
-      "🆔 IDs identificados\n" +
-      "💾 canais.json atualizado\n" +
-      "🤖 Canais analisados\n" +
-      "📨 Mensagens configuradas"
-    );
+    return message.reply({ embeds: [infoEmbed] });
   }
 });
-
-// ============================================================
-// TRATAMENTO DE ERROS
-// ============================================================
-
-process.on("unhandledRejection", (error) => {
-  console.error(
-    "❌ ERRO NÃO TRATADO:",
-    error
-  );
-});
-
-process.on("uncaughtException", (error) => {
-  console.error(
-    "❌ ERRO CRÍTICO:",
-    error
-  );
-});
-
-// ============================================================
-// LOGIN
-// ============================================================
 
 client.login(TOKEN);
