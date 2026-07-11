@@ -119,7 +119,7 @@ client.on("messageCreate", async (message) => {
         }
       }
 
-      // 3. Criar a nova estrutura de categorias e canais
+      // 3. Criar a nova estrutura de categorias e canais com destaques e ilustrações
       const categorias = [
         {
           name: "📢・INFORMAÇÕES",
@@ -190,75 +190,74 @@ client.on("messageCreate", async (message) => {
             parent: createdCategory.id
           });
 
-          // Enviar mensagens iniciais formatadas e embeds
+          // Enviar mensagens iniciais formatadas e embeds destacados
           if (chan.msgType === "rules") {
             const embedRegras = new EmbedBuilder()
-              .setTitle("📚 REGRAS OFICIAIS - AURA BOTS STUDIO")
-              .setDescription("Bem-vindo ao servidor oficial da **Aura Bots Studio**! Siga as diretrizes abaixo para garantir um ambiente saudável e profissional para todos.")
+              .setTitle("👑 **DIRETRIZES DA COMUNIDADE - AURA BOTS STUDIO** 👑")
+              .setDescription("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🌟 **Seja muito bem-vindo!** Leia atentamente as nossas regras oficiais para manter a ordem e garantir um suporte de altíssima qualidade.\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
               .setColor("#a855f7")
               .addFields(
-                { name: "1️⃣ Respeito e Conduta", value: "Trate todos os membros, parceiros e equipe de staff com educação. É estritamente proibido discursos de ódio, homofobia, racismo, xenofobia ou ofensas gratuitas." },
-                { name: "2️⃣ Divulgação e Spam", value: "Não divulgue links de convite de outros servidores do Discord ou links suspeitos em canais públicos ou nas DMs dos membros. Spam, flood ou excesso de menções sofrerão punições." },
-                { name: "3️⃣ Atendimento de Vendas & Suporte", value: "Caso queira comprar algum bot ou precise de ajuda com seus sistemas, use o canal de suporte oficial em `#abrir-ticket`. Não marque os Fundadores ou Sócios no chat privado." },
-                { name: "4️⃣ Uso Correto de Canais", value: "Respeite a função de cada canal. Use o `#chat-geral` para conversas, `#memes` para imagens engraçadas, e `#comandos` para testar comandos dos bots." }
+                { name: "1️⃣・**RESPEITO EM PRIMEIRO LUGAR**", value: "• É obrigatório tratar todos com o máximo de cordialidade.\n• **Proibido** insultos, discursos de ódio ou comportamentos tóxicos." },
+                { name: "2️⃣・**SEM SPAM OU DIVULGAÇÃO (DM/CHAT)**", value: "• **Proibido** enviar convites de servidores ou links externos sem autorização.\n• **Punição imediata** para quem fizer flood ou importunar membros no privado." },
+                { name: "3️⃣・**ATENDIMENTO EXCLUSIVO VIA TICKET**", value: "• Para suporte técnico ou compras, use sempre o canal de ticket.\n• **Não marque** a diretoria ou desenvolvedores no privado." },
+                { name: "4️⃣・**USO ADEQUADO DOS CANAIS**", value: "• Cada canal tem um propósito único. Use os chats adequados para conversas e comandos." },
+                { name: "5️⃣・**PROTEÇÃO & SEGURANÇA GERAL**", value: "• Qualquer abuso de bugs ou de comandos de nossos bots resultará em **banimento permanente**." }
               )
-              .setFooter({ text: "Obrigado por cooperar! Equipe Aura Bots Studio" })
+              .setFooter({ text: "🔒 Aura Bots Studio • Segurança & Tecnologia Garantida" })
               .setTimestamp();
 
             await createdChan.send({ embeds: [embedRegras] });
           } 
           else if (chan.msgType === "sales") {
             const embedVendas = new EmbedBuilder()
-              .setTitle("🛍️ PROMOÇÃO IMPERDÍVEL - COMBO BOTS PREMIUM")
-              .setDescription("Leve o controle total do seu servidor Discord para o próximo nível com a tecnologia de ponta da Aura Bots Studio!")
+              .setTitle("💎 **CATÁLOGO OFICIAL - AURA BOTS STUDIO** 💎")
+              .setDescription("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n🚀 **Adquira os melhores bots para a sua comunidade!** Nossos sistemas funcionam **24/7 hospedados em servidores de ponta**, garantindo 100% de estabilidade!\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
               .setColor("#facc15")
               .addFields(
-                { name: "🤖 Aura Ticket Bot (🎫)", value: "• Sistema de tickets por botões integrados\n• Transcrições em HTML\n• **Apenas R$ 19,00/mês**" },
-                { name: "🛡️ Aura Moderador Pro (🔒)", value: "• Filtros automáticos contra invasões\n• Logs super detalhados\n• **Apenas R$ 25,00/mês**" },
-                { name: "🌟 COMBO SUPREMO (💎)", value: "Leve TODOS os nossos bots de cima inclusos na sua comunidade, com atualizações gratuitas.\n💰 **De R$ 112,00 por APENAS R$ 59,00/mês!**" }
+                { name: "🎫・**AURA TICKET BOT**", value: "• Atendimento dinâmico com **botões integrados**\n• Transcrições de conversas salvas em **HTML**\n• Painel de controle completo\n• 📦 **Valor: R$ 19,00/mês**" },
+                { name: "🛡️・**AURA MODERADOR PRO**", value: "• Sistema robusto de **antiraid & anti-link**\n• Logs detalhados de todas as ações de membros\n• Verificação para evitar contas falsas\n• 📦 **Valor: R$ 25,00/mês**" },
+                { name: "🌟・**COMBO SUPREMO PREMIUM (💎)**", value: "• 🔥 **Leve todos os nossos bots integrados em um único pacote!**\n• Suporte prioritário 24 horas + Hospedagem Premium inclusa de graça\n• 💰 **De R$ 112,00 por APENAS R$ 59,00/mês!**" }
               )
               .setFooter({ text: "Para adquirir, abra um ticket em #abrir-ticket!" });
 
             await createdChan.send({ embeds: [embedVendas] });
           }
           else if (chan.msgType === "prices") {
-            const msgPrecos = "# ╔══════════════════════╗\n" +
-                              "                                  💎 ** AURA BOTS STUDIO**\n" +
-                              "                                  📦**TABELA DE PREÇOS**\n" +
-                              "# ╚══════════════════════╝\n\n" +
-                              "**🤖 BÁSICO** — R$ 15\n" +
-                              "• Comandos essenciais\n" +
-                              "• Bot leve e rápido\n\n" +
-                              "**💎 PERSONALIZADO** — R$ 50\n" +
-                              "• Sistema sob medida\n" +
-                              "• Funções exclusivas\n\n" +
-                              "**⚙️ ENTERPRISE** — R$ 120\n" +
-                              "• Projeto completo\n" +
-                              "• Automação avançada\n\n" +
-                              "━━━━━━━━━━━━━━━━━━━━━━\n" +
-                              "🔥 INFO:\n" +
-                              "✔ Entrega rápida\n" +
-                              "✔ Suporte incluso\n\n" +
-                              "🎫 Pedidos via ticket\n" +
-                              "💎 AURA BOTS STUDIO";
+            const msgPrecos = "╔══════════════════════════════════╗\n" +
+                              "  💎 **AURA BOTS STUDIO - TABELA DE PREÇOS** 💎\n" +
+                              "╚══════════════════════════════════╝\n\n" +
+                              "📌 **BOT BÁSICO** — **R$ 15,00/mês**\n" +
+                              "• Comandos essenciais e estáveis\n" +
+                              "• Bot leve, rápido e com hospedagem inclusa\n\n" +
+                              "📌 **BOT PERSONALIZADO** — **R$ 50,00/mês**\n" +
+                              "• Sistemas sob medida (Sua ideia vira realidade)\n" +
+                              "• Funções exclusivas & API de dados personalizada\n\n" +
+                              "📌 **BOT ENTERPRISE** — **R$ 120,00/mês**\n" +
+                              "• Integrações completas com painéis ou servidores externos\n" +
+                              "• Automação avançada para grandes comunidades virtuais\n\n" +
+                              "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n" +
+                              "⚡ **INFORMAÇÕES ADICIONAIS:**\n" +
+                              "✔ **Entrega Expressa:** Configuração em tempo recorde\n" +
+                              "✔ **Suporte Premium:** Equipe pronta para te ajudar 24/7\n\n" +
+                              "🎫 Para fazer seu pedido, abra um canal de ticket!";
 
             await createdChan.send({ content: msgPrecos });
           }
           else if (chan.msgType === "ticket_central") {
             const embedTicket = new EmbedBuilder()
-              .setTitle("🎫 CENTRAL DE ATENDIMENTO E SUPORTE")
-              .setDescription("Precisa comprar um bot ou falar com nossa equipe de suporte? Abra um ticket privado clicando no botão abaixo!\n\n🕒 **Horário de Atendimento:**\nSegunda a Sábado: 09:00 às 22:00")
+              .setTitle("🎫 **CENTRAL DE ATENDIMENTO E SUPORTE** 🎫")
+              .setDescription("Precisa comprar um bot ou falar com nossa equipe de suporte? Abra um ticket privado clicando no botão abaixo!\n\n🕒 **Horário de Funcionamento:**\n• Segunda a Sábado: **09:00 às 22:00**\n• Domingo: **Plantão de urgências**\n\n*Clique abaixo para iniciar seu atendimento personalizado com o Aura Bot.*")
               .setColor("#34d399")
-              .setFooter({ text: "Aura Bots Studio Atendimento VIP" });
+              .setFooter({ text: "Aura Bots Studio • Atendimento VIP" });
 
             await createdChan.send({ embeds: [embedTicket] });
           }
         }
       }
 
-      // 4. Criar canais de voz padrões em uma nova categoria dedicada
+      // 4. Criar canais de voz padrões fora de categorias ou em nova categoria
       const createdVoiceCategory = await targetGuild.channels.create({
-        name: "🔊・CANAIS DE VOZ",
+        name: "🔊 CANAIS DE VOZ",
         type: ChannelType.GuildCategory
       });
 
