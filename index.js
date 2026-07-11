@@ -8,7 +8,7 @@ const { Client, GatewayIntentBits, EmbedBuilder, ActivityType } = require('disco
 require('dotenv').config();
 
 const DEV_ID = "1174745079630549014"; // Seu ID do Discord (Henrique - Dono & Programador Oficial)
-const TOKEN = process.env.DISCORD_TOKEN;
+const TOKEN = process.env.TOKEN;
 const PREFIX = process.env.PREFIX || '!';
 
 // Impede que o bot caia se houver algum erro inesperado na API
