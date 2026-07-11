@@ -820,4 +820,4 @@ client.on("messageCreate", async (message) => {
 });
 
 // Coloque o TOKEN do seu bot no arquivo .env
-client.login(process.env.DISCORD_BOT_TOKEN);
+client.login(process.env.TOKEN);
