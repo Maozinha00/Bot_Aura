@@ -454,3 +454,4 @@ client.on('messageCreate', async (message) => {
 // INSIRA O TOKEN DO SEU BOT DISCORD ABAIXO:
 
 client.login(process.env.TOKEN);
+;
