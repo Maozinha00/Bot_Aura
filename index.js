@@ -619,8 +619,5 @@ client.on('messageCreate', async (message) => {
 // Coloque o Token do seu Bot Discord abaixo (ou defina a variável de ambiente TOKEN)
 client.login(process.env.TOKEN);
 
-client.login(TOKEN).catch(err => {
-  console.error('❌ Falha ao logar o bot no Discord. Verifique se o TOKEN é válido!');
-  console.error(err);
-});
+client.login(TOKEN).catch(console.error);
 
