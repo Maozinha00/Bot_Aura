@@ -6,6 +6,18 @@
  * 🔒 BLINDAGEM TOTAL: Canais totalmente privados por padrão.
  * 🧹 LIMPEZA COMPLETA: Apaga TODOS os canais e cargos antigos antes de criar.
  * ======================================================================
+ * 
+ * 📌 COMO INSTALAR E RODAR:
+ * 1. Crie uma pasta vazia no seu computador.
+ * 2. Abra o terminal nessa pasta e digite: npm install discord.js dotenv
+ * 3. Crie um arquivo chamado "index.js" e cole este código completo dentro dele.
+ * 4. Ative as 3 "Privileged Gateway Intents" no painel de desenvolvedor do Discord (aba Bot):
+ *    - Presence Intent
+ *    - Server Members Intent
+ *    - Message Content Intent (OBRIGATÓRIO para ler o comando "!criar")
+ * 5. Coloque o Token do seu bot abaixo na variável BOT_TOKEN ou em um arquivo .env.
+ * 6. Rode o bot usando: node index.js
+ * 7. Digite "!criar" em qualquer canal de texto no seu Discord.
  */
 
 const { 
@@ -24,6 +36,10 @@ const client = new Client({
     GatewayIntentBits.GuildMembers
   ]
 });
+
+// Chaves de Configuração
+const BOT_TOKEN = process.env.TOKEN || 'COLE_SEU_TOKEN_AQUI'; 
+const GUILD_ID = 'COLE_ID_DO_SEU_SERVIDOR_AQUI'; // Insira o ID do seu servidor aqui
 
 // Configurações estruturadas da Aura Bots Studio
 const CONFIG = {
@@ -143,7 +159,7 @@ const CONFIG = {
       ]
     },
     {
-      name: '🎫 ・SUPORTE',
+      name: '🎫 ・SUPORRE',
       channels: [
         {
           id: 'chan-abrir-ticket-aura',
@@ -326,7 +342,7 @@ const PREFIX = '!';
 
 client.once('ready', () => {
   console.log('====================================================');
-  console.log(`🤖 ${client.user.tag} iniciado com sucesso!`);
+  console.log(`🤖 Bot iniciado com sucesso como ${client.user.tag}!`);
   console.log('====================================================');
   console.log('👉 DIGITE "!criar" em qualquer canal para iniciar.');
   console.log('====================================================');
@@ -339,12 +355,18 @@ client.on('messageCreate', async (message) => {
   const command = args.shift().toLowerCase();
 
   if (command === 'criar') {
-    // 1. Verificar permissão de Administrador de quem enviou o comando
+    // 1. Verificar permissão de Administrador
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply('❌ Apenas administradores do servidor podem executar este comando.');
     }
 
     const guild = message.guild;
+    
+    // Se o GUILD_ID foi configurado, impedir execução fora dele
+    if (GUILD_ID && GUILD_ID !== 'COLE_ID_DO_SEU_SERVIDOR_AQUI' && guild.id !== GUILD_ID) {
+      return message.reply('❌ Este bot não está configurado para operar neste servidor.');
+    }
+
     console.log(`Iniciando reestruturação no servidor ${guild.name} (${guild.id})`);
     
     let progressMsg;
@@ -360,7 +382,7 @@ client.on('messageCreate', async (message) => {
         ]
       });
     } catch (e) {
-      console.log('Erro ao enviar mensagem inicial: ', e.message);
+      console.log('Erro ao enviar mensagem inicial:', e.message);
     }
 
     try {
@@ -368,12 +390,12 @@ client.on('messageCreate', async (message) => {
       const channels = await guild.channels.fetch();
       let deletedChansCount = 0;
       for (const [id, channel] of channels) {
-        if (id === message.channel.id) continue; // Mantém o canal do comando para não perder o log
+        if (id === message.channel.id) continue; // Mantém o canal ativo para enviar progresso
         if (channel.deletable) {
           try {
             await channel.delete('Reestruturação Aura Bots');
             deletedChansCount++;
-            await new Promise(resolve => setTimeout(resolve, 150)); // Delay contra rate limit
+            await new Promise(resolve => setTimeout(resolve, 150)); // Delay para evitar rate limit
           } catch (e) {
             console.log(`Não foi possível apagar o canal ${channel.name}: ${e.message}`);
           }
@@ -388,7 +410,7 @@ client.on('messageCreate', async (message) => {
             embeds: [
               new EmbedBuilder()
                 .setTitle('🧹 Apagando Cargos Antigos')
-                .setDescription('🧹 **Etapa 2/4:** Apagando todos os cargos antigos customizados do servidor...\nAguarde.')
+                .setDescription('🧹 **Etapa 2/4:** Apagando todos os cargos antigos do servidor...\nAguarde.')
                 .setColor(0xe74c3c)
                 .setFooter({ text: CONFIG.storeName })
                 .setTimestamp()
@@ -400,21 +422,21 @@ client.on('messageCreate', async (message) => {
       const roles = await guild.roles.fetch();
       let deletedRolesCount = 0;
       for (const [id, role] of roles) {
-        // Regras de segurança para exclusão:
-        // - Não deletar o cargo @everyone (id igual ao da guilda)
-        // - Não deletar cargos gerenciados de bots externos (role.managed)
-        // - Não deletar o cargo do próprio bot atual
-        // - Não deletar cargos acima do cargo do bot (não-deletáveis)
         const isEveryone = role.id === guild.id;
-        const isSelfBot = role.name === client.user.username;
+        const isSelfBotRole = role.tags?.botId === client.user.id;
         
-        if (!isEveryone && !role.managed && role.deletable && !isSelfBot) {
+        // Deleta qualquer cargo customizado (não gerenciado por outro app, não everyone e não o próprio cargo do bot)
+        if (!isEveryone && !role.managed && !isSelfBotRole) {
           try {
             await role.delete('Reset de Cargos Aura Bots');
             deletedRolesCount++;
-            await new Promise(resolve => setTimeout(resolve, 150)); // Delay contra rate limit
+            console.log(`Cargo "${role.name}" deletado com sucesso!`);
+            await new Promise(resolve => setTimeout(resolve, 150)); // Delay para evitar rate limit
           } catch (e) {
-            console.log(`Não foi possível apagar o cargo ${role.name}: ${e.message}`);
+            console.log(`⚠️ Não foi possível apagar o cargo "${role.name}": ${e.message}`);
+            if (e.message.includes('Missing Permissions') || e.code === 50013) {
+              console.log(`   💡 DICA: Mova o cargo do bot para o TOPO absoluto em Configurações -> Cargos.`);
+            }
           }
         }
       }
@@ -426,7 +448,7 @@ client.on('messageCreate', async (message) => {
           await progressMsg.edit({
             embeds: [
               new EmbedBuilder()
-                .setTitle('🛡️ Criando Cargos da Loja')
+                .setTitle('🛡️ Criando Novos Cargos')
                 .setDescription('⚙️ **Etapa 3/4:** Criando novos cargos customizados e gerando cores...\nAguarde.')
                 .setColor(0x3498db)
                 .setFooter({ text: CONFIG.storeName })
@@ -450,7 +472,7 @@ client.on('messageCreate', async (message) => {
           console.log(`Cargo Criado: ${r.name}`);
           await new Promise(resolve => setTimeout(resolve, 200));
         } catch (e) {
-          console.error(`Erro ao criar cargo ${r.name}: `, e.message);
+          console.error(`Erro ao criar cargo ${r.name}:`, e.message);
         }
       }
 
@@ -482,12 +504,12 @@ client.on('messageCreate', async (message) => {
 
           for (const chan of cat.channels) {
             try {
-              // Estilização do nome do canal
+              // Estilização do nome do canal (minúsculas para canais de texto)
               const cleanChanName = chan.type === 2 ? chan.name : chan.name.toLowerCase().replace(/\s+/g, '-');
               
               const permissionOverwrites = [];
 
-              // 🛡️ BLINDAGEM: Retirar visualização de canais para o cargo @everyone (quem não tem cargo)
+              // 🛡️ BLINDAGEM: Retirar visualização de canais para o cargo @everyone
               permissionOverwrites.push({
                 id: guild.id,
                 deny: [PermissionsBitField.Flags.ViewChannel]
@@ -499,7 +521,6 @@ client.on('messageCreate', async (message) => {
               if (chan.allowedRoles && chan.allowedRoles.length > 0) {
                 allowedRolesToAssign = [...chan.allowedRoles];
               } else {
-                // Inferir baseado no nome/ID para maior praticidade
                 const chanId = (chan.id || '').toLowerCase();
                 const chanName = (chan.name || '').toLowerCase();
                 
@@ -510,7 +531,7 @@ client.on('messageCreate', async (message) => {
                 } else if (chanId.includes('download') || chanName.includes('download')) {
                   allowedRolesToAssign = ['role-cliente', 'role-vip', 'role-staff', 'role-developer', 'role-founder'];
                 } else {
-                  // Canais de comunidade são acessíveis por qualquer membro registrado (cargo Membro+)
+                  // Canais públicos gerais para toda a comunidade cadastrada
                   allowedRolesToAssign = ['role-membro', 'role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-developer', 'role-founder'];
                 }
               }
@@ -566,16 +587,16 @@ client.on('messageCreate', async (message) => {
 
                   await createdChannel.send({ embeds: [embed] });
                 } catch (embedErr) {
-                  console.error(`Erro ao postar embed em ${cleanChanName}: `, embedErr.message);
+                  console.error(`Erro ao postar embed em ${cleanChanName}:`, embedErr.message);
                 }
               }
 
             } catch (chanErr) {
-              console.error(`Erro ao criar o canal ${chan.name}: `, chanErr.message);
+              console.error(`Erro ao criar o canal ${chan.name}:`, chanErr.message);
             }
           }
         } catch (catErr) {
-          console.error(`Erro ao criar a categoria ${cat.name}: `, catErr.message);
+          console.error(`Erro ao criar a categoria ${cat.name}:`, catErr.message);
         }
       }
 
@@ -598,7 +619,7 @@ client.on('messageCreate', async (message) => {
       console.log('✅ REESTRUTURAÇÃO COMPLETA CONCLUÍDA COM SUCESSO!');
 
     } catch (err) {
-      console.error('Erro geral na execução: ', err);
+      console.error('Erro geral na execução:', err);
       if (progressMsg) {
         try {
           await progressMsg.edit({
