@@ -617,7 +617,8 @@ client.on('messageCreate', async (message) => {
 });
 
 // Coloque o Token do seu Bot Discord abaixo (ou defina a variável de ambiente TOKEN)
-client.login(process.env.TOKEN);
+require("dotenv").config();
 
-client.login(TOKEN).catch(console.error);
+client.login(process.env.TOKEN);
+;
 
