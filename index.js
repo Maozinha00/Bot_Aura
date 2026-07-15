@@ -1,6 +1,11 @@
 /**
- * BOT DE DISCORD AUTO-CONFIGURÁVEL - ARSENAL DE ESTILO
+ * BOT DE DISCORD AUTO-CONFIGURÁVEL - AURA BOTS STUDIO
  * Versão: discord.js v14
+ * 
+ * 📌 REQUISITOS:
+ * - Instalar a dependência: npm install discord.js
+ * - Ativar as 3 "Privileged Gateway Intents" no Discord Developer Portal (Bot tab).
+ * - Substituir o token na última linha pelo Token real do seu Bot.
  */
 
 const { 
@@ -19,285 +24,293 @@ const client = new Client({
   ]
 });
 
-// Configuração completa do "Arsenal de Estilo" (Canais, Cargos, Permissões e Textos)
+// Configuração estruturada completa pré-carregada para a Aura Bots Studio
 const CONFIG = {
-  "storeName": "Arsenal de Estilo",
-  "accentColor": "#eab308",
-  "roles": [
-    { "id": "role-founder", "name": "👑 Fundador", "color": "#ef4444", "hoist": true, "mentionable": true },
-    { "id": "role-designer", "name": "🎨 Designer de Roupas", "color": "#3b82f6", "hoist": true, "mentionable": true },
-    { "id": "role-staff", "name": "🛡️ Staff", "color": "#10b981", "hoist": true, "mentionable": true },
-    { "id": "role-vip", "name": "⭐ VIP Premium", "color": "#eab308", "hoist": true, "mentionable": false },
-    { "id": "role-parceiro", "name": "🤝 Parceiro", "color": "#a855f7", "hoist": false, "mentionable": false },
-    { "id": "role-cliente", "name": "🛒 Cliente Verificado", "color": "#14b8a6", "hoist": false, "mentionable": false },
-    { "id": "role-membro", "name": "👥 Membro", "color": "#9ca3af", "hoist": false, "mentionable": false }
+  storeName: "Aura Bots Studio",
+  accentColor: "#a855f7",
+  roles: [
+    { id: 'role-founder', name: '👑 Dono / Fundador', color: '#e74c3c', hoist: true, mentionable: true },
+    { id: 'role-developer', name: '💻 Developer / Programador', color: '#a855f7', hoist: true, mentionable: true },
+    { id: 'role-staff', name: '🛡️ Administrador / Staff', color: '#3498db', hoist: true, mentionable: true },
+    { id: 'role-parceiro', name: '🤝 Parceiro / Influencer', color: '#e67e22', hoist: true, mentionable: true },
+    { id: 'role-vip', name: '⭐ Cliente VIP Premium', color: '#f1c40f', hoist: true, mentionable: true },
+    { id: 'role-cliente', name: '🛒 Cliente Verificado', color: '#2ecc71', hoist: true, mentionable: false },
+    { id: 'role-membro', name: '👥 Membro da Comunidade', color: '#95a5a6', hoist: false, mentionable: false }
   ],
-  "categories": [
+  categories: [
     {
-      "name": "📜 ・INÍCIO",
-      "channels": [
+      name: '╔══ 📌 INFO & COMUNIDADE ══╗',
+      channels: [
         {
-          "name": "├─👋・boas-vindas",
-          "type": 0,
-          "description": "Boas-vindas aos novos membros da comunidade.",
-          "embedTitle": "👋 Bem-vindo ao Arsenal de Estilo!",
-          "embedDescription": "Seja muito bem-vindo ao servidor oficial do **Arsenal de Estilo**! Aqui você encontra as melhores coleções de roupas e calçados otimizados para o seu servidor FiveM (Low-Poly). Fique à vontade e explore nossos canais!",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-boas-vindas-aura',
+          name: '├─👋・boas-vindas',
+          type: 0,
+          description: 'Seja muito bem-vindo à Aura Bots Studio!',
+          embedTitle: '👋 Bem-vindo ao Aura Bots Studio!',
+          embedDescription: 'Seja muito bem-vindo ao melhor centro de desenvolvimento de Bots do Discord e Servidores prontos!\n\nAqui você encontrará soluções completas, servidores otimizados, bots dedicados com suporte ativo e hospedagem premium VPS.\n\n📌 **Como começar?**\n📖 Consulte as nossas regras no canal de regras.\n📢 Fique de olho nas novidades em anúncios.\n🛒 Dê uma olhada no nosso catálogo de serviços.'
         },
         {
-          "name": "├─📢・anúncios",
-          "type": 0,
-          "description": "Avisos importantes, atualizações e novidades da loja.",
-          "embedTitle": "📢 Novidades e Avisos da Loja",
-          "embedDescription": "Fique de olho neste canal para não perder os últimos anúncios, atualizações de packs de roupas masculinas e femininas, e novos lançamentos no nosso catálogo!",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-anuncios-aura',
+          name: '├─📢・anúncios',
+          type: 0,
+          description: 'Avisos importantes, atualizações e novidades.',
+          embedTitle: '📢 Novidades e Comunicados Oficiais',
+          embedDescription: 'Fique por dentro de todos os novos lançamentos de bots, cupons especiais, atualizações de APIs e novidades de desenvolvimento da Aura Bots Studio.'
         },
         {
-          "name": "├─📜・regras",
-          "type": 0,
-          "description": "Diretrizes e regras do servidor.",
-          "embedTitle": "📜 Diretrizes & Regras do Servidor",
-          "embedDescription": "Para manter nossa comunidade saudável e organizada, siga nossas regras fundamentais:\n\n1️⃣ **Respeito Mútuo**: Trate todos os membros e staff com respeito.\n2️⃣ **Sem Spam/Flood**: Evite mensagens repetitivas nos canais comuns.\n3️⃣ **Sem Divulgação**: É proibido divulgar outros servidores ou links não autorizados.\n4️⃣ **Tickets de Vendas**: Use os canais corretos de suporte para realizar compras.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-regras-aura',
+          name: '├─📖・regras',
+          type: 0,
+          description: 'Diretrizes de convivência do nosso servidor.',
+          embedTitle: '📖 Regulamento & Diretrizes da Comunidade',
+          embedDescription: 'Para garantir um ambiente saudável e profissional, pedimos que todos sigam nossas regras simples:\n\n1️⃣ **Respeito Mútuo**: Sem insultos ou preconceitos.\n2️⃣ **Divulgação proibida**: Não anuncie serviços ou outros bots sem autorização.\n3️⃣ **Sem Spam/Flood**: Utilize os canais adequados para interagir.\n4️⃣ **Atendimento oficial**: Dúvidas técnicas e compras devem ser tratadas estritamente em seu Ticket individual.'
         },
         {
-          "name": "├─🎭・cargos",
-          "type": 0,
-          "description": "Descrição dos cargos e reações.",
-          "embedTitle": "🎭 Sistema de Cargos do Servidor",
-          "embedDescription": "Conheça os cargos do nosso servidor:\n\n👑 **Fundador/Dono**: Responsável geral pelo projeto.\n🎨 **Designer de Roupas**: Desenvolvedor dos modelos e packs.\n🛡️ **Staff/Admin**: Suporte e moderação.\n⭐ **VIP Premium**: Acesso antecipado e descontos exclusivos.\n🛒 **Cliente Verificado**: Membros que já efetuaram compras.\n👥 **Membro**: Visitantes e entusiastas da nossa comunidade.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-cargos-aura',
+          name: '├─🎭・cargos',
+          type: 0,
+          description: 'Auto-atribuição de cargos da comunidade.',
+          embedTitle: '🎭 Reaja para Selecionar Seus Cargos',
+          embedDescription: 'Escolha suas áreas de interesse para receber notificações personalizadas:\n\n💻 **Desenvolvedor**: Ative para receber novidades de programação e tutoriais.\n🛒 **Notificar Compras**: Receba alertas sobre novos bots no catálogo.'
         },
         {
-          "name": "├─🎁・presentes",
-          "type": 0,
-          "description": "Brindes e cupons especiais para membros.",
-          "embedTitle": "🎁 Brindes & Mimos da Comunidade",
-          "embedDescription": "Gostamos de retribuir a preferência dos nossos membros! Periodicamente disponibilizaremos packs gratuitos de roupas de teste ou cupons promocionais especiais aqui.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-presentes-aura',
+          name: '├─🎁・brindes-e-presentes',
+          type: 0,
+          description: 'Arquivos gratuitos, bots de teste e presentes exclusivos.',
+          embedTitle: '🎁 Brindes e Conteúdos Gratuitos!',
+          embedDescription: 'Agradecemos sua participação em nossa comunidade! Divirta-se com códigos-fontes livres de testes, guias de configuração rápidos e templates de servidores prontos disponibilizados periodicamente aqui.'
         },
         {
-          "name": "└─📅・eventos",
-          "type": 0,
-          "description": "Cronograma de sorteios e eventos.",
-          "embedTitle": "📅 Eventos & Sorteios Ativos",
-          "embedDescription": "Fique atento a esta aba! Aqui você saberá sobre sorteios de assinaturas VIP, packs completos e competições de prints estilizados da comunidade.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-eventos-aura',
+          name: '└─🎉・eventos',
+          type: 0,
+          description: 'Eventos de programação, hackathons e sorteios.',
+          embedTitle: '🎉 Sorteios e Eventos da Aura',
+          embedDescription: 'Quer ganhar licenças de bots, assinaturas gratuitas de hospedagem ou assessoria profissional para seu servidor? Não perca os sorteios e eventos interativos realizados neste canal!'
         }
       ]
     },
     {
-      "name": "🛒 ・LOJA",
-      "channels": [
+      name: '🛒 ・LOJA',
+      channels: [
         {
-          "name": "├─💎・catálogo",
-          "type": 0,
-          "description": "Catálogo de packs de roupas premium.",
-          "embedTitle": "💎 Catálogo Premium de Roupas & Acessórios",
-          "embedDescription": "Nossos modelos de roupas são low-poly e totalmente otimizados para evitar crash ou lag no seu servidor FiveM.\n\n👕 Roupas Masculinas (Grifes, Táticas, Jaquetas)\n👗 Roupas Femininas (Crop, Vestidos, Looks Balada)\n🎒 Acessórios (Mochilas, Óculos, Bonés de Grife)\n👟 Calçados (Jordan, Yeezy, Nike Shox)\n\n_Para realizar o seu pedido ou tirar dúvidas, acesse a central de atendimento e abra um ticket._",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-catalogo-aura',
+          name: '├─💎・catálogo',
+          type: 0,
+          description: 'Preços e catálogo detalhado de Bots e Servidores.',
+          embedTitle: '🤖 Catálogo de Bots & Criação de Servidores',
+          embedDescription: 'Oferecemos soluções completas com excelente custo-benefício:\n\n🤖 **Bots Customizados (A partir de R$ 30,00)**\nDesenvolvemos qualquer sistema: Vendas automáticas, Moderação, Ticket, Economia, RPG e integrações API.\n\n⚙️ **Bot Mensal (Apenas R$ 15,00/mês)**\nTenha o seu bot ativo 24/7 hospedado em nossa VPS premium. Sem travamentos, com suporte e atualizações inclusas!\n\n💻 **Criação de Servidor Completo (A partir de R$ 20,00)**\nConfiguramos seu servidor com categorias organizadas, emojis de alta qualidade, cargos estruturados, permissões blindadas e bots essenciais configurados!'
         },
         {
-          "name": "├─🔥・promoções",
-          "type": 0,
-          "description": "Combos e pacotes promocionais ativos.",
-          "embedTitle": "🔥 Combos & Packs Promocionais",
-          "embedDescription": "Aproveite nossos preços especiais em packs agrupados! Economize até 40% levando coleções masculinas e femininas integradas com o script de instalação pronta resource.cfg.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-promocoes-aura',
+          name: '├─🔥・promoções',
+          type: 0,
+          description: 'Combos irresistíveis para turbinar seu servidor.',
+          embedTitle: '🔥 Combos e Promoções Imperdíveis!',
+          embedDescription: 'Quer economizar mais? Confira nossos pacotes especiais:\n\n🔥 **Combo Start (Apenas R$ 40,00)**\nCriação de Servidor Completo + 1 Bot Customizado (com 1 mês de hospedagem gratuita).\n\n⚡ **Combo Enterprise (Apenas R$ 75,00)**\nCriação de Servidor Completo + 2 Bots Customizados com funções avançadas de gerenciamento de vendas e tickets.'
         },
         {
-          "name": "├─⭐・vip",
-          "type": 0,
-          "description": "Benefícios e packs do plano VIP.",
-          "embedTitle": "⭐ Vantagens Exclusivas VIP Premium",
-          "embedDescription": "Ao assinar nossa categoria VIP Deluxe, você adquire:\n\n✔️ 25% de desconto fixo em todas as peças avulsas.\n✔️ Acesso antecipado de 14 dias a lançamentos.\n✔️ Cargo e cor exclusiva no Discord.\n✔️ Suporte 1-on-1 prioritário na fila de entregas.",
-          "allowedRoles": ["role-vip", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-vip-aura',
+          name: '├─⭐・vip',
+          type: 0,
+          description: 'Planos VIP e benefícios para apoiadores da Aura Bots Studio.',
+          embedTitle: '💎 Seja um Membro VIP Aura Premium',
+          embedDescription: 'Ao assinar nosso plano VIP, você apoia o desenvolvimento de novos bots e adquire vantagens exclusivas:\n\n✔️ Isenção de taxa de configuração em novos projetos.\n✔️ Desconto permanente de 20% nas mensalidades dos seus bots.\n✔️ Acesso a comandos de bot experimentais exclusivos.\n✔️ Cargo VIP de destaque e suporte prioritário no chat.',
+          allowedRoles: ['role-vip', 'role-staff', 'role-developer', 'role-founder']
         },
         {
-          "name": "├─🛍️・compras",
-          "type": 0,
-          "description": "Instruções de como comprar.",
-          "embedTitle": "🛍️ Como Realizar Suas Compras",
-          "embedDescription": "Siga este passo a passo simples para adquirir roupas:\n\n1️⃣ Escolha os itens desejados no canal **💎・catálogo** ou **🔥・promoções**.\n2️⃣ Vá em **🎫・abrir-ticket** e clique no botão correspondente para abrir o atendimento.\n3️⃣ Informe os itens selecionados e nossa equipe finalizará o pagamento com envio imediato!",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-compras-aura',
+          name: '├─🛍️・compras',
+          type: 0,
+          description: 'Instruções para realizar sua compra com segurança.',
+          embedTitle: '🛍️ Passo a Passo para Comprar seu Bot/Servidor',
+          embedDescription: 'Comprar conosco é simples e seguro:\n\n1️⃣ Escolha o serviço desejado nos canais **💎・catálogo** ou **🔥・promoções**.\n2️⃣ Entre no canal **🎫・abrir-ticket** e selecione o botão adequado.\n3️⃣ Um canal privado de atendimento será aberto imediatamente com a nossa equipe.\n4️⃣ Detalhe as especificações do seu bot ou servidor para darmos início ao desenvolvimento!'
         },
         {
-          "name": "└─💳・pagamentos",
-          "type": 0,
-          "description": "Métodos de pagamento disponíveis.",
-          "embedTitle": "💳 Formas de Pagamento Aceitas",
-          "embedDescription": "Trabalhamos com os métodos de pagamento mais seguros e rápidos:\n\n🔹 **PIX** (Processamento imediato com desconto exclusivo!)\n🔹 **Cartão de Crédito** (Via Mercado Pago, parcelado em até 12x)\n🔹 **Boleto Bancário** (Sujeito à compensação de 1 a 2 dias úteis)",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-pagamentos-aura',
+          name: '└─💳・pagamentos',
+          type: 0,
+          description: 'Métodos de pagamento seguros.',
+          embedTitle: '💳 Métodos de Pagamento e Facilidades',
+          embedDescription: 'Garantimos facilidade para você adquirir seus bots:\n\n🔹 **Pix**: Envio e início imediato do desenvolvimento (Recomendado).\n🔹 **Mercado Pago & Cartão de Crédito**: Parcele suas compras com total segurança.\n🔹 **Saldo / Boleto**.'
         }
       ]
     },
     {
-      "name": "🎫 ・SUPORTE",
-      "channels": [
+      name: '🎫 ・SUPORTE',
+      channels: [
         {
-          "name": "├─🎟️・abrir-ticket",
-          "type": 0,
-          "description": "Clique no botão para abrir um ticket.",
-          "embedTitle": "🎟️ Central de Atendimento & Compras",
-          "embedDescription": "Deseja comprar alguma roupa ou precisa de suporte para instalação?\n\nClique no botão abaixo para abrir o seu ticket privado de atendimento. Nossa equipe e designers estão prontos para ajudar você!",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-abrir-ticket-aura',
+          name: '├─🎟️・abrir-ticket',
+          type: 0,
+          description: 'Abra um ticket para tirar dúvidas ou fazer pedidos.',
+          embedTitle: '🎟️ Central de Atendimento & Orçamentos',
+          embedDescription: 'Precisa de suporte com seu bot, quer renovar uma mensalidade ou solicitar um orçamento de servidor customizado?\n\nClique no botão abaixo correspondente à sua necessidade para iniciarmos um chat privado com nossa equipe de suporte!'
         },
         {
-          "name": "├─📨・atendimento",
-          "type": 0,
-          "description": "Informações de horários de atendimento.",
-          "embedTitle": "📨 Horários de Suporte",
-          "embedDescription": "Nossa equipe atende nos seguintes horários:\n\n📅 **Segunda a Sexta**: 10:00 às 22:00\n📅 **Sábados e Domingos**: 13:00 às 20:00\n\n_Mesmo fora do horário, sinta-se à vontade para abrir o ticket e deixar sua mensagem. Responderemos na ordem de chegada!_",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-atendimento-aura',
+          name: '├─📨・atendimento',
+          type: 0,
+          description: 'Informações de horários de suporte e SLAs.',
+          embedTitle: '📨 Horários de Atendimento da Aura Bots Studio',
+          embedDescription: 'Nossos desenvolvedores e equipe de suporte atendem nos seguintes períodos:\n\n📅 **Segunda a Sábado**: 09:00 às 22:00\n📅 **Domingos e Feriados**: Atendimento em escala de plantão.\n\n_Mesmo fora do horário comercial você pode abrir o seu ticket, daremos retorno assim que o primeiro desenvolvedor estiver online!_'
         },
         {
-          "name": "├─❓・faq",
-          "type": 0,
-          "description": "Perguntas frequentes e dúvidas comuns.",
-          "embedTitle": "❓ FAQ - Perguntas Frequentes",
-          "embedDescription": "**1. As roupas causam crash no servidor?**\nNão! Todas as nossas texturas e malhas são compactadas e otimizadas (Low-Poly), mantendo o tamanho abaixo do limite crítico do FiveM.\n\n**2. Posso testar as roupas antes de comprar?**\nSim! Solicite no seu ticket a entrada no nosso servidor de testes oficial.\n\n**3. Vocês fazem roupas personalizadas com minha marca?**\nSim! Entre em contato via ticket para orçamentos de roupas com o logotipo do seu servidor ou marca real.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-faq-aura',
+          name: '├─❓・faq',
+          type: 0,
+          description: 'Perguntas frequentes respondidas de forma simples.',
+          embedTitle: '❓ FAQ - Dúvidas Frequentes',
+          embedDescription: '**1. Como funciona a mensalidade do bot?**\nA mensalidade cobre os custos de hospedagem do bot em nossa VPS 24/7 de alta velocidade e atualizações automáticas contra bugs das APIs do Discord.\n\n**2. Vocês entregam o código-fonte do bot?**\nPor padrão, o bot é hospedado por nós para sua comodidade. Caso queira o código-fonte completo (.js/.ts), consulte as taxas de compra de licença no ticket.\n\n**3. O bot tem garantia de uptime?**\nSim! Nossos servidores contam com 99.9% de uptime garantido. Qualquer instabilidade é resolvida de imediato pela nossa equipe.'
         },
         {
-          "name": "└─📂・downloads",
-          "type": 0,
-          "description": "Downloads de arquivos e links úteis.",
-          "embedTitle": "📂 Área de Downloads e Manuais",
-          "embedDescription": "Acesse seus arquivos de forma organizada. Aqui disponibilizamos manuais em PDF, links para downloads dos recursos comprados e atualizações dos pacotes de roupas de grife.",
-          "allowedRoles": ["role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-downloads-aura',
+          name: '└─📂・downloads',
+          type: 0,
+          description: 'Acesso a arquivos e portfólio de projetos.',
+          embedTitle: '📂 Portfólio & Downloads de Manuais',
+          embedDescription: 'Confira nossos bots em ação ou faça download de manuais de comando, painéis de controle web de teste e scripts complementares para integrar ao seu bot!',
+          allowedRoles: ['role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-developer', 'role-founder']
         }
       ]
     },
     {
-      "name": "👑 ・COMUNIDADE",
-      "channels": [
+      name: '👑 ・COMUNIDADE',
+      channels: [
         {
-          "name": "├─💬・chat",
-          "type": 0,
-          "description": "Bate-papo geral da comunidade.",
-          "embedTitle": "💬 Chat Geral - Área de Convivência",
-          "embedDescription": "Converse sobre o servidor, FiveM, GTA RP, mande prints ou fale sobre moda urbana. Siga as diretrizes de bom convívio!",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-chat-aura',
+          name: '├─💬・chat',
+          type: 0,
+          description: 'Bate-papo geral para todos os membros.',
+          embedTitle: '💬 Chat Geral da Comunidade',
+          embedDescription: 'Sinta-se em casa! Use este espaço para debater sobre desenvolvimento de bots, novas tecnologias, trocar ideias ou bater um papo descontraído com outros membros.'
         },
         {
-          "name": "├─📸・prints",
-          "type": 0,
-          "description": "Envie fotos do seu personagem usando nossas roupas.",
-          "embedTitle": "📸 Galeria de Looks (Prints)",
-          "embedDescription": "Mostre o estilo do seu personagem! Envie fotos e capturas de tela usando nossos trajes no servidor de roleplay e receba elogios da comunidade.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-prints-aura',
+          name: '├─📸・prints',
+          type: 0,
+          description: 'Compartilhe capturas de tela e painéis de controle dos bots.',
+          embedTitle: '📸 Mostre seu Servidor! (Prints)',
+          embedDescription: 'Poste fotos dos painéis dos bots, prints de servidores que você montou usando nossa assessoria ou o sucesso dos sistemas da Aura Bots!'
         },
         {
-          "name": "├─🎥・clips",
-          "type": 0,
-          "description": "Envie clipes engraçados ou de ação.",
-          "embedTitle": "🎥 Clipes & Vídeos de Roleplay",
-          "embedDescription": "Mandou bem no RP ou quer compartilhar aquele momento engraçado ou de ação? Publique seus clipes do Twitch, TikTok ou YouTube aqui!",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-clips-aura',
+          name: '├─🎥・clips',
+          type: 0,
+          description: 'Publique vídeos curtos e gravações do bot em ação.',
+          embedTitle: '🎥 Clipes, Vídeos & Demonstrações',
+          embedDescription: 'Mande vídeos demonstrativos do bot executando comandos, tocando músicas, ou tutoriais de uso que você achou interessante.'
         },
         {
-          "name": "├─😂・memes",
-          "type": 0,
-          "description": "Canal de humor e memes.",
-          "embedTitle": "😂 Humor & Memes de GTA",
-          "embedDescription": "Solte a risada! Poste piadas, montagens e memes sobre FiveM e o cotidiano das cidades de roleplay.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-memes-aura',
+          name: '├─😂・memes',
+          type: 0,
+          description: 'Humor e memes do mundo da programação.',
+          embedTitle: '😂 Programação & Humor Nerd',
+          embedDescription: 'Canal destinado a compartilhar memes sobre bugs, programadores, clientes engenhosos, e o mundo tech em geral!'
         },
         {
-          "name": "├─🎵・música",
-          "type": 0,
-          "description": "Comandos para o bot de música.",
-          "embedTitle": "🎵 Comandos de Música",
-          "embedDescription": "Quer colocar um som de fundo enquanto joga ou conversa? Use este canal para enviar os comandos do nosso bot de rádio e gerenciar suas playlists de música.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-musica-text-aura',
+          name: '├─🎵・música',
+          type: 0,
+          description: 'Comandos do bot de rádio e música do servidor.',
+          embedTitle: '🎵 Comandos do Bot de Música',
+          embedDescription: 'Deseja ouvir uma rádio ou música nas salas de voz? Digite os comandos de reprodução aqui para interagir com o bot musical.'
         },
         {
-          "name": "└─🤖・comandos",
-          "type": 0,
-          "description": "Interações e comandos gerais de bots.",
-          "embedTitle": "🤖 Comandos Gerais de Bots",
-          "embedDescription": "Utilize este canal para brincar com os minijogos do bot, verificar seu nível de XP na comunidade ou consultar suas moedas da loja.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-comandos-aura',
+          name: '└─🤖・comandos',
+          type: 0,
+          description: 'Use os comandos públicos do bot aqui.',
+          embedTitle: '🤖 Comandos de Interação e Diversão',
+          embedDescription: 'Aqui você pode interagir com os bots públicos da Aura Bots Studio: consulte seu nível de XP, use comandos de diversão, economia fictícia e muito mais!'
         }
       ]
     },
     {
-      "name": "🎙️ ・VOZ",
-      "channels": [
+      name: '🎙️ ・VOZ',
+      channels: [
         {
-          "name": "├─🔊 Geral 01",
-          "type": 2,
-          "description": "Conversa por voz livre.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-geral-1-aura',
+          name: '├─🔊 Geral 01',
+          type: 2,
+          description: 'Canal de voz aberto para conversas casuais.'
         },
         {
-          "name": "├─🔊 Geral 02",
-          "type": 2,
-          "description": "Conversa por voz livre.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-geral-2-aura',
+          name: '├─🔊 Geral 02',
+          type: 2,
+          description: 'Canal de voz aberto para conversas casuais.'
         },
         {
-          "name": "├─🎮 Gaming",
-          "type": 2,
-          "description": "Jogar conversando.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-gaming-aura',
+          name: '├─🎮 Gaming',
+          type: 2,
+          description: 'Conecte-se com outros programadores para jogar.'
         },
         {
-          "name": "├─💼 Reunião",
-          "type": 2,
-          "description": "Reuniões e suporte por voz.",
-          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+          id: 'chan-reuniao-aura',
+          name: '├─💼 Reunião',
+          type: 2,
+          description: 'Canal restrito para reuniões internas da staff.',
+          allowedRoles: ['role-staff', 'role-developer', 'role-founder']
         },
         {
-          "name": "└─🎵 Música",
-          "type": 2,
-          "description": "Sala para ouvir música com bots.",
-          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+          id: 'chan-musica-voice-aura',
+          name: '└─🎵 Música',
+          type: 2,
+          description: 'Canal de voz para ouvir som com bots de rádio.'
         }
       ]
     },
     {
-      "name": "🛠️ ・STAFF",
-      "channels": [
+      name: '🛠️ ・STAFF',
+      channels: [
         {
-          "name": "├─📋・logs",
-          "type": 0,
-          "description": "Registros e auditorias do bot.",
-          "embedTitle": "📋 Logs de Atividades da Staff",
-          "embedDescription": "Canal privado para monitorar eventos do servidor, entradas/saídas de membros, histórico de banimentos, kicks e auditoria geral de moderação.",
-          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+          id: 'chan-logs-aura',
+          name: '├─📋・logs',
+          type: 0,
+          description: 'Logs administrativos do bot e do servidor.',
+          embedTitle: '📋 Central de Logs & Histórico',
+          embedDescription: 'Canal privado para monitoramento em tempo real de ações administrativas: edições de cargos, bans/kicks, novos clientes e relatórios automáticos.',
+          allowedRoles: ['role-staff', 'role-developer', 'role-founder']
         },
         {
-          "name": "├─📊・painel",
-          "type": 0,
-          "description": "Painel de controle e faturamento.",
-          "embedTitle": "📊 Painel Financeiro e de Metas",
-          "embedDescription": "Mantenha o controle de faturamento de roupas, assinaturas VIP ativas e status dos servidores em tempo real. Apenas donos e cargos autorizados.",
-          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+          id: 'chan-painel-aura',
+          name: '├─📊・painel',
+          type: 0,
+          description: 'Painel administrativo de estatísticas e financeiro.',
+          embedTitle: '📊 Métricas, Faturamento e Metas',
+          embedDescription: 'Acompanhamento de novos pedidos de bots, faturamento mensal das assinaturas e metas alcançadas pela Aura Bots Studio.',
+          allowedRoles: ['role-staff', 'role-developer', 'role-founder']
         },
         {
-          "name": "├─⚙️・config",
-          "type": 0,
-          "description": "Configurações administrativas e de desenvolvimento.",
-          "embedTitle": "⚙️ Configurações Administrativas",
-          "embedDescription": "Coordenação técnica de desenvolvimento do bot, integrações Webhook e backups de banco de dados do servidor.",
-          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+          id: 'chan-config-aura',
+          name: '├─⚙️・config',
+          type: 0,
+          description: 'Ajustes, credenciais de desenvolvimento e webhook.',
+          embedTitle: '⚙️ Configurações & Webhooks Técnicos',
+          embedDescription: 'Canal para disparar deploys dos bots de clientes, atualizar tokens de testes e configurar redirecionamentos Webhook.',
+          allowedRoles: ['role-staff', 'role-developer', 'role-founder']
         },
         {
-          "name": "├─📑・relatórios",
-          "type": 0,
-          "description": "Relatórios periódicos da loja.",
-          "embedTitle": "📑 Relatórios de Vendas e Desempenho",
-          "embedDescription": "Lista mensal de produtos mais vendidos, feedback dos tickets finalizados e avaliações dos novos packs de roupas.",
-          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+          id: 'chan-relatorios-aura',
+          name: '├─📑・relatórios',
+          type: 0,
+          description: 'Relatórios automáticos de vendas e status das VPS.',
+          embedTitle: '📑 Relatórios de VPS e Desempenho dos Bots',
+          embedDescription: 'Relatório diário informando uso de CPU/RAM de cada bot alocado em nossa VPS, para monitorar a saúde das aplicações.',
+          allowedRoles: ['role-staff', 'role-developer', 'role-founder']
         },
         {
-          "name": "└─👮・moderação",
-          "type": 0,
-          "description": "Comunicação interna de regras da Staff.",
-          "embedTitle": "👮 Manual Interno de Conduta da Staff",
-          "embedDescription": "Instruções de conduta para moderadores e administradores. Aplique as punições corretas de acordo com a gravidade das infrações dos membros do servidor.",
-          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+          id: 'chan-moderacao-aura',
+          name: '└─👮・moderação',
+          type: 0,
+          description: 'Coordenação de punições e banimentos.',
+          embedTitle: '👮 Manual e Conduta de Moderação',
+          embedDescription: 'Orientações oficiais de moderação. Siga a tabela de avisos e punições em caso de infração de regras no servidor principal.',
+          allowedRoles: ['role-staff', 'role-developer', 'role-founder']
         }
       ]
     }
@@ -307,8 +320,8 @@ const CONFIG = {
 const PREFIX = '!';
 
 client.once('ready', () => {
-  console.log(`\n✅ Bot online com sucesso como ${client.user.tag}!`);
-  console.log('📌 Vá para o seu servidor Discord e digite !criar para rodar a automação.\n');
+  console.log(`✅ Bot online com sucesso como ${client.user.tag}!`);
+  console.log('📌 Vá para o seu servidor Discord e digite !criar para rodar a automação.');
 });
 
 client.on('messageCreate', async (message) => {
@@ -402,7 +415,7 @@ client.on('messageCreate', async (message) => {
             color: parseInt(colorHex, 16) || 0,
             hoist: r.hoist,
             mentionable: r.mentionable,
-            reason: 'Automação Loja FiveM'
+            reason: 'Automação Aura Bots Studio'
           });
           roleIdMapping[r.id] = newRole.id;
           console.log(`Cargo Criado: ${r.name}`);
@@ -429,7 +442,7 @@ client.on('messageCreate', async (message) => {
 
       const embedColor = parseInt(CONFIG.accentColor.replace('#', ''), 16) || 0x3498db;
 
-      // 4. Criar as categorias e canais
+      // 4. Criar as categorias e canais com try-catch encapsulados por nível
       for (const cat of CONFIG.categories) {
         try {
           console.log(`Criando categoria: ${cat.name}`);
@@ -446,24 +459,29 @@ client.on('messageCreate', async (message) => {
 
               const permissionOverwrites = [];
 
-              // PRIVAR CANAL: Negar para @everyone por padrão
+              // PRIVAR CANAL: Negar para @everyone
               permissionOverwrites.push({
                 id: guild.id,
                 deny: [PermissionsBitField.Flags.ViewChannel]
               });
 
+              // Determinar cargos permitidos de forma inteligente e premium
               let allowedRolesToAssign = [];
 
               if (chan.allowedRoles && chan.allowedRoles.length > 0) {
                 allowedRolesToAssign = [...chan.allowedRoles];
               } else {
-                const chanNameLower = (chan.name || '').toLowerCase();
-                if (chanNameLower.includes('vip')) {
-                  allowedRolesToAssign = ['role-vip', 'role-staff', 'role-designer', 'role-founder'];
-                } else if (chanNameLower.includes('logs') || chanNameLower.includes('config') || chanNameLower.includes('painel') || chanNameLower.includes('relatório')) {
-                  allowedRolesToAssign = ['role-staff', 'role-designer', 'role-founder'];
+                const chanId = (chan.id || '').toLowerCase();
+                const chanName = (chan.name || '').toLowerCase();
+                
+                if (chanId.includes('vip') || chanName.includes('vip')) {
+                  allowedRolesToAssign = ['role-vip', 'role-staff', 'role-designer', 'role-developer', 'role-founder'];
+                } else if (chanId.includes('policia') || chanId.includes('faccao') || chanId.includes('mc') || chanName.includes('farda') || chanName.includes('moto')) {
+                  allowedRolesToAssign = ['role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-designer', 'role-developer', 'role-founder'];
+                } else if (chanId.includes('tutorial') || chanId.includes('instalar') || chanName.includes('como-instalar') || chanName.includes('tutorial')) {
+                  allowedRolesToAssign = ['role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-designer', 'role-developer', 'role-founder'];
                 } else {
-                  allowedRolesToAssign = ['role-membro', 'role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-designer', 'role-founder'];
+                  allowedRolesToAssign = ['role-membro', 'role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-designer', 'role-developer', 'role-founder'];
                 }
               }
 
@@ -482,7 +500,7 @@ client.on('messageCreate', async (message) => {
               }
 
               // Garantir cargos administrativos sempre ativos
-              const adminRoles = ['role-founder', 'role-designer', 'role-staff'];
+              const adminRoles = ['role-founder', 'role-designer', 'role-developer', 'role-staff'];
               for (const adminId of adminRoles) {
                 const realAdminRoleId = roleIdMapping[adminId];
                 if (realAdminRoleId) {
@@ -503,6 +521,7 @@ client.on('messageCreate', async (message) => {
                 topic: chan.description || '',
                 permissionOverwrites: permissionOverwrites.length > 0 ? permissionOverwrites : undefined
               });
+
               await new Promise(resolve => setTimeout(resolve, 200));
 
               // Postar o embed se for de texto e possuir conteúdo
@@ -512,7 +531,7 @@ client.on('messageCreate', async (message) => {
                     .setTitle(chan.embedTitle || `📌 #${chan.name}`)
                     .setDescription(chan.embedDescription || chan.description || '...')
                     .setColor(embedColor)
-                    .setFooter({ text: 'Arsenal de Estilo | Automação' })
+                    .setFooter({ text: CONFIG.storeName || 'Aura Bots Studio' })
                     .setTimestamp();
 
                   await channel.send({ embeds: [embed] });
@@ -566,4 +585,3 @@ client.on('messageCreate', async (message) => {
 
 // COLOQUE O TOKEN DO SEU BOT DISCORD ABAIXO:
 client.login(process.env.TOKEN);
-;
