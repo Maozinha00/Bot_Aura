@@ -1,5 +1,5 @@
 /**
- * BOT DE DISCORD AUTO-CONFIGURÁVEL - VERSÃO PREMIUM DELUXE
+ * BOT DE DISCORD AUTO-CONFIGURÁVEL - ARSENAL DE ESTILO
  * Versão: discord.js v14
  */
 
@@ -19,201 +19,296 @@ const client = new Client({
   ]
 });
 
-const PREFIX = '!';
-
-// Configurações e Dados da Loja Premium Deluxe
+// Configuração completa do "Arsenal de Estilo" (Canais, Cargos, Permissões e Textos)
 const CONFIG = {
-  storeName: "Aura Bots Studio - Luxury FiveM",
-  accentColor: "#f39c12", // Cor Alaranjada Premium
-  roles: [
-    { id: "role-founder", name: "👑 Proprietário", color: "#f1c40f", hoist: true, mentionable: true },
-    { id: "role-staff", name: "🛡️ Equipe / Staff", color: "#e74c3c", hoist: true, mentionable: true },
-    { id: "role-designer", name: "📐 Designer / Modelador", color: "#3498db", hoist: true, mentionable: true },
-    { id: "role-vip", name: "⭐ VIP Premium Deluxe", color: "#9b59b6", hoist: true, mentionable: true },
-    { id: "role-client", name: "🛍️ Cliente Verificado", color: "#2ecc71", hoist: false, mentionable: false }
+  "storeName": "Arsenal de Estilo",
+  "accentColor": "#eab308",
+  "roles": [
+    { "id": "role-founder", "name": "👑 Fundador", "color": "#ef4444", "hoist": true, "mentionable": true },
+    { "id": "role-designer", "name": "🎨 Designer de Roupas", "color": "#3b82f6", "hoist": true, "mentionable": true },
+    { "id": "role-staff", "name": "🛡️ Staff", "color": "#10b981", "hoist": true, "mentionable": true },
+    { "id": "role-vip", "name": "⭐ VIP Premium", "color": "#eab308", "hoist": true, "mentionable": false },
+    { "id": "role-parceiro", "name": "🤝 Parceiro", "color": "#a855f7", "hoist": false, "mentionable": false },
+    { "id": "role-cliente", "name": "🛒 Cliente Verificado", "color": "#14b8a6", "hoist": false, "mentionable": false },
+    { "id": "role-membro", "name": "👥 Membro", "color": "#9ca3af", "hoist": false, "mentionable": false }
   ],
-  categories: [
+  "categories": [
     {
-      name: "📌 INFORMAÇÕES & COMUNIDADE",
-      channels: [
+      "name": "📜 ・INÍCIO",
+      "channels": [
         {
-          name: "📢-anuncios-loja",
-          type: 0,
-          description: "Avisos importantes, atualizações e novidades da loja.",
-          embedTitle: "📢 Novidades e Avisos da Loja",
-          embedDescription: "Bem-vindo ao canal oficial de anúncios da nossa loja! Fique atento aqui para não perder nenhuma atualização de roupas, novidades de mods e lançamentos incríveis para o seu servidor FiveM!"
+          "name": "├─👋・boas-vindas",
+          "type": 0,
+          "description": "Boas-vindas aos novos membros da comunidade.",
+          "embedTitle": "👋 Bem-vindo ao Arsenal de Estilo!",
+          "embedDescription": "Seja muito bem-vindo ao servidor oficial do **Arsenal de Estilo**! Aqui você encontra as melhores coleções de roupas e calçados otimizados para o seu servidor FiveM (Low-Poly). Fique à vontade e explore nossos canais!",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🛒-como-comprar",
-          type: 0,
-          description: "Instruções detalhadas de como realizar sua compra.",
-          embedTitle: "🛒 Como Adquirir Nossas Roupas",
-          embedDescription: "Para comprar nossas roupas:\n\n1️⃣ Navegue pelas categorias de **🛍️ LOJA & PRODUTOS**.\n2️⃣ Escolha o pack, peça de roupa ou coleção que deseja.\n3️⃣ Vá até a categoria **📞 ATENDIMENTO & SUPORTE** e entre no canal **📩-abrir-ticket**.\n4️⃣ Clique no botão de abrir ticket para iniciar o seu atendimento privado.\n5️⃣ Informe o nome dos itens desejados para nossa equipe finalizar a venda e realizar o envio imediato!"
+          "name": "├─📢・anúncios",
+          "type": 0,
+          "description": "Avisos importantes, atualizações e novidades da loja.",
+          "embedTitle": "📢 Novidades e Avisos da Loja",
+          "embedDescription": "Fique de olho neste canal para não perder os últimos anúncios, atualizações de packs de roupas masculinas e femininas, e novos lançamentos no nosso catálogo!",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "💳-valores-e-precos",
-          type: 0,
-          description: "Preços das roupas e métodos de pagamento.",
-          embedTitle: "💳 Métodos de Pagamento e Valores",
-          embedDescription: "Trabalhamos com os melhores preços do mercado para roupas FiveM Otimizadas (Low-Poly).\n\n🔹 **Pix** (Desconto especial!)\n🔹 **Cartão de Crédito** (Até 12x via Mercado Pago)\n🔹 **Boleto Bancário**\n\n_Consulte os preços detalhados de cada pack nos canais abaixo ou abra um ticket para orçamentos personalizados._"
+          "name": "├─📜・regras",
+          "type": 0,
+          "description": "Diretrizes e regras do servidor.",
+          "embedTitle": "📜 Diretrizes & Regras do Servidor",
+          "embedDescription": "Para manter nossa comunidade saudável e organizada, siga nossas regras fundamentais:\n\n1️⃣ **Respeito Mútuo**: Trate todos os membros e staff com respeito.\n2️⃣ **Sem Spam/Flood**: Evite mensagens repetitivas nos canais comuns.\n3️⃣ **Sem Divulgação**: É proibido divulgar outros servidores ou links não autorizados.\n4️⃣ **Tickets de Vendas**: Use os canais corretos de suporte para realizar compras.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🎉-sorteios",
-          type: 0,
-          description: "Sorteios de packs e cupons.",
-          embedTitle: "🎉 Sorteios da Loja",
-          embedDescription: "Participe dos nossos sorteios exclusivos! Sorteamos regularmente pacotes de roupas premium, cupons de desconto e assinaturas VIP para a nossa comunidade."
+          "name": "├─🎭・cargos",
+          "type": 0,
+          "description": "Descrição dos cargos e reações.",
+          "embedTitle": "🎭 Sistema de Cargos do Servidor",
+          "embedDescription": "Conheça os cargos do nosso servidor:\n\n👑 **Fundador/Dono**: Responsável geral pelo projeto.\n🎨 **Designer de Roupas**: Desenvolvedor dos modelos e packs.\n🛡️ **Staff/Admin**: Suporte e moderação.\n⭐ **VIP Premium**: Acesso antecipado e descontos exclusivos.\n🛒 **Cliente Verificado**: Membros que já efetuaram compras.\n👥 **Membro**: Visitantes e entusiastas da nossa comunidade.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🏆-depoimentos",
-          type: 0,
-          description: "Avaliações de clientes satisfeitos.",
-          embedTitle: "🏆 O que dizem nossos clientes",
-          embedDescription: "Sua satisfação é a nossa prioridade número um! Veja o feedback de clientes que já compraram nossas roupas e otimizaram seus servidores FiveM."
+          "name": "├─🎁・presentes",
+          "type": 0,
+          "description": "Brindes e cupons especiais para membros.",
+          "embedTitle": "🎁 Brindes & Mimos da Comunidade",
+          "embedDescription": "Gostamos de retribuir a preferência dos nossos membros! Periodicamente disponibilizaremos packs gratuitos de roupas de teste ou cupons promocionais especiais aqui.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "└─📅・eventos",
+          "type": 0,
+          "description": "Cronograma de sorteios e eventos.",
+          "embedTitle": "📅 Eventos & Sorteios Ativos",
+          "embedDescription": "Fique atento a esta aba! Aqui você saberá sobre sorteios de assinaturas VIP, packs completos e competições de prints estilizados da comunidade.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         }
       ]
     },
     {
-      name: "🛍️ LOJA & PRODUTOS",
-      channels: [
+      "name": "🛒 ・LOJA",
+      "channels": [
         {
-          name: "📦-packs-promocionais",
-          type: 0,
-          description: "Combos de roupas com preços imperdíveis.",
-          embedTitle: "📦 Packs de Roupas Promocionais",
-          embedDescription: "Adquira pacotes completos de roupas masculinas + femininas prontas para colocar no seu servidor (com script resource.cfg incluído)! Economize até 40% comprando nossos combos!"
+          "name": "├─💎・catálogo",
+          "type": 0,
+          "description": "Catálogo de packs de roupas premium.",
+          "embedTitle": "💎 Catálogo Premium de Roupas & Acessórios",
+          "embedDescription": "Nossos modelos de roupas são low-poly e totalmente otimizados para evitar crash ou lag no seu servidor FiveM.\n\n👕 Roupas Masculinas (Grifes, Táticas, Jaquetas)\n👗 Roupas Femininas (Crop, Vestidos, Looks Balada)\n🎒 Acessórios (Mochilas, Óculos, Bonés de Grife)\n👟 Calçados (Jordan, Yeezy, Nike Shox)\n\n_Para realizar o seu pedido ou tirar dúvidas, acesse a central de atendimento e abra um ticket._",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "👕-masculino-premium",
-          type: 0,
-          description: "Roupas masculinas de marcas de luxo.",
-          embedTitle: "👕 Estilo & Luxo Masculino",
-          embedDescription: "Camisas Polo, Jaquetas corta-vento de marcas famosas, calças táticas, moletons estilosos e as últimas novidades da moda urbana."
+          "name": "├─🔥・promoções",
+          "type": 0,
+          "description": "Combos e pacotes promocionais ativos.",
+          "embedTitle": "🔥 Combos & Packs Promocionais",
+          "embedDescription": "Aproveite nossos preços especiais em packs agrupados! Economize até 40% levando coleções masculinas e femininas integradas com o script de instalação pronta resource.cfg.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "👗-feminino-premium",
-          type: 0,
-          description: "Roupas femininas de alta costura.",
-          embedTitle: "👗 Moda Luxo Feminina",
-          embedDescription: "Modas de balada, biquínis, saias curtas, shorts jeans rasgados de grife e blusas estilosas para as moradoras mais elegantes do seu servidor."
+          "name": "├─⭐・vip",
+          "type": 0,
+          "description": "Benefícios e packs do plano VIP.",
+          "embedTitle": "⭐ Vantagens Exclusivas VIP Premium",
+          "embedDescription": "Ao assinar nossa categoria VIP Deluxe, você adquire:\n\n✔️ 25% de desconto fixo em todas as peças avulsas.\n✔️ Acesso antecipado de 14 dias a lançamentos.\n✔️ Cargo e cor exclusiva no Discord.\n✔️ Suporte 1-on-1 prioritário na fila de entregas.",
+          "allowedRoles": ["role-vip", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🎒-acessorios",
-          type: 0,
-          description: "Óculos, correntes, relógios e mochilas.",
-          embedTitle: "🎒 Acessórios & Joias Exclusivas",
-          embedDescription: "Os detalhes fazem a diferença! Adicione relógios Rolex funcionais, óculos escuros de grife, correntes de ouro com pingentes customizados e bonés de marcas renomadas."
+          "name": "├─🛍️・compras",
+          "type": 0,
+          "description": "Instruções de como comprar.",
+          "embedTitle": "🛍️ Como Realizar Suas Compras",
+          "embedDescription": "Siga este passo a passo simples para adquirir roupas:\n\n1️⃣ Escolha os itens desejados no canal **💎・catálogo** ou **🔥・promoções**.\n2️⃣ Vá em **🎫・abrir-ticket** e clique no botão correspondente para abrir o atendimento.\n3️⃣ Informe os itens selecionados e nossa equipe finalizará o pagamento com envio imediato!",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "Sneakers-calcados",
-          type: 0,
-          description: "Tênis Jordan, Yeezy, sapatilhas e botas.",
-          embedTitle: "👟 Tênis & Calçados Realistas",
-          embedDescription: "Ande com estilo! Tênis Jordan, Yeezy, Nike Shox, sapatos sociais e botas perfeitamente mapeados em texturas de alta definição."
+          "name": "└─💳・pagamentos",
+          "type": 0,
+          "description": "Métodos de pagamento disponíveis.",
+          "embedTitle": "💳 Formas de Pagamento Aceitas",
+          "embedDescription": "Trabalhamos com os métodos de pagamento mais seguros e rápidos:\n\n🔹 **PIX** (Processamento imediato com desconto exclusivo!)\n🔹 **Cartão de Crédito** (Via Mercado Pago, parcelado em até 12x)\n🔹 **Boleto Bancário** (Sujeito à compensação de 1 a 2 dias úteis)",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         }
       ]
     },
     {
-      name: "⭐ ÁREA EXCLUSIVA VIP",
-      channels: [
+      "name": "🎫 ・SUPORTE",
+      "channels": [
         {
-          name: "💎-beneficios-vip",
-          type: 0,
-          description: "Vantagens em assinar os planos VIP.",
-          embedTitle: "💎 Benefícios Exclusivos do Plano VIP",
-          embedDescription: "Assine nossos planos VIP mensais ou vitalícios e receba:\n\n✅ 30% de desconto em qualquer peça avulsa do catálogo.\n✅ Acesso ao canal exclusivo de lançamentos antecipados.\n✅ Suporte prioritário na fila de atendimento do ticket.\n✅ Cargo destacado em roxo no servidor do Discord.",
-          allowedRoles: ["role-vip"]
+          "name": "├─🎟️・abrir-ticket",
+          "type": 0,
+          "description": "Clique no botão para abrir um ticket.",
+          "embedTitle": "🎟️ Central de Atendimento & Compras",
+          "embedDescription": "Deseja comprar alguma roupa ou precisa de suporte para instalação?\n\nClique no botão abaixo para abrir o seu ticket privado de atendimento. Nossa equipe e designers estão prontos para ajudar você!",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "👑-packs-exclusivos-vip",
-          type: 0,
-          description: "Acesso a roupas exclusivas do plano VIP.",
-          embedTitle: "👑 Lançamentos e Packs Exclusivos VIP",
-          embedDescription: "Canal restrito com os arquivos de download direto de packs promocionais e roupas de alta qualidade exclusivas para os membros ativos do VIP!",
-          allowedRoles: ["role-vip"]
+          "name": "├─📨・atendimento",
+          "type": 0,
+          "description": "Informações de horários de atendimento.",
+          "embedTitle": "📨 Horários de Suporte",
+          "embedDescription": "Nossa equipe atende nos seguintes horários:\n\n📅 **Segunda a Sexta**: 10:00 às 22:00\n📅 **Sábados e Domingos**: 13:00 às 20:00\n\n_Mesmo fora do horário, sinta-se à vontade para abrir o ticket e deixar sua mensagem. Responderemos na ordem de chegada!_",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "├─❓・faq",
+          "type": 0,
+          "description": "Perguntas frequentes e dúvidas comuns.",
+          "embedTitle": "❓ FAQ - Perguntas Frequentes",
+          "embedDescription": "**1. As roupas causam crash no servidor?**\nNão! Todas as nossas texturas e malhas são compactadas e otimizadas (Low-Poly), mantendo o tamanho abaixo do limite crítico do FiveM.\n\n**2. Posso testar as roupas antes de comprar?**\nSim! Solicite no seu ticket a entrada no nosso servidor de testes oficial.\n\n**3. Vocês fazem roupas personalizadas com minha marca?**\nSim! Entre em contato via ticket para orçamentos de roupas com o logotipo do seu servidor ou marca real.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "└─📂・downloads",
+          "type": 0,
+          "description": "Downloads de arquivos e links úteis.",
+          "embedTitle": "📂 Área de Downloads e Manuais",
+          "embedDescription": "Acesse seus arquivos de forma organizada. Aqui disponibilizamos manuais em PDF, links para downloads dos recursos comprados e atualizações dos pacotes de roupas de grife.",
+          "allowedRoles": ["role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         }
       ]
     },
     {
-      name: "👔 ROUPAS DE CORPORAÇÕES",
-      channels: [
+      "name": "👑 ・COMUNIDADE",
+      "channels": [
         {
-          name: "🚓-fardas-policia-e-samu",
-          type: 0,
-          description: "Uniformes militares, policiais e médicos.",
-          embedTitle: "🚓 Fardamentos Militares e Médicos",
-          embedDescription: "Fornecemos fardamentos completos, coletes táticos realistas e roupas médicas/SAMU perfeitamente otimizados e prontos para colocar na sua pasta de mods."
+          "name": "├─💬・chat",
+          "type": 0,
+          "description": "Bate-papo geral da comunidade.",
+          "embedTitle": "💬 Chat Geral - Área de Convivência",
+          "embedDescription": "Converse sobre o servidor, FiveM, GTA RP, mande prints ou fale sobre moda urbana. Siga as diretrizes de bom convívio!",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🕶️-roupas-faccoes",
-          type: 0,
-          description: "Skins para gangues, máfias e cartéis.",
-          embedTitle: "🕶️ Vestuário de Facções & Gangues",
-          embedDescription: "Roupas esportivas combinando, bandanas, casacos acolchoados e camisas estampadas para unificar o estilo da sua facção ou gangue urbana."
+          "name": "├─📸・prints",
+          "type": 0,
+          "description": "Envie fotos do seu personagem usando nossas roupas.",
+          "embedTitle": "📸 Galeria de Looks (Prints)",
+          "embedDescription": "Mostre o estilo do seu personagem! Envie fotos e capturas de tela usando nossos trajes no servidor de roleplay e receba elogios da comunidade.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🏍️-motoclubes",
-          type: 0,
-          description: "Coletes de couro e casacos pesados de moto.",
-          embedTitle: "🏍️ Coletes de Couro de Moto Clubes",
-          embedDescription: "Estilo estradeiro autêntico! Coletes de couro personalizáveis, casacos pesados e calças de couro de alta resistência para motoclubes."
+          "name": "├─🎥・clips",
+          "type": 0,
+          "description": "Envie clipes engraçados ou de ação.",
+          "embedTitle": "🎥 Clipes & Vídeos de Roleplay",
+          "embedDescription": "Mandou bem no RP ou quer compartilhar aquele momento engraçado ou de ação? Publique seus clipes do Twitch, TikTok ou YouTube aqui!",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "├─😂・memes",
+          "type": 0,
+          "description": "Canal de humor e memes.",
+          "embedTitle": "😂 Humor & Memes de GTA",
+          "embedDescription": "Solte a risada! Poste piadas, montagens e memes sobre FiveM e o cotidiano das cidades de roleplay.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "├─🎵・música",
+          "type": 0,
+          "description": "Comandos para o bot de música.",
+          "embedTitle": "🎵 Comandos de Música",
+          "embedDescription": "Quer colocar um som de fundo enquanto joga ou conversa? Use este canal para enviar os comandos do nosso bot de rádio e gerenciar suas playlists de música.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "└─🤖・comandos",
+          "type": 0,
+          "description": "Interações e comandos gerais de bots.",
+          "embedTitle": "🤖 Comandos Gerais de Bots",
+          "embedDescription": "Utilize este canal para brincar com os minijogos do bot, verificar seu nível de XP na comunidade ou consultar suas moedas da loja.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         }
       ]
     },
     {
-      name: "🛠️ INSTALAÇÃO & AJUDA",
-      channels: [
+      "name": "🎙️ ・VOZ",
+      "channels": [
         {
-          name: "📥-como-instalar",
-          type: 0,
-          description: "Tutoriais em texto e vídeo de instalação.",
-          embedTitle: "📥 Como Instalar em seu Servidor FiveM",
-          embedDescription: "Todos os nossos produtos são entregues no formato pronto para o seu servidor:\n\n**Como recurso Add-on (Pronto):**\n1️⃣ Extraia o arquivo baixado.\n2️⃣ Coloque a pasta na sua diretiva `resources/`.\n3️⃣ Adicione `ensure nome_da_pasta` no seu `server.cfg`.\n4️⃣ Inicie o servidor e aproveite!\n\n_Para substituir roupas padrão (Replace), consulte o tutorial fixado._"
+          "name": "├─🔊 Geral 01",
+          "type": 2,
+          "description": "Conversa por voz livre.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "❓-faq-duvidas",
-          type: 0,
-          description: "Dúvidas frequentes respondidas.",
-          embedTitle: "❓ Dúvidas Frequentes",
-          embedDescription: "**1. As roupas causam crash no servidor?**\nNão! Todas as nossas texturas e malhas são compactadas e otimizadas (Low-Poly), mantendo o tamanho abaixo do limite crítico do FiveM.\n\n**2. Posso testar as roupas antes de comprar?**\nSim! Solicite no seu ticket a entrada no nosso servidor de testes oficial.\n\n**3. Vocês fazem roupas personalizadas com minha marca?**\nSim! Entre em contato via ticket para orçamentos de roupas com o logotipo do seu servidor ou marca real."
+          "name": "├─🔊 Geral 02",
+          "type": 2,
+          "description": "Conversa por voz livre.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "├─🎮 Gaming",
+          "type": 2,
+          "description": "Jogar conversando.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "├─💼 Reunião",
+          "type": 2,
+          "description": "Reuniões e suporte por voz.",
+          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "└─🎵 Música",
+          "type": 2,
+          "description": "Sala para ouvir música com bots.",
+          "allowedRoles": ["role-membro", "role-cliente", "role-vip", "role-parceiro", "role-staff", "role-designer", "role-founder"]
         }
       ]
     },
     {
-      name: "📞 ATENDIMENTO & SUPORTE",
-      channels: [
+      "name": "🛠️ ・STAFF",
+      "channels": [
         {
-          name: "📩-abrir-ticket",
-          type: 0,
-          description: "Abra um ticket de suporte privado.",
-          embedTitle: "📩 Central de Suporte e Vendas",
-          embedDescription: "Para comprar ou receber suas roupas, clique no botão para abrir um ticket de atendimento. Nossa equipe responderá o mais rápido possível!"
+          "name": "├─📋・logs",
+          "type": 0,
+          "description": "Registros e auditorias do bot.",
+          "embedTitle": "📋 Logs de Atividades da Staff",
+          "embedDescription": "Canal privado para monitorar eventos do servidor, entradas/saídas de membros, histórico de banimentos, kicks e auditoria geral de moderação.",
+          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🤝-parcerias",
-          type: 0,
-          description: "Requisitos para parcerias com streamers.",
-          embedTitle: "🤝 Programa de Parcerias",
-          embedDescription: "É streamer, criador de conteúdo de FiveM ou dono de cidade grande? Faça uma parceria conosco e ganhe roupas exclusivas em troca de divulgação! Consulte os requisitos abrindo um ticket."
+          "name": "├─📊・painel",
+          "type": 0,
+          "description": "Painel de controle e faturamento.",
+          "embedTitle": "📊 Painel Financeiro e de Metas",
+          "embedDescription": "Mantenha o controle de faturamento de roupas, assinaturas VIP ativas e status dos servidores em tempo real. Apenas donos e cargos autorizados.",
+          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🔊 Sala de Espera #1",
-          type: 2,
-          description: "Aguarde atendimento em voz."
+          "name": "├─⚙️・config",
+          "type": 0,
+          "description": "Configurações administrativas e de desenvolvimento.",
+          "embedTitle": "⚙️ Configurações Administrativas",
+          "embedDescription": "Coordenação técnica de desenvolvimento do bot, integrações Webhook e backups de banco de dados do servidor.",
+          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
         },
         {
-          name: "🔊 Sala de Espera #2",
-          type: 2,
-          description: "Aguarde atendimento em voz."
+          "name": "├─📑・relatórios",
+          "type": 0,
+          "description": "Relatórios periódicos da loja.",
+          "embedTitle": "📑 Relatórios de Vendas e Desempenho",
+          "embedDescription": "Lista mensal de produtos mais vendidos, feedback dos tickets finalizados e avaliações dos novos packs de roupas.",
+          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
+        },
+        {
+          "name": "└─👮・moderação",
+          "type": 0,
+          "description": "Comunicação interna de regras da Staff.",
+          "embedTitle": "👮 Manual Interno de Conduta da Staff",
+          "embedDescription": "Instruções de conduta para moderadores e administradores. Aplique as punições corretas de acordo com a gravidade das infrações dos membros do servidor.",
+          "allowedRoles": ["role-staff", "role-designer", "role-founder"]
         }
       ]
     }
   ]
 };
 
+const PREFIX = '!';
+
 client.once('ready', () => {
-  console.log(`✅ Bot online com sucesso como ${client.user.tag}!`);
-  console.log('📌 Vá para o seu servidor Discord e digite !criar para rodar a automação.');
+  console.log(`\n✅ Bot online com sucesso como ${client.user.tag}!`);
+  console.log('📌 Vá para o seu servidor Discord e digite !criar para rodar a automação.\n');
 });
 
 client.on('messageCreate', async (message) => {
@@ -257,7 +352,7 @@ client.on('messageCreate', async (message) => {
             await channel.delete();
             deletedChansCount++;
             console.log(`Deletado canal/categoria: ${channel.name}`);
-            await new Promise(resolve => setTimeout(resolve, 150)); // Evitar limite de taxa (Rate Limit)
+            await new Promise(resolve => setTimeout(resolve, 150)); // Evitar limite de taxa
           } catch (e) {
             console.log(`Erro ao deletar canal ${channel.name}: ${e.message}`);
           }
@@ -265,7 +360,7 @@ client.on('messageCreate', async (message) => {
       }
       console.log(`🧹 Limpeza de canais concluída! Total deletados: ${deletedChansCount}`);
 
-      // 2. Deletar todos os cargos customizados deletáveis (exceto bots e everyone)
+      // 2. Deletar todos os cargos customizados deletáveis
       const roles = await guild.roles.fetch();
       let deletedRolesCount = 0;
       for (const [id, role] of roles) {
@@ -274,7 +369,7 @@ client.on('messageCreate', async (message) => {
             await role.delete();
             deletedRolesCount++;
             console.log(`Deletado cargo: ${role.name}`);
-            await new Promise(resolve => setTimeout(resolve, 150)); // Evitar limite de taxa (Rate Limit)
+            await new Promise(resolve => setTimeout(resolve, 150)); // Evitar limite de taxa
           } catch (e) {
             console.log(`Erro ao deletar cargo ${role.name}: ${e.message}`);
           }
@@ -334,7 +429,7 @@ client.on('messageCreate', async (message) => {
 
       const embedColor = parseInt(CONFIG.accentColor.replace('#', ''), 16) || 0x3498db;
 
-      // 4. Criar as categorias e canais estruturados
+      // 4. Criar as categorias e canais
       for (const cat of CONFIG.categories) {
         try {
           console.log(`Criando categoria: ${cat.name}`);
@@ -351,32 +446,50 @@ client.on('messageCreate', async (message) => {
 
               const permissionOverwrites = [];
 
-              // Configurar permissões de canal privado se houver restrição
-              if (chan.allowedRoles && chan.allowedRoles.length > 0) {
-                // Negar visualização para everyone (público geral)
-                permissionOverwrites.push({
-                  id: guild.id,
-                  deny: [PermissionsBitField.Flags.ViewChannel]
-                });
+              // PRIVAR CANAL: Negar para @everyone por padrão
+              permissionOverwrites.push({
+                id: guild.id,
+                deny: [PermissionsBitField.Flags.ViewChannel]
+              });
 
-                // Permitir para os cargos permitidos configurados
-                for (const tempRoleId of chan.allowedRoles) {
-                  const realRoleId = roleIdMapping[tempRoleId];
-                  if (realRoleId) {
+              let allowedRolesToAssign = [];
+
+              if (chan.allowedRoles && chan.allowedRoles.length > 0) {
+                allowedRolesToAssign = [...chan.allowedRoles];
+              } else {
+                const chanNameLower = (chan.name || '').toLowerCase();
+                if (chanNameLower.includes('vip')) {
+                  allowedRolesToAssign = ['role-vip', 'role-staff', 'role-designer', 'role-founder'];
+                } else if (chanNameLower.includes('logs') || chanNameLower.includes('config') || chanNameLower.includes('painel') || chanNameLower.includes('relatório')) {
+                  allowedRolesToAssign = ['role-staff', 'role-designer', 'role-founder'];
+                } else {
+                  allowedRolesToAssign = ['role-membro', 'role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-designer', 'role-founder'];
+                }
+              }
+
+              // Aplicar permissão ViewChannel para cargos mapeados
+              for (const tempRoleId of allowedRolesToAssign) {
+                const realRoleId = roleIdMapping[tempRoleId];
+                if (realRoleId) {
+                  const alreadyAdded = permissionOverwrites.some(o => o.id === realRoleId);
+                  if (!alreadyAdded) {
                     permissionOverwrites.push({
                       id: realRoleId,
                       allow: [PermissionsBitField.Flags.ViewChannel]
                     });
                   }
                 }
+              }
 
-                // Garantir permissão de visualização para administradores padrão (Proprietário e Staff)
-                const defaultPrivilegedTempIds = ['role-founder', 'role-staff'];
-                for (const privId of defaultPrivilegedTempIds) {
-                  const realPrivRoleId = roleIdMapping[privId];
-                  if (realPrivRoleId && !chan.allowedRoles.includes(privId)) {
+              // Garantir cargos administrativos sempre ativos
+              const adminRoles = ['role-founder', 'role-designer', 'role-staff'];
+              for (const adminId of adminRoles) {
+                const realAdminRoleId = roleIdMapping[adminId];
+                if (realAdminRoleId) {
+                  const alreadyAdded = permissionOverwrites.some(o => o.id === realAdminRoleId);
+                  if (!alreadyAdded) {
                     permissionOverwrites.push({
-                      id: realPrivRoleId,
+                      id: realAdminRoleId,
                       allow: [PermissionsBitField.Flags.ViewChannel]
                     });
                   }
@@ -392,14 +505,14 @@ client.on('messageCreate', async (message) => {
               });
               await new Promise(resolve => setTimeout(resolve, 200));
 
-              // Postar o embed de vendas automático se for canal de texto
+              // Postar o embed se for de texto e possuir conteúdo
               if (chan.type === 0 && (chan.embedTitle || chan.embedDescription)) {
                 try {
                   const embed = new EmbedBuilder()
                     .setTitle(chan.embedTitle || `📌 #${chan.name}`)
                     .setDescription(chan.embedDescription || chan.description || '...')
                     .setColor(embedColor)
-                    .setFooter({ text: `Powered by ${CONFIG.storeName} • Auto Setup` })
+                    .setFooter({ text: 'Arsenal de Estilo | Automação' })
                     .setTimestamp();
 
                   await channel.send({ embeds: [embed] });
@@ -416,7 +529,7 @@ client.on('messageCreate', async (message) => {
         }
       }
 
-      // Atualizar mensagem de progresso final
+      // Atualizar mensagem de sucesso final no próprio canal do setup
       if (progressMsg) {
         try {
           await progressMsg.edit({
@@ -440,7 +553,7 @@ client.on('messageCreate', async (message) => {
             embeds: [
               new EmbedBuilder()
                 .setTitle('❌ Falha no Setup')
-                .setDescription(`Ocorreu um erro geral durante a execução do setup:\n\`\`\`${error.message}\`\`\`\nConsulte o terminal para mais detalhes.`)
+                .setDescription(`Ocorreu um erro geral durante a execução do setup:\n\`\`\`${error.message}\`\`\`\nConsulte o console para mais detalhes.`)
                 .setColor(0xe74c3c)
                 .setTimestamp()
             ]
@@ -451,7 +564,6 @@ client.on('messageCreate', async (message) => {
   }
 });
 
-// INSIRA O TOKEN DO SEU BOT DISCORD ABAIXO:
-
+// COLOQUE O TOKEN DO SEU BOT DISCORD ABAIXO:
 client.login(process.env.TOKEN);
 ;
