@@ -100,7 +100,7 @@ const CONFIG = {
           type: 0,
           description: 'Preços e catálogo detalhado de Bots e Servidores.',
           embedTitle: '🤖 Catálogo de Bots & Criação de Servidores',
-          embedDescription: 'Oferecemos soluções completas com excelente custo-benefício:\n\n🤖 **Bots Customizados (A partir de R$ 30,00)**\nDesenvolvemos qualquer sistema: Vendas automáticas, Moderação, Ticket, Economia, RPG e integrações API.\n\n⚙️ **Bot Mensal (Apenas R$ 15,00/mês)**\nTenha o seu bot ativo 24/7 hospedado em nossa VPS premium. Sem travamentos, com suporte e atualizações inclusas!\n\n💻 **Criação de Servidor Completo (A partir de R$ 20,00)**\nConfiguramos seu servidor com categorias organizadas, emojis de alta qualidade, cargos estruturados, permissões blindadas e bots essenciais configurados!'
+          embedDescription: 'Oferecemos soluções completas com excelente custo-benefício:\n\n🤖 **Bots Customizados (A partir de R$ 30,00)**\nDesenvolvemos qualquer sistema: Vendas automáticas, Moderação, Ticket, Economia, RPG e integrações API.\n\n⚙️ **Bot Mensal (Apenas R$ 15,00/mês)**\nTenha o seu bot ativo 24/7 hospedado em nossa VPS premium. Sem travamentos, com suporte e atualizações inclusas!\n\n💻 **Criação de Servidor Completo (A partir de R$ 30,00)**\nConfiguramos seu servidor com categorias organizadas, emojis de alta qualidade, cargos estruturados, permissões blindadas e bots essenciais configurados!'
         },
         {
           id: 'chan-promocoes-aura',
