@@ -413,4 +413,4 @@ client.on('messageCreate', async (message) => {
 // Coloque o TOKEN do seu bot do Discord aqui:
 
 client.login(process.env.TOKEN);
-});
+;
