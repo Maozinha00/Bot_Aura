@@ -409,7 +409,4 @@ client.on('messageCreate', async (message) => {
 
 // TOKEN do seu Bot Discord (Mantenha seguro)
 client.login(process.env.TOKEN);
-
-client.login(TOKEN).catch(err => {
-  console.error('❌ Falha ao logar o bot no Discord. Verifique o TOKEN!');
-});
+;
