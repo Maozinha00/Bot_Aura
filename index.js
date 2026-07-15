@@ -1,23 +1,22 @@
 /**
  * ======================================================================
- * 🤖 BOT AUTO-CONFIGURADOR DE SERVIDORES - AURA BOTS
- * Versão: discord.js v14
+ * 🤖 BOT AUTO-CONFIGURADOR DE SERVIDORES - PREMIUM (v14)
  * 
  * 🔒 BLINDAGEM TOTAL: Canais totalmente privados por padrão.
  * 🧹 LIMPEZA COMPLETA: Apaga TODOS os canais e cargos antigos.
  * ======================================================================
  * 
  * 📌 COMO INSTALAR E RODAR:
- * 1. Crie uma pasta vazia no seu computador e abra o terminal/prompt.
- * 2. Rode: npm install discord.js dotenv
- * 3. Crie um arquivo chamado "index.js" e cole este código completo dentro dele.
- * 4. Ative as 3 "Privileged Gateway Intents" no painel de desenvolvedor do Discord:
+ * 1. Crie uma pasta vazia no seu computador.
+ * 2. Abra o terminal nessa pasta e rode: npm install discord.js dotenv
+ * 3. Crie um arquivo chamado "index.js" e cole este código dentro dele.
+ * 4. Ative as 3 "Privileged Gateway Intents" no painel de desenvolvedor do Discord (Bot):
  *    - Presence Intent
- *    - Server Members Intent
+ *    - Server Members Intent (Para gerenciar cargos)
  *    - Message Content Intent (OBRIGATÓRIO para ler o comando "!criar")
- * 5. Configure seu TOKEN nas variáveis de ambiente da Railway ou no final deste arquivo.
- * 6. Rode o bot usando: node index.js
- * 7. Digite "!criar" no canal do seu servidor Discord para rodar a automação completa.
+ * 5. Configure o TOKEN do seu bot no final do arquivo ou no arquivo .env
+ * 6. Inicie o bot no terminal: node index.js
+ * 7. Digite "!criar" em qualquer canal do servidor para iniciar a mágica!
  */
 
 const { 
@@ -37,64 +36,13 @@ const client = new Client({
   ]
 });
 
-// Configurações Globais da sua Loja (Serão injetadas automaticamente no painel)
+// Configurações dinâmicas que você edita na interface do App
 const CONFIG_LOJA = {
-  storeName: "Aura Bots Studio",
+  storeName: "Sua Loja", // Substituído automaticamente pelo nome configurado no painel
   accentColor: "#a855f7",
-  // Insira o ID do seu servidor para travar o bot apenas nele (Opcional)
-  guildId: "", 
-  
-  // Lista de cargos padrão que serão criados na hierarquia limpa do zero
-  roles: [
-    { id: "role-founder", name: "👑 Founder", color: "#a855f7", hoist: true, mentionable: false },
-    { id: "role-developer", name: "💻 Developer", color: "#3b82f6", hoist: true, mentionable: false },
-    { id: "role-staff", name: "🛡️ Staff", color: "#ef4444", hoist: true, mentionable: false },
-    { id: "role-parceiro", name: "🤝 Parceiro", color: "#10b981", hoist: true, mentionable: false },
-    { id: "role-vip", name: "⭐ VIP", color: "#f59e0b", hoist: true, mentionable: false },
-    { id: "role-cliente", name: "🛒 Cliente Verificado", color: "#10b981", hoist: true, mentionable: false },
-    { id: "role-membro", name: "👥 Membro", color: "#9ca3af", hoist: false, mentionable: false }
-  ],
-  
-  // Categorias e canais blindados com mensagens embutidas
-  categories: [
-    {
-      name: "📌 ─── INFORMAÇÕES ───",
-      channels: [
-        {
-          id: "chan-boas-vindas",
-          name: "👋・bem-vindo",
-          type: 0,
-          description: "Canal de boas-vindas do servidor.",
-          embedTitle: "👋 Seja muito bem-vindo!",
-          embedDescription: "Ficamos muito felizes com a sua chegada! Aqui você encontra os melhores produtos digitais e serviços automatizados com suporte premium. Sinta-se em casa!",
-          allowedRoles: ["role-membro"]
-        },
-        {
-          id: "chan-regras",
-          name: "📜・diretrizes",
-          type: 0,
-          description: "Regras gerais de comportamento.",
-          embedTitle: "📜 Diretrizes & Regras do Servidor",
-          embedDescription: "Para manter o ambiente agradável, pedimos que siga nossas regras:\n\n1️⃣ Respeite todos os membros e a equipe.\n2️⃣ Proibido qualquer tipo de spam, flood ou convites não autorizados.\n3️⃣ Use os canais de forma correta e evite poluição visual.\n\nAproveite sua estadia!",
-          allowedRoles: ["role-membro"]
-        }
-      ]
-    },
-    {
-      name: "🛒 ─── COMPRAS & SERVIÇOS ───",
-      channels: [
-        {
-          id: "chan-produtos",
-          name: "🎁・vitrine-produtos",
-          type: 0,
-          description: "Produtos oficiais disponíveis para compra.",
-          embedTitle: "🎁 Nossos Produtos Premium",
-          embedDescription: "Explore nossos produtos digitais com entrega 100% automatizada e suporte qualificado. Clique no botão de compra ou chame um de nossos robôs de vendas para adquirir os seus pacotes!",
-          allowedRoles: ["role-membro"]
-        }
-      ]
-    }
-  ]
+  guildId: "", // Cole o ID do servidor aqui caso queira travar em um único servidor
+  roles: [], // Seus cargos definidos
+  categories: [] // Suas categorias e canais
 };
 
 const PREFIX = '!';
@@ -103,10 +51,10 @@ client.once('ready', () => {
   console.log('====================================================');
   console.log(`🤖 ${client.user.tag} iniciado com sucesso!`);
   console.log('====================================================');
-  console.log('👉 INSTRUÇÕES DE EXECUÇÃO:');
-  console.log('1. Entre no seu servidor Discord onde o bot está adicionado.');
-  console.log('2. Garanta que o cargo do Bot esteja no topo da lista (Hierarquia máxima).');
-  console.log('3. Digite "!criar" em qualquer canal de texto para rodar a reestruturação.');
+  console.log('👉 INSTRUÇÕES:');
+  console.log('1. Entre no seu servidor Discord.');
+  console.log('2. Coloque o cargo do Bot no topo absoluto da lista (hierarquia máxima).');
+  console.log('3. Digite "!criar" em qualquer canal para rodar a automação.');
   console.log('====================================================');
 });
 
@@ -124,11 +72,6 @@ client.on('messageCreate', async (message) => {
 
     const guild = message.guild;
 
-    // Se houver um ID de guilda travado na configuração, validar
-    if (CONFIG_LOJA.guildId && guild.id !== CONFIG_LOJA.guildId) {
-      return message.reply('❌ Este bot foi configurado para rodar em outro servidor específico.');
-    }
-
     console.log(`Iniciando limpeza e montagem do servidor: ${guild.name} (${guild.id})`);
     
     let progressMsg;
@@ -137,7 +80,7 @@ client.on('messageCreate', async (message) => {
         embeds: [
           new EmbedBuilder()
             .setTitle('🧹 Reestruturação Iniciada')
-            .setDescription('🧹 **Etapa 1/4:** Iniciando limpeza completa de canais antigos...\nAguarde um momento para evitar limites de requisição da API.')
+            .setDescription('🧹 **Etapa 1/4:** Iniciando limpeza completa de canais antigos...\nAguarde um momento.')
             .setColor(0xf39c12)
             .setFooter({ text: CONFIG_LOJA.storeName })
             .setTimestamp()
@@ -148,24 +91,23 @@ client.on('messageCreate', async (message) => {
     }
 
     try {
-      // ETAPA 1: Limpar canais antigos (Mantendo o canal atual temporariamente para o progresso)
+      // ETAPA 1: Limpar canais antigos (EXCETO o canal onde foi digitado o comando)
       const channels = await guild.channels.fetch();
       let deletedChansCount = 0;
       for (const [id, channel] of channels) {
         if (id === message.channel.id) continue;
         if (channel.deletable) {
           try {
-            await channel.delete('Restruturação e blindagem Aura');
+            await channel.delete('Reestruturação Aura');
             deletedChansCount++;
-            await new Promise(resolve => setTimeout(resolve, 150));
+            await new Promise(resolve => setTimeout(resolve, 150)); // Pausa anti-rate-limit
           } catch (e) {
             console.log(`Não foi possível deletar o canal/categoria ${channel.name}: ${e.message}`);
           }
         }
       }
-      console.log(`Canais deletados: ${deletedChansCount}`);
 
-      // ETAPA 2: Limpeza completa de cargos antigos
+      // ETAPA 2: Limpeza completa e segura de cargos antigos
       if (progressMsg) {
         try {
           await progressMsg.edit({
@@ -185,7 +127,7 @@ client.on('messageCreate', async (message) => {
       let deletedRolesCount = 0;
       const failedRoles = [];
       
-      // Ordenar cargos para apagar do menor para o maior na hierarquia
+      // Ordenar do menor ao maior para deletar sem quebra de hierarquia
       const rolesToDelete = Array.from(roles.values())
         .sort((a, b) => a.position - b.position);
 
@@ -196,18 +138,17 @@ client.on('messageCreate', async (message) => {
 
         if (!isEveryone && !isManaged && !isSelfBotRole) {
           try {
-            await role.delete('Restruturação e hierarquia limpa Aura');
+            await role.delete('Hierarquia limpa');
             deletedRolesCount++;
-            await new Promise(resolve => setTimeout(resolve, 150)); // Evitar rate limit
+            await new Promise(resolve => setTimeout(resolve, 150));
           } catch (e) {
             failedRoles.push(role.name);
             console.log(`Não foi possível deletar o cargo ${role.name}: ${e.message}`);
           }
         }
       }
-      console.log(`Cargos deletados: ${deletedRolesCount}`);
 
-      // ETAPA 3: Criar cargos novos configurados
+      // ETAPA 3: Criar cargos configurados
       if (progressMsg) {
         try {
           await progressMsg.edit({
@@ -235,7 +176,6 @@ client.on('messageCreate', async (message) => {
             reason: 'Automação de Cargos Aura'
           });
           roleIdMapping[r.id] = newRole.id;
-          console.log(`Cargo Criado: ${r.name} -> ID: ${newRole.id}`);
           await new Promise(resolve => setTimeout(resolve, 200));
         } catch (e) {
           console.error(`Erro ao criar o cargo ${r.name}: `, e.message);
@@ -243,13 +183,18 @@ client.on('messageCreate', async (message) => {
       }
 
       // ETAPA 4: Criar Categorias, Canais e aplicar Blindagem de Permissões
+      const totalCategories = CONFIG_LOJA.categories.length;
+      const totalChannels = CONFIG_LOJA.categories.reduce((acc, c) => acc + (c.channels ? c.channels.length : 0), 0);
+      let createdCategoriesCount = 0;
+      let createdChannelsCount = 0;
+
       if (progressMsg) {
         try {
           await progressMsg.edit({
             embeds: [
               new EmbedBuilder()
                 .setTitle('📂 Criando Estrutura Blindada')
-                .setDescription('🔒 **Etapa 4/4:** Criando categorias e canais com **permissões blindadas** (bloqueado para quem não tem cargo) e postando embeds...\nAguarde a conclusão.')
+                .setDescription(`🔒 **Etapa 4/4:** Preparando criação de canais com **permissões blindadas**...\n\n📁 **Categorias:** 0 de ${totalCategories} criadas\n💬 **Canais:** 0 de ${totalChannels} criados\n\n_Iniciando em instantes..._`)
                 .setColor(0x9b59b6)
                 .setFooter({ text: CONFIG_LOJA.storeName })
                 .setTimestamp()
@@ -262,43 +207,60 @@ client.on('messageCreate', async (message) => {
 
       for (const cat of CONFIG_LOJA.categories) {
         try {
-          console.log(`Criando categoria: ${cat.name}`);
           const category = await guild.channels.create({
             name: cat.name,
             type: ChannelType.GuildCategory
           });
-          await new Promise(resolve => setTimeout(resolve, 200));
+          createdCategoriesCount++;
+
+          if (progressMsg) {
+            try {
+              await progressMsg.edit({
+                embeds: [
+                  new EmbedBuilder()
+                    .setTitle('📂 Criando Estrutura Blindada')
+                    .setDescription(`🔒 **Etapa 4/4:** Criando categorias e canais...\n\n📁 **Categorias:** ${createdCategoriesCount} de ${totalCategories} criadas\n💬 **Canais:** ${createdChannelsCount} de ${totalChannels} criados\n\n*Criando categoria:* **${cat.name}**\n\n_Aguarde, configurando canais desta categoria..._`)
+                    .setColor(0x9b59b6)
+                    .setFooter({ text: CONFIG_LOJA.storeName })
+                    .setTimestamp()
+                ]
+              });
+            } catch (e) {}
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 350));
 
           for (const chan of cat.channels) {
             try {
-              const cleanChanName = chan.type === 2 ? chan.name : chan.name.toLowerCase().replace(/\s+/g, '-');
-              console.log(`Criando canal: ${cleanChanName}`);
+              const rawChanName = chan.name || 'canal-sem-nome';
+              const cleanChanName = chan.type === 2 ? rawChanName : rawChanName.toLowerCase().replace(/\s+/g, '-');
 
               const permissionOverwrites = [];
 
-              // Negar visualização absoluta para o cargo @everyone
+              // Negar visualização total para o cargo @everyone (visitantes)
               permissionOverwrites.push({
                 id: guild.id,
                 deny: [PermissionsBitField.Flags.ViewChannel]
               });
 
+              // Determinar quem pode ver este canal
               let allowedRolesToAssign = [];
-
               if (chan.allowedRoles && chan.allowedRoles.length > 0) {
                 allowedRolesToAssign = [...chan.allowedRoles];
               } else {
-                const chanId = (chan.id || '').toLowerCase();
                 const chanName = (chan.name || '').toLowerCase();
-                
-                if (chanId.includes('vip') || chanName.includes('vip')) {
+                if (chanName.includes('vip')) {
                   allowedRolesToAssign = ['role-vip', 'role-staff', 'role-developer', 'role-founder'];
-                } else if (chanId.includes('staff') || chanId.includes('painel') || chanId.includes('logs') || chanName.includes('staff') || chanName.includes('moderacao')) {
+                } else if (chanName.includes('staff') || chanName.includes('painel') || chanName.includes('logs') || chanName.includes('moderacao')) {
                   allowedRolesToAssign = ['role-staff', 'role-developer', 'role-founder'];
+                } else if (chanName.includes('download')) {
+                  allowedRolesToAssign = ['role-cliente', 'role-vip', 'role-staff', 'role-developer', 'role-founder'];
                 } else {
                   allowedRolesToAssign = ['role-membro', 'role-cliente', 'role-vip', 'role-parceiro', 'role-staff', 'role-developer', 'role-founder'];
                 }
               }
 
+              // Aplicar permissões
               for (const tempRoleId of allowedRolesToAssign) {
                 const realRoleId = roleIdMapping[tempRoleId];
                 if (realRoleId) {
@@ -312,7 +274,7 @@ client.on('messageCreate', async (message) => {
                 }
               }
 
-              // Permitir cargos administrativos verem tudo por padrão
+              // Staff sempre vê tudo
               const adminRoles = ['role-founder', 'role-developer', 'role-staff'];
               for (const adminId of adminRoles) {
                 const realAdminRoleId = roleIdMapping[adminId];
@@ -327,6 +289,7 @@ client.on('messageCreate', async (message) => {
                 }
               }
 
+              // Criar o canal
               const createdChannel = await guild.channels.create({
                 name: cleanChanName,
                 type: chan.type === 2 ? ChannelType.GuildVoice : ChannelType.GuildText,
@@ -335,8 +298,26 @@ client.on('messageCreate', async (message) => {
                 permissionOverwrites: permissionOverwrites
               });
 
-              await new Promise(resolve => setTimeout(resolve, 200));
+              createdChannelsCount++;
 
+              if (progressMsg) {
+                try {
+                  await progressMsg.edit({
+                    embeds: [
+                      new EmbedBuilder()
+                        .setTitle('📂 Criando Estrutura Blindada')
+                        .setDescription(`🔒 **Etapa 4/4:** Criando categorias e canais...\n\n📁 **Categorias:** ${createdCategoriesCount} de ${totalCategories} criadas\n💬 **Canais:** ${createdChannelsCount} de ${totalChannels} criados\n\n*Criado com sucesso:* **${cleanChanName}**\n\n_Aguarde... Configurando permissões de privacidade._`)
+                        .setColor(0x9b59b6)
+                        .setFooter({ text: CONFIG_LOJA.storeName })
+                        .setTimestamp()
+                    ]
+                  });
+                } catch (e) {}
+              }
+
+              await new Promise(resolve => setTimeout(resolve, 350));
+
+              // Se for canal de texto e possuir embed configurado, postar o embed
               if (chan.type === 0 && (chan.embedTitle || chan.embedDescription)) {
                 try {
                   const embed = new EmbedBuilder()
@@ -360,13 +341,13 @@ client.on('messageCreate', async (message) => {
         }
       }
 
-      // Setup terminado com sucesso absoluto!
+      // Conclusão com Sucesso Absoluto
       if (progressMsg) {
         try {
-          let descFinal = `👑 Toda a estrutura de categorias, canais de texto/voz, permissões privadas de cargos e mensagens automáticas da **${CONFIG_LOJA.storeName}** foram configurados com sucesso!\n\n🔒 **Canais Blindados:** O cargo @everyone foi removido da visualização dos canais. Apenas membros que receberem cargos como Membro, VIP ou Cliente conseguirão acessar seus respectivos canais!\n\n🧹 **Limpeza Completa:** Todos os canais antigos foram deletados.`;
+          let descFinal = `👑 Toda a estrutura de categorias, canais de texto/voz, permissões privadas de cargos e mensagens automáticas da **${CONFIG_LOJA.storeName}** foram configurados com sucesso!\n\n🔒 **Canais Blindados:** O cargo @everyone foi removido da visualização dos canais. Apenas membros autorizados conseguirão acessar!\n\n🧹 **Limpeza Completa:** Todos os canais antigos foram deletados.`;
           
           if (failedRoles.length > 0) {
-            descFinal += `\n\n⚠️ **Aviso de Cargos Antigos:** Alguns cargos não puderam ser deletados automaticamente porque o cargo do seu Bot está abaixo deles na lista (hierarquia do Discord):\n` + failedRoles.map(r => `• ${r}`).join('\n') + `\n\n👉 **Como resolver:** Vá em **Configurações do Servidor > Cargos**, arraste o cargo do seu Bot para o topo absoluto da lista (hierarquia máxima) e digite \`!criar\` novamente para limpar tudo perfeitamente!`;
+            descFinal += `\n\n⚠️ **Aviso de Cargos Antigos:** Alguns cargos não puderam ser deletados automaticamente porque o cargo do seu Bot está abaixo deles na lista (hierarquia do Discord):\n` + failedRoles.map(r => `• ${r}`).join('\n') + `\n\n👉 **Como resolver:** Vá em **Configurações do Servidor > Cargos**, arraste o cargo do seu Bot para o topo absoluto da lista e digite \`!criar\` novamente para limpar tudo perfeitamente!`;
           } else {
             descFinal += `\n\n🧹 **Limpeza de Cargos:** Todos os cargos antigos foram deletados e recriados com sucesso do zero!`;
           }
@@ -386,9 +367,7 @@ client.on('messageCreate', async (message) => {
         } catch (e) {}
       }
 
-      console.log('====================================================');
       console.log('✅ REESTRUTURAÇÃO CONCLUÍDA COM SUCESSO!');
-      console.log('====================================================');
 
     } catch (err) {
       console.error('Erro geral no setup: ', err);
@@ -398,7 +377,7 @@ client.on('messageCreate', async (message) => {
             embeds: [
               new EmbedBuilder()
                 .setTitle('❌ Falha Crítica no Setup')
-                .setDescription(`Ocorreu um erro ao configurar o servidor:\n\`\`\`\n${err.message}\n\`\`\`\nConsulte o terminal do bot para mais detalhes.`)
+                .setDescription(`Ocorreu um erro ao configurar o servidor:\n\`\`\`\n${err.message}\n\`\`\`\nConsulte o console para detalhes.`)
                 .setColor(0xe74c3c)
                 .setFooter({ text: CONFIG_LOJA.storeName })
                 .setTimestamp()
@@ -411,6 +390,9 @@ client.on('messageCreate', async (message) => {
 });
 
 // Coloque o TOKEN do seu bot do Discord aqui:
-
 client.login(process.env.TOKEN);
-;
+
+client.login(TOKEN).catch(err => {
+  console.error('❌ Falha ao logar o bot no Discord. Verifique se o TOKEN é válido!');
+  console.error(err);
+});
