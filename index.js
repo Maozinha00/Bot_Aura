@@ -1,15 +1,6 @@
 /**
- * BOT DE DISCORD AUTO-CONFIGURÁVEL - AUTOMATION SETUP
+ * BOT DE DISCORD AUTO-CONFIGURÁVEL - VERSÃO PREMIUM DELUXE
  * Versão: discord.js v14
- * 
- * 📌 INSTRUÇÕES DE INSTALAÇÃO:
- * 1. Crie uma pasta vazia no seu computador e abra o terminal nela.
- * 2. Digite: npm init -y
- * 3. Instale a biblioteca do Discord: npm install discord.js
- * 4. Crie um arquivo chamado index.js e cole todo este código dentro dele.
- * 5. Substitua o token na última linha pelo Token real do seu Bot.
- * 6. Inicialize o bot rodando: node index.js
- * 7. No seu servidor Discord, digite o comando: !criar
  */
 
 const { 
@@ -28,40 +19,197 @@ const client = new Client({
   ]
 });
 
-// A interface web gera esta configuração dinamicamente com base no seu design de canais e cargos
+const PREFIX = '!';
+
+// Configurações e Dados da Loja Premium Deluxe
 const CONFIG = {
-  "storeName": "Sua Loja",
-  "accentColor": "#f59e0b",
-  "roles": [
-    { "id": "role-founder", "name": "👑 Fundador", "color": "#f59e0b", "hoist": true, "mentionable": false },
-    { "id": "role-staff", "name": "🛡️ Staff", "color": "#10b981", "hoist": true, "mentionable": false },
-    { "id": "role-vip", "name": "⭐ Cliente VIP", "color": "#3b82f6", "hoist": false, "mentionable": false }
+  storeName: "Aura Bots Studio - Luxury FiveM",
+  accentColor: "#f39c12", // Cor Alaranjada Premium
+  roles: [
+    { id: "role-founder", name: "👑 Proprietário", color: "#f1c40f", hoist: true, mentionable: true },
+    { id: "role-staff", name: "🛡️ Equipe / Staff", color: "#e74c3c", hoist: true, mentionable: true },
+    { id: "role-designer", name: "📐 Designer / Modelador", color: "#3498db", hoist: true, mentionable: true },
+    { id: "role-vip", name: "⭐ VIP Premium Deluxe", color: "#9b59b6", hoist: true, mentionable: true },
+    { id: "role-client", name: "🛍️ Cliente Verificado", color: "#2ecc71", hoist: false, mentionable: false }
   ],
-  "categories": [
+  categories: [
     {
-      "name": "📌 INFORMAÇÕES",
-      "channels": [
-        { "name": "📢-anuncios", "type": 0, "description": "Avisos importantes da loja", "embedTitle": "📢 Anúncios Oficiais", "embedDescription": "Fique por dentro de todas as novidades e atualizações!" },
-        { "name": "📜-regras", "type": 0, "description": "Regras do servidor", "embedTitle": "📜 Diretrizes do Servidor", "embedDescription": "Evite punições lendo atentamente as nossas regras." }
+      name: "📌 INFORMAÇÕES & COMUNIDADE",
+      channels: [
+        {
+          name: "📢-anuncios-loja",
+          type: 0,
+          description: "Avisos importantes, atualizações e novidades da loja.",
+          embedTitle: "📢 Novidades e Avisos da Loja",
+          embedDescription: "Bem-vindo ao canal oficial de anúncios da nossa loja! Fique atento aqui para não perder nenhuma atualização de roupas, novidades de mods e lançamentos incríveis para o seu servidor FiveM!"
+        },
+        {
+          name: "🛒-como-comprar",
+          type: 0,
+          description: "Instruções detalhadas de como realizar sua compra.",
+          embedTitle: "🛒 Como Adquirir Nossas Roupas",
+          embedDescription: "Para comprar nossas roupas:\n\n1️⃣ Navegue pelas categorias de **🛍️ LOJA & PRODUTOS**.\n2️⃣ Escolha o pack, peça de roupa ou coleção que deseja.\n3️⃣ Vá até a categoria **📞 ATENDIMENTO & SUPORTE** e entre no canal **📩-abrir-ticket**.\n4️⃣ Clique no botão de abrir ticket para iniciar o seu atendimento privado.\n5️⃣ Informe o nome dos itens desejados para nossa equipe finalizar a venda e realizar o envio imediato!"
+        },
+        {
+          name: "💳-valores-e-precos",
+          type: 0,
+          description: "Preços das roupas e métodos de pagamento.",
+          embedTitle: "💳 Métodos de Pagamento e Valores",
+          embedDescription: "Trabalhamos com os melhores preços do mercado para roupas FiveM Otimizadas (Low-Poly).\n\n🔹 **Pix** (Desconto especial!)\n🔹 **Cartão de Crédito** (Até 12x via Mercado Pago)\n🔹 **Boleto Bancário**\n\n_Consulte os preços detalhados de cada pack nos canais abaixo ou abra um ticket para orçamentos personalizados._"
+        },
+        {
+          name: "🎉-sorteios",
+          type: 0,
+          description: "Sorteios de packs e cupons.",
+          embedTitle: "🎉 Sorteios da Loja",
+          embedDescription: "Participe dos nossos sorteios exclusivos! Sorteamos regularmente pacotes de roupas premium, cupons de desconto e assinaturas VIP para a nossa comunidade."
+        },
+        {
+          name: "🏆-depoimentos",
+          type: 0,
+          description: "Avaliações de clientes satisfeitos.",
+          embedTitle: "🏆 O que dizem nossos clientes",
+          embedDescription: "Sua satisfação é a nossa prioridade número um! Veja o feedback de clientes que já compraram nossas roupas e otimizaram seus servidores FiveM."
+        }
       ]
     },
     {
-      "name": "🛒 PRODUTOS",
-      "channels": [
-        { "name": "💎-ofertas", "type": 0, "description": "Melhores produtos", "embedTitle": "💎 Ofertas Exclusivas", "embedDescription": "Confira as nossas promoções ativas." }
+      name: "🛍️ LOJA & PRODUTOS",
+      channels: [
+        {
+          name: "📦-packs-promocionais",
+          type: 0,
+          description: "Combos de roupas com preços imperdíveis.",
+          embedTitle: "📦 Packs de Roupas Promocionais",
+          embedDescription: "Adquira pacotes completos de roupas masculinas + femininas prontas para colocar no seu servidor (com script resource.cfg incluído)! Economize até 40% comprando nossos combos!"
+        },
+        {
+          name: "👕-masculino-premium",
+          type: 0,
+          description: "Roupas masculinas de marcas de luxo.",
+          embedTitle: "👕 Estilo & Luxo Masculino",
+          embedDescription: "Camisas Polo, Jaquetas corta-vento de marcas famosas, calças táticas, moletons estilosos e as últimas novidades da moda urbana."
+        },
+        {
+          name: "👗-feminino-premium",
+          type: 0,
+          description: "Roupas femininas de alta costura.",
+          embedTitle: "👗 Moda Luxo Feminina",
+          embedDescription: "Modas de balada, biquínis, saias curtas, shorts jeans rasgados de grife e blusas estilosas para as moradoras mais elegantes do seu servidor."
+        },
+        {
+          name: "🎒-acessorios",
+          type: 0,
+          description: "Óculos, correntes, relógios e mochilas.",
+          embedTitle: "🎒 Acessórios & Joias Exclusivas",
+          embedDescription: "Os detalhes fazem a diferença! Adicione relógios Rolex funcionais, óculos escuros de grife, correntes de ouro com pingentes customizados e bonés de marcas renomadas."
+        },
+        {
+          name: "Sneakers-calcados",
+          type: 0,
+          description: "Tênis Jordan, Yeezy, sapatilhas e botas.",
+          embedTitle: "👟 Tênis & Calçados Realistas",
+          embedDescription: "Ande com estilo! Tênis Jordan, Yeezy, Nike Shox, sapatos sociais e botas perfeitamente mapeados em texturas de alta definição."
+        }
       ]
     },
     {
-      "name": "📞 SUPORTE",
-      "channels": [
-        { "name": "🎫-abrir-ticket", "type": 0, "description": "Atendimento", "embedTitle": "🎫 Central de Suporte", "embedDescription": "Precisa de ajuda? Abra um ticket de atendimento!" },
-        { "name": "🔊-suporte-voice", "type": 2, "description": "Canal de Voz para Suporte" }
+      name: "⭐ ÁREA EXCLUSIVA VIP",
+      channels: [
+        {
+          name: "💎-beneficios-vip",
+          type: 0,
+          description: "Vantagens em assinar os planos VIP.",
+          embedTitle: "💎 Benefícios Exclusivos do Plano VIP",
+          embedDescription: "Assine nossos planos VIP mensais ou vitalícios e receba:\n\n✅ 30% de desconto em qualquer peça avulsa do catálogo.\n✅ Acesso ao canal exclusivo de lançamentos antecipados.\n✅ Suporte prioritário na fila de atendimento do ticket.\n✅ Cargo destacado em roxo no servidor do Discord.",
+          allowedRoles: ["role-vip"]
+        },
+        {
+          name: "👑-packs-exclusivos-vip",
+          type: 0,
+          description: "Acesso a roupas exclusivas do plano VIP.",
+          embedTitle: "👑 Lançamentos e Packs Exclusivos VIP",
+          embedDescription: "Canal restrito com os arquivos de download direto de packs promocionais e roupas de alta qualidade exclusivas para os membros ativos do VIP!",
+          allowedRoles: ["role-vip"]
+        }
+      ]
+    },
+    {
+      name: "👔 ROUPAS DE CORPORAÇÕES",
+      channels: [
+        {
+          name: "🚓-fardas-policia-e-samu",
+          type: 0,
+          description: "Uniformes militares, policiais e médicos.",
+          embedTitle: "🚓 Fardamentos Militares e Médicos",
+          embedDescription: "Fornecemos fardamentos completos, coletes táticos realistas e roupas médicas/SAMU perfeitamente otimizados e prontos para colocar na sua pasta de mods."
+        },
+        {
+          name: "🕶️-roupas-faccoes",
+          type: 0,
+          description: "Skins para gangues, máfias e cartéis.",
+          embedTitle: "🕶️ Vestuário de Facções & Gangues",
+          embedDescription: "Roupas esportivas combinando, bandanas, casacos acolchoados e camisas estampadas para unificar o estilo da sua facção ou gangue urbana."
+        },
+        {
+          name: "🏍️-motoclubes",
+          type: 0,
+          description: "Coletes de couro e casacos pesados de moto.",
+          embedTitle: "🏍️ Coletes de Couro de Moto Clubes",
+          embedDescription: "Estilo estradeiro autêntico! Coletes de couro personalizáveis, casacos pesados e calças de couro de alta resistência para motoclubes."
+        }
+      ]
+    },
+    {
+      name: "🛠️ INSTALAÇÃO & AJUDA",
+      channels: [
+        {
+          name: "📥-como-instalar",
+          type: 0,
+          description: "Tutoriais em texto e vídeo de instalação.",
+          embedTitle: "📥 Como Instalar em seu Servidor FiveM",
+          embedDescription: "Todos os nossos produtos são entregues no formato pronto para o seu servidor:\n\n**Como recurso Add-on (Pronto):**\n1️⃣ Extraia o arquivo baixado.\n2️⃣ Coloque a pasta na sua diretiva `resources/`.\n3️⃣ Adicione `ensure nome_da_pasta` no seu `server.cfg`.\n4️⃣ Inicie o servidor e aproveite!\n\n_Para substituir roupas padrão (Replace), consulte o tutorial fixado._"
+        },
+        {
+          name: "❓-faq-duvidas",
+          type: 0,
+          description: "Dúvidas frequentes respondidas.",
+          embedTitle: "❓ Dúvidas Frequentes",
+          embedDescription: "**1. As roupas causam crash no servidor?**\nNão! Todas as nossas texturas e malhas são compactadas e otimizadas (Low-Poly), mantendo o tamanho abaixo do limite crítico do FiveM.\n\n**2. Posso testar as roupas antes de comprar?**\nSim! Solicite no seu ticket a entrada no nosso servidor de testes oficial.\n\n**3. Vocês fazem roupas personalizadas com minha marca?**\nSim! Entre em contato via ticket para orçamentos de roupas com o logotipo do seu servidor ou marca real."
+        }
+      ]
+    },
+    {
+      name: "📞 ATENDIMENTO & SUPORTE",
+      channels: [
+        {
+          name: "📩-abrir-ticket",
+          type: 0,
+          description: "Abra um ticket de suporte privado.",
+          embedTitle: "📩 Central de Suporte e Vendas",
+          embedDescription: "Para comprar ou receber suas roupas, clique no botão para abrir um ticket de atendimento. Nossa equipe responderá o mais rápido possível!"
+        },
+        {
+          name: "🤝-parcerias",
+          type: 0,
+          description: "Requisitos para parcerias com streamers.",
+          embedTitle: "🤝 Programa de Parcerias",
+          embedDescription: "É streamer, criador de conteúdo de FiveM ou dono de cidade grande? Faça uma parceria conosco e ganhe roupas exclusivas em troca de divulgação! Consulte os requisitos abrindo um ticket."
+        },
+        {
+          name: "🔊 Sala de Espera #1",
+          type: 2,
+          description: "Aguarde atendimento em voz."
+        },
+        {
+          name: "🔊 Sala de Espera #2",
+          type: 2,
+          description: "Aguarde atendimento em voz."
+        }
       ]
     }
   ]
 };
-
-const PREFIX = '!';
 
 client.once('ready', () => {
   console.log(`✅ Bot online com sucesso como ${client.user.tag}!`);
@@ -75,7 +223,7 @@ client.on('messageCreate', async (message) => {
   const command = args.shift().toLowerCase();
 
   if (command === 'criar') {
-    // Apenas administradores do servidor podem executar o comando
+    // Apenas administradores podem rodar este comando
     if (!message.member.permissions.has(PermissionsBitField.Flags.Administrator)) {
       return message.reply('❌ Apenas membros com a permissão de **Administrador** podem executar este comando!');
     }
@@ -89,7 +237,7 @@ client.on('messageCreate', async (message) => {
         embeds: [
           new EmbedBuilder()
             .setTitle('🧹 Iniciando Setup da Loja')
-            .setDescription('🧹 **Etapa 1:** Realizando limpeza completa do servidor (canais e cargos antigos)...\\nAguarde um momento, isso pode levar alguns segundos devido aos limites de taxa.')
+            .setDescription('🧹 **Etapa 1:** Realizando limpeza completa do servidor (canais e cargos antigos)...\nAguarde um momento, isso pode levar alguns segundos devido aos limites de taxa.')
             .setColor(0xf39c12)
             .setTimestamp()
         ]
@@ -99,17 +247,17 @@ client.on('messageCreate', async (message) => {
     }
 
     try {
-      // 1. Deletar todos os canais e categorias existentes deletáveis (EXCETO o canal de comando)
+      // 1. Deletar todos os canais e categorias existentes deletáveis (EXCETO o canal onde o comando foi enviado)
       const channels = await guild.channels.fetch();
       let deletedChansCount = 0;
       for (const [id, channel] of channels) {
-        if (id === message.channel.id) continue; // Mantém o canal atual vivo para feedback
+        if (id === message.channel.id) continue; // Manter o canal do comando para não quebrar o bot
         if (channel.deletable) {
           try {
             await channel.delete();
             deletedChansCount++;
             console.log(`Deletado canal/categoria: ${channel.name}`);
-            await new Promise(resolve => setTimeout(resolve, 150)); // Delay para limites de taxa
+            await new Promise(resolve => setTimeout(resolve, 150)); // Evitar limite de taxa (Rate Limit)
           } catch (e) {
             console.log(`Erro ao deletar canal ${channel.name}: ${e.message}`);
           }
@@ -117,7 +265,7 @@ client.on('messageCreate', async (message) => {
       }
       console.log(`🧹 Limpeza de canais concluída! Total deletados: ${deletedChansCount}`);
 
-      // 2. Deletar todos os cargos customizados antigos e deletáveis
+      // 2. Deletar todos os cargos customizados deletáveis (exceto bots e everyone)
       const roles = await guild.roles.fetch();
       let deletedRolesCount = 0;
       for (const [id, role] of roles) {
@@ -126,7 +274,7 @@ client.on('messageCreate', async (message) => {
             await role.delete();
             deletedRolesCount++;
             console.log(`Deletado cargo: ${role.name}`);
-            await new Promise(resolve => setTimeout(resolve, 150));
+            await new Promise(resolve => setTimeout(resolve, 150)); // Evitar limite de taxa (Rate Limit)
           } catch (e) {
             console.log(`Erro ao deletar cargo ${role.name}: ${e.message}`);
           }
@@ -134,14 +282,14 @@ client.on('messageCreate', async (message) => {
       }
       console.log(`🧹 Limpeza de cargos concluída! Total deletados: ${deletedRolesCount}`);
 
-      // Atualizar status para Etapa 2
+      // Atualizar mensagem de progresso para Etapa 2
       if (progressMsg) {
         try {
           await progressMsg.edit({
             embeds: [
               new EmbedBuilder()
                 .setTitle('⚙️ Progresso do Setup')
-                .setDescription('🎨 **Etapa 2:** Criando novos cargos customizados e configurando hierarquia...\\nAguarde um momento.')
+                .setDescription('🎨 **Etapa 2:** Criando novos cargos customizados e configurando hierarquia...\nAguarde um momento.')
                 .setColor(0x3498db)
                 .setTimestamp()
             ]
@@ -149,7 +297,7 @@ client.on('messageCreate', async (message) => {
         } catch (e) {}
       }
 
-      // 3. Criar os novos cargos configurados
+      // 3. Criar os novos cargos customizados configurados
       const roleIdMapping = {};
       for (const r of CONFIG.roles) {
         try {
@@ -159,7 +307,7 @@ client.on('messageCreate', async (message) => {
             color: parseInt(colorHex, 16) || 0,
             hoist: r.hoist,
             mentionable: r.mentionable,
-            reason: 'Automação Loja Discord'
+            reason: 'Automação Loja FiveM'
           });
           roleIdMapping[r.id] = newRole.id;
           console.log(`Cargo Criado: ${r.name}`);
@@ -169,14 +317,14 @@ client.on('messageCreate', async (message) => {
         }
       }
 
-      // Atualizar status para Etapa 3
+      // Atualizar mensagem de progresso para Etapa 3
       if (progressMsg) {
         try {
           await progressMsg.edit({
             embeds: [
               new EmbedBuilder()
                 .setTitle('⚙️ Progresso do Setup')
-                .setDescription('📂 **Etapa 3:** Criando categorias, canais de texto/voz e definindo permissões privadas...\\nAguarde um momento.')
+                .setDescription('📂 **Etapa 3:** Criando categorias, canais de texto/voz e definindo permissões privadas...\nAguarde um momento.')
                 .setColor(0x9b59b6)
                 .setTimestamp()
             ]
@@ -186,7 +334,7 @@ client.on('messageCreate', async (message) => {
 
       const embedColor = parseInt(CONFIG.accentColor.replace('#', ''), 16) || 0x3498db;
 
-      // 4. Criar categorias e canais
+      // 4. Criar as categorias e canais estruturados
       for (const cat of CONFIG.categories) {
         try {
           console.log(`Criando categoria: ${cat.name}`);
@@ -203,15 +351,15 @@ client.on('messageCreate', async (message) => {
 
               const permissionOverwrites = [];
 
-              // Tratar canais privados por cargo
+              // Configurar permissões de canal privado se houver restrição
               if (chan.allowedRoles && chan.allowedRoles.length > 0) {
-                // Negar View para everyone
+                // Negar visualização para everyone (público geral)
                 permissionOverwrites.push({
                   id: guild.id,
                   deny: [PermissionsBitField.Flags.ViewChannel]
                 });
 
-                // Permitir cargos permitidos
+                // Permitir para os cargos permitidos configurados
                 for (const tempRoleId of chan.allowedRoles) {
                   const realRoleId = roleIdMapping[tempRoleId];
                   if (realRoleId) {
@@ -222,15 +370,15 @@ client.on('messageCreate', async (message) => {
                   }
                 }
 
-                // Dar privilégio padrão para Staffs e Fundadores
-                const defaultPrivilegedTempIds = ['role-founder', 'role-designer', 'role-staff'];
+                // Garantir permissão de visualização para administradores padrão (Proprietário e Staff)
+                const defaultPrivilegedTempIds = ['role-founder', 'role-staff'];
                 for (const privId of defaultPrivilegedTempIds) {
                   const realPrivRoleId = roleIdMapping[privId];
                   if (realPrivRoleId && !chan.allowedRoles.includes(privId)) {
                     permissionOverwrites.push({
                       id: realPrivRoleId,
                       allow: [PermissionsBitField.Flags.ViewChannel]
-                });
+                    });
                   }
                 }
               }
@@ -244,7 +392,7 @@ client.on('messageCreate', async (message) => {
               });
               await new Promise(resolve => setTimeout(resolve, 200));
 
-              // Se for canal de texto, publica o embed rico configurado
+              // Postar o embed de vendas automático se for canal de texto
               if (chan.type === 0 && (chan.embedTitle || chan.embedDescription)) {
                 try {
                   const embed = new EmbedBuilder()
@@ -268,14 +416,14 @@ client.on('messageCreate', async (message) => {
         }
       }
 
-      // Enviar mensagem de finalização bem sucedida!
+      // Atualizar mensagem de progresso final
       if (progressMsg) {
         try {
           await progressMsg.edit({
             embeds: [
               new EmbedBuilder()
                 .setTitle('🎉 Setup Concluído com Sucesso!')
-                .setDescription(`👑 Toda a estrutura de categorias, canais de texto/voz, permissões privadas, cargos e mensagens de embeds automáticas da loja **${CONFIG.storeName}** foram configurados com sucesso!\n\n*Você já pode deletar este canal temporário se desejar.*`)
+                .setDescription(`👑 Toda a estrutura de categorias, canais de texto/voz, permissões privadas, cargos e mensagens de embeds automáticas da loja **${CONFIG.storeName}** foram configurados com sucesso!\n\n*Você já pode apagar este canal temporário se desejar.*`)
                 .setColor(0x2ecc71)
                 .setTimestamp()
             ]
@@ -285,14 +433,14 @@ client.on('messageCreate', async (message) => {
 
       console.log('✅ Automação de criação concluída com sucesso!');
     } catch (error) {
-      console.error('Erro geral no setup: ', error);
+      console.error('Erro geral na automação do bot: ', error);
       if (progressMsg) {
         try {
           await progressMsg.edit({
             embeds: [
               new EmbedBuilder()
                 .setTitle('❌ Falha no Setup')
-                .setDescription(`Ocorreu um erro geral durante a execução do setup:\n\`\`\`${error.message}\`\`\`\nConsulte o console para mais detalhes.`)
+                .setDescription(`Ocorreu um erro geral durante a execução do setup:\n\`\`\`${error.message}\`\`\`\nConsulte o terminal para mais detalhes.`)
                 .setColor(0xe74c3c)
                 .setTimestamp()
             ]
@@ -302,5 +450,7 @@ client.on('messageCreate', async (message) => {
     }
   }
 });
+
+// INSIRA O TOKEN DO SEU BOT DISCORD ABAIXO:
 
 client.login(process.env.TOKEN);
