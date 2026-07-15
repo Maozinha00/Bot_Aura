@@ -38,8 +38,7 @@ const client = new Client({
 });
 
 // Chaves de Configuração
-const BOT_TOKEN = process.env.TOKEN || 'COLE_SEU_TOKEN_AQUI'; 
-const GUILD_ID = 'COLE_ID_DO_SEU_SERVIDOR_AQUI'; // Insira o ID do seu servidor aqui
+const GUILD_ID = '1495178024759332914'; // Insira o ID do seu servidor aqui
 
 // Configurações estruturadas da Aura Bots Studio
 const CONFIG = {
@@ -363,7 +362,7 @@ client.on('messageCreate', async (message) => {
     const guild = message.guild;
     
     // Se o GUILD_ID foi configurado, impedir execução fora dele
-    if (GUILD_ID && GUILD_ID !== 'COLE_ID_DO_SEU_SERVIDOR_AQUI' && guild.id !== GUILD_ID) {
+    if (GUILD_ID && GUILD_ID !== '1495178024759332914' && guild.id !== GUILD_ID) {
       return message.reply('❌ Este bot não está configurado para operar neste servidor.');
     }
 
@@ -637,9 +636,7 @@ client.on('messageCreate', async (message) => {
   }
 });
 
-// Coloque o Token do seu Bot Discord abaixo (ou defina a variável de ambiente TOKEN)
-require("dotenv").config();
-
+// Coloque o Token do seu Bot Discord abaixo (ou no arquivo .env)
 client.login(process.env.TOKEN);
 ;
 
